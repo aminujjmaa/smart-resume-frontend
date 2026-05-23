@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { syncAuthCookieFromStorage } from "@/lib/authCookie";
 
-/** Keeps middleware-readable cookie in sync for sessions created before cookie auth existed. */
+/** Retires legacy localStorage tokens after server-managed cookie auth is available. */
 export default function AuthCookieSync() {
   useEffect(() => {
     syncAuthCookieFromStorage();

@@ -1,19 +1,19 @@
-const TOKEN_COOKIE = "access_token";
-const MAX_AGE_SECONDS = 60 * 60 * 24 * 7; // 7 days
-
-export function setAuthCookie(token: string) {
-  if (typeof document === "undefined") return;
-  const encoded = encodeURIComponent(token);
-  document.cookie = `${TOKEN_COOKIE}=${encoded}; path=/; max-age=${MAX_AGE_SECONDS}; SameSite=Lax`;
-}
+const TOKEN_COOKIE = "sr_access_token";
+const LEGACY_TOKEN_COOKIE = "access_token";
 
 export function clearAuthCookie() {
   if (typeof document === "undefined") return;
   document.cookie = `${TOKEN_COOKIE}=; path=/; max-age=0; SameSite=Lax`;
+  document.cookie = `${LEGACY_TOKEN_COOKIE}=; path=/; max-age=0; SameSite=Lax`;
+}
+
+export function clearLegacyAuthStorage() {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("user");
+  document.cookie = `${LEGACY_TOKEN_COOKIE}=; path=/; max-age=0; SameSite=Lax`;
 }
 
 export function syncAuthCookieFromStorage() {
-  if (typeof window === "undefined") return;
-  const token = localStorage.getItem("access_token");
-  if (token) setAuthCookie(token);
+  clearLegacyAuthStorage();
 }

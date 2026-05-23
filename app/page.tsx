@@ -1,101 +1,146 @@
-import Image from "next/image";
+import Navbar from "@/components/shared/Navbar";
+import Footer from "@/components/shared/Footer";
+import Hero from "@/components/landing/Hero";
+import HowItWorks from "@/components/landing/HowItWorks";
+import Features from "@/components/landing/Features";
+import Testimonials from "@/components/landing/Testimonials";
+import Pricing from "@/components/landing/Pricing";
+import Link from "next/link";
+import { ArrowRight, HelpCircle, Search } from "lucide-react";
 
-export default function Home() {
+const roleLinks = [
+  "Software Engineer",
+  "Product Manager",
+  "Data Analyst",
+  "Project Manager",
+  "Marketing Manager",
+  "Business Analyst",
+];
+
+const faqs = [
+  {
+    q: "What is an ATS resume scanner?",
+    a: "An ATS resume scanner checks how well your resume can be parsed and matched by applicant tracking systems before a recruiter reviews it.",
+  },
+  {
+    q: "Can I scan a PDF resume?",
+    a: "Yes. The upload flow supports PDF, DOCX, TXT, and pasted text, then keeps the original preview visible during the report flow.",
+  },
+  {
+    q: "Should I include a job description?",
+    a: "Yes. A job description makes the report more specific because the score can compare your resume against the exact role requirements.",
+  },
+  {
+    q: "Does the tool rewrite bullet points?",
+    a: "The report highlights weak bullets and suggests stronger versions with clearer action, scope, and measurable outcomes.",
+  },
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "SmartResume AI",
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+  description:
+    "AI resume scanner with ATS score, keyword gap analysis, formatting checks, and resume bullet rewriting.",
+};
+
+export default function LandingPage() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <Navbar />
+      <Hero />
+      <HowItWorks />
+      <Features />
+      <Testimonials />
+      <Pricing />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      <section className="section bg-surface-950">
+        <div className="container-lg mx-auto">
+          <div className="mb-10 flex flex-col justify-between gap-5 md:flex-row md:items-end">
+            <div>
+              <span className="badge badge-info mb-4">Role-specific scans</span>
+              <h2 className="font-display text-4xl font-bold leading-tight text-white md:text-5xl">
+                Start with the role you are targeting.
+              </h2>
+            </div>
+            <p className="max-w-md text-base leading-8 text-slate-400">
+              Choose a common job family, add your resume, and tailor the report around the language hiring teams expect for that role.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {roleLinks.map((role) => {
+              const slug = role.toLowerCase().replace(/\s+/g, "-");
+              return (
+                <Link
+                  key={role}
+                  href={`/ats-score/${slug}`}
+                  className="group flex items-center justify-between rounded-lg border border-white/10 bg-white/[0.035] px-5 py-4 transition-all hover:border-teal-300/25 hover:bg-white/[0.055]"
+                >
+                  <span className="flex items-center gap-3 font-semibold text-slate-200">
+                    <Search size={17} className="text-teal-300" />
+                    {role} ATS scanner
+                  </span>
+                  <ArrowRight size={16} className="text-slate-500 transition-transform group-hover:translate-x-1 group-hover:text-teal-300" />
+                </Link>
+              );
+            })}
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </section>
+
+      <section className="section bg-[#070b12]">
+        <div className="container-md mx-auto">
+          <div className="mb-10 text-center">
+            <span className="badge badge-info mb-4">FAQ</span>
+            <h2 className="font-display text-4xl font-bold text-white md:text-5xl">
+              Resume scanner questions, answered.
+            </h2>
+          </div>
+
+          <div className="space-y-3">
+            {faqs.map((faq) => (
+              <div key={faq.q} className="rounded-lg border border-white/10 bg-white/[0.035] p-5">
+                <div className="flex gap-3">
+                  <HelpCircle size={18} className="mt-1 shrink-0 text-teal-300" />
+                  <div>
+                    <h3 className="font-display text-lg font-semibold text-white">{faq.q}</h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-400">{faq.a}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section hero-bg text-center">
+        <div className="container-md mx-auto">
+          <h2 className="font-display text-4xl font-bold text-white md:text-5xl">
+            Ready to see what your resume is missing?
+          </h2>
+          <p className="mx-auto mb-8 mt-4 max-w-lg text-lg leading-8 text-slate-300">
+            Run a free ATS scan, review the report, and fix the highest-impact gaps before your next application.
+          </p>
+          <Link href="/dashboard/upload" className="btn-primary inline-flex px-10 py-4 text-base">
+            Scan My Resume Free
+            <ArrowRight size={18} />
+          </Link>
+        </div>
+      </section>
+
+      <Footer />
+    </main>
   );
 }

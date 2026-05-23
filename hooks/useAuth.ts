@@ -22,8 +22,8 @@ export function useAuth() {
   const login = useCallback(
     async (email: string, password: string) => {
       const res = await authApi.login({ email, password });
-      const { access_token, user: userData } = res.data;
-      setAuth(userData, access_token);
+      const { user: userData } = res.data;
+      setAuth(userData, "");
       redirectAfterAuth();
     },
     [setAuth, redirectAfterAuth]
@@ -32,16 +32,18 @@ export function useAuth() {
   const register = useCallback(
     async (email: string, password: string, full_name?: string) => {
       const res = await authApi.register({ email, password, full_name });
-      const { access_token, user: userData } = res.data;
-      setAuth(userData, access_token);
+      const { user: userData } = res.data;
+      setAuth(userData, "");
       redirectAfterAuth();
     },
     [setAuth, redirectAfterAuth]
   );
 
   const logout = useCallback(() => {
-    clearAuth();
-    router.push("/");
+    authApi.logout().catch(() => undefined).finally(() => {
+      clearAuth();
+      router.push("/");
+    });
   }, [clearAuth, router]);
 
   return { user, isAuthenticated, login, register, logout };

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { clearAuthCookie, setAuthCookie } from "@/lib/authCookie";
+import { clearAuthCookie, clearLegacyAuthStorage } from "@/lib/authCookie";
 import type { User, Analysis, AnalysisStep } from "@/types";
 
 interface AuthState {
@@ -34,16 +34,14 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       setAuth: (user, token) => {
         if (typeof window !== "undefined") {
-          localStorage.setItem("access_token", token);
-          setAuthCookie(token);
+          clearLegacyAuthStorage();
         }
-        set({ user, token, isAuthenticated: true });
+        set({ user, token: null, isAuthenticated: true });
       },
       updateUser: (user) => set({ user }),
       clearAuth: () => {
         if (typeof window !== "undefined") {
-          localStorage.removeItem("access_token");
-          localStorage.removeItem("user");
+          clearLegacyAuthStorage();
           clearAuthCookie();
         }
         set({ user: null, token: null, isAuthenticated: false });
@@ -51,7 +49,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "smartresume-auth",
-      partialize: (state) => ({ user: state.user, token: state.token, isAuthenticated: state.isAuthenticated }),
+      partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
     }
   )
 );
