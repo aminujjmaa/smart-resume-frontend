@@ -19,7 +19,7 @@ const navItems = [
   { href: "/dashboard/cover-letter", icon: Mail,         label: "Cover Letter" },
   { href: "/dashboard/networking", icon: Network,        label: "Networking Emails" },
   { href: "/dashboard/interview-prep", icon: MessageSquare, label: "Interview Prep" },
-  { href: "/dashboard/action-verbs", icon: BookOpen,     label: "Action Verbs" },
+  { href: "/action-verbs",        icon: BookOpen,        label: "Action Verbs" },
   { href: "/dashboard/skills",    icon: Target,          label: "Skills Matrix" },
   { href: "/dashboard/history",   icon: History,         label: "History" },
   { href: "/dashboard/billing",   icon: CreditCard,      label: "Billing" },
