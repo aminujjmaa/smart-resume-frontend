@@ -4,6 +4,7 @@ import "./globals.css";
 import Providers from "./providers";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://smartresume.co.in"),
   title: "SmartResume AI | Free ATS Resume Scanner and Resume Score Checker",
   description:
     "Scan your resume for ATS compatibility, missing keywords, formatting risks, and stronger bullet rewrites before you apply.",

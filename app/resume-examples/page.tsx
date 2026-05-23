@@ -2,44 +2,9 @@ import Link from "next/link";
 import { FileText, ArrowRight, CheckCircle2 } from "lucide-react";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
+import { SEO_DATA } from "@/lib/seo-data";
 
 export default function ResumeExamplesPage() {
-  const examples = [
-    {
-      role: "Software Engineer",
-      level: "Mid-Senior",
-      focus: "Backend & Systems",
-      score: 92,
-      points: [
-        "Uses strong action verbs (Architected, Scaled)",
-        "Quantifies impact (reduced latency by 40%)",
-        "Clear technical skills section"
-      ]
-    },
-    {
-      role: "Product Manager",
-      level: "Senior",
-      focus: "B2B SaaS",
-      score: 94,
-      points: [
-        "Highlights ARR growth and adoption metrics",
-        "Shows cross-functional leadership",
-        "Focuses on product outcomes, not just output"
-      ]
-    },
-    {
-      role: "Data Scientist",
-      level: "Entry-Level",
-      focus: "Machine Learning",
-      score: 88,
-      points: [
-        "Details specific models used (XGBoost, PyTorch)",
-        "Links to GitHub portfolio projects",
-        "Emphasizes business value of models"
-      ]
-    }
-  ];
-
   return (
     <div className="min-h-screen flex flex-col bg-surface-900">
       <Navbar />
@@ -60,8 +25,8 @@ export default function ResumeExamplesPage() {
 
         <section className="px-6 pb-24 relative z-10">
           <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
-            {examples.map((ex, i) => (
-              <div key={i} className="card p-8 flex flex-col h-full border border-white/5 hover:border-brand-500/30 transition-colors">
+            {SEO_DATA.map((ex) => (
+              <div key={ex.slug} className="card p-8 flex flex-col h-full border border-white/5 hover:border-brand-500/30 transition-colors">
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-bold uppercase tracking-wider text-brand-400 bg-brand-500/10 px-2.5 py-1 rounded-full">
@@ -71,14 +36,13 @@ export default function ResumeExamplesPage() {
                       <FileText size={14} /> Score: {ex.score}
                     </span>
                   </div>
-                  <h2 className="text-xl font-bold text-white">{ex.role}</h2>
-                  <p className="text-slate-400 text-sm">{ex.focus}</p>
+                  <h2 className="text-xl font-bold text-white">{ex.title.split(' |')[0]}</h2>
                 </div>
                 
                 <div className="mb-8 flex-1">
                   <h3 className="text-sm font-semibold text-slate-300 mb-3">Why it works:</h3>
                   <ul className="space-y-3">
-                    {ex.points.map((pt, idx) => (
+                    {ex.whyItWorks.map((pt, idx) => (
                       <li key={idx} className="flex items-start gap-2 text-sm text-slate-400">
                         <CheckCircle2 size={16} className="text-emerald-500 shrink-0 mt-0.5" />
                         <span>{pt}</span>
@@ -87,8 +51,8 @@ export default function ResumeExamplesPage() {
                   </ul>
                 </div>
                 
-                <Link href="/register" className="btn-secondary w-full justify-center group">
-                  Build yours now <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                <Link href={`/resume-examples/${ex.slug}`} className="btn-secondary w-full justify-center group">
+                  View full resume <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
             ))}
