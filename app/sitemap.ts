@@ -7,6 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Core static routes
   const routes = [
     "",
+    "/about",
     "/resume-examples",
     "/action-verbs",
     "/pricing",
