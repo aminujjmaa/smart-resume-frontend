@@ -1,3 +1,4 @@
+import { type Metadata } from "next";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import Hero from "@/components/landing/Hero";
@@ -7,6 +8,11 @@ import Testimonials from "@/components/landing/Testimonials";
 import Pricing from "@/components/landing/Pricing";
 import Link from "next/link";
 import { ArrowRight, HelpCircle, Search } from "lucide-react";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
+
 
 const roleLinks = [
   "Software Engineer",

@@ -40,9 +40,7 @@ export const metadata: Metadata = {
     "resume analysis tool",
     "job application resume",
   ],
-  alternates: {
-    canonical: "/",
-  },
+
   openGraph: {
     title: "SmartResume AI | Free ATS Resume Scanner & Score Checker",
     description:

@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Resume Action Verbs Library | SmartResume AI",
   description: "Replace weak verbs like 'Managed' and 'Responsible for' with strong, impactful action verbs that signal ownership and drive ATS scores higher.",
   keywords: ["resume action verbs", "strong resume verbs", "words to use instead of managed", "resume writing tips"],
+  alternates: { canonical: "/action-verbs" },
 };
 
 export default function ActionVerbsPage() {
@@ -59,16 +60,16 @@ export default function ActionVerbsPage() {
         {/* Verbs Library Grid */}
         <section className="px-6 pb-24 relative z-10">
           <div className="max-w-6xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {categories.map((cat, idx) => (
-              <div key={idx} className="card p-6 border border-white/5 bg-white/[0.02]">
+            {categories.map((cat) => (
+              <div key={cat.name} className="card p-6 border border-white/5 bg-white/[0.02]">
                 <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                   <CheckCircle2 size={18} className="text-emerald-500" />
                   {cat.name}
                 </h2>
                 <div className="flex flex-wrap gap-2">
-                  {cat.verbs.map((verb, vIdx) => (
+                  {cat.verbs.map((verb) => (
                     <span 
-                      key={vIdx} 
+                      key={verb} 
                       className="px-3 py-1.5 bg-surface-800 border border-white/10 rounded-lg text-sm text-slate-300 hover:text-white hover:border-brand-500/50 transition-colors cursor-default"
                     >
                       {verb}

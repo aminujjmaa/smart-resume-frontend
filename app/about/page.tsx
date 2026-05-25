@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "About Us | SmartResume AI",
   description: "Learn about SmartResume AI, our mission to democratize the job hunt, and how our advanced ATS resume scanner helps candidates land more interviews.",
   keywords: ["about smartresume ai", "ats scanner mission", "resume builder company"],
+  alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {
