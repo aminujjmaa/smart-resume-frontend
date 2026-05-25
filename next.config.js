@@ -18,6 +18,12 @@ const nextConfig = {
         destination: '/',
         permanent: true,
       },
+      {
+        // Redirect old gated upload page to the new public scanner
+        source: '/dashboard/upload',
+        destination: '/scan',
+        permanent: false,
+      },
     ];
   },
 };

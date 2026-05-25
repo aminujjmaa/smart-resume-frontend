@@ -133,7 +133,7 @@ export default function LandingPage() {
           <p className="mx-auto mb-8 mt-4 max-w-lg text-lg leading-8 text-slate-300">
             Run a free ATS scan, review the report, and fix the highest-impact gaps before your next application.
           </p>
-          <Link href="/dashboard/upload" className="btn-primary inline-flex px-10 py-4 text-base">
+          <Link href="/scan" className="btn-primary inline-flex px-10 py-4 text-base">
             Scan My Resume Free
             <ArrowRight size={18} />
           </Link>

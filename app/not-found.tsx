@@ -21,7 +21,7 @@ export default function NotFound() {
         </h2>
         
         <p className="text-slate-400 max-w-md mx-auto mb-10 text-lg leading-relaxed">
-          It looks like the link you followed is broken, or the page has been moved. Don't worry, your resume is safe!
+          It looks like the link you followed is broken, or the page has been moved. Don&apos;t worry, your resume is safe!
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
@@ -29,7 +29,7 @@ export default function NotFound() {
             <Home size={18} className="mr-2" />
             Back to Home
           </Link>
-          <Link href="/dashboard/upload" className="btn-primary px-8 py-4 text-base shadow-glow">
+          <Link href="/scan" className="btn-primary px-8 py-4 text-base shadow-glow">
             Scan Your Resume
             <ArrowRight size={18} className="ml-2" />
           </Link>

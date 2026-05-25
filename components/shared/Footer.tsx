@@ -33,7 +33,7 @@ export default function Footer() {
             <p className="max-w-sm text-sm leading-6 text-slate-400">
               ATS resume scanning, keyword gap analysis, formatting checks, and AI bullet rewrites for job seekers who want a sharper application.
             </p>
-            <Link href="/dashboard/upload" className="btn-secondary mt-6 px-4 py-2 text-sm">
+            <Link href="/scan" className="btn-secondary mt-6 px-4 py-2 text-sm">
               <Search size={15} />
               Run free scan
             </Link>

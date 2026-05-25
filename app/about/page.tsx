@@ -37,15 +37,15 @@ export default function AboutPage() {
             <div className="prose prose-invert prose-lg">
               <h2 className="text-2xl font-bold text-white mb-4">The Problem</h2>
               <p className="text-slate-300 leading-relaxed mb-6">
-                Did you know that over 75% of resumes are rejected by an Applicant Tracking System (ATS) before a human ever reads them? Hiring managers rely on these automated systems to filter out candidates who don't perfectly match their exact keyword criteria.
+                Did you know that over 75% of resumes are rejected by an Applicant Tracking System (ATS) before a human ever reads them? Hiring managers rely on these automated systems to filter out candidates who don&apos;t perfectly match their exact keyword criteria.
               </p>
               <p className="text-slate-300 leading-relaxed mb-6">
-                This means incredibly talented people are missing out on life-changing opportunities simply because their resume wasn't formatted correctly, or because they used a synonym instead of the exact keyword the ATS was looking for.
+                This means incredibly talented people are missing out on life-changing opportunities simply because their resume wasn&apos;t formatted correctly, or because they used a synonym instead of the exact keyword the ATS was looking for.
               </p>
 
               <h2 className="text-2xl font-bold text-white mb-4 mt-12">Our Mission</h2>
               <p className="text-slate-300 leading-relaxed mb-6">
-                At SmartResume AI, we believe that your career shouldn't be blocked by a robot. We built a reverse-engineered ATS scanner that analyzes your resume exactly how the corporate filters do.
+                At SmartResume AI, we believe that your career shouldn&apos;t be blocked by a robot. We built a reverse-engineered ATS scanner that analyzes your resume exactly how the corporate filters do.
               </p>
               
               <div className="bg-surface-900 border border-white/10 rounded-xl p-8 my-8">
@@ -68,7 +68,7 @@ export default function AboutPage() {
 
               <h2 className="text-2xl font-bold text-white mb-4">Who We Are</h2>
               <p className="text-slate-300 leading-relaxed mb-6">
-                SmartResume AI is a team of former recruiters, engineers, and data scientists who understand the hiring pipeline inside and out. We've seen firsthand how broken the modern application process is, and we're building the tools to fix it for candidates worldwide.
+                SmartResume AI is a team of former recruiters, engineers, and data scientists who understand the hiring pipeline inside and out. We&apos;ve seen firsthand how broken the modern application process is, and we&apos;re building the tools to fix it for candidates worldwide.
               </p>
             </div>
 
@@ -76,9 +76,9 @@ export default function AboutPage() {
             <div className="mt-16 p-8 md:p-12 rounded-2xl border border-brand-500/20 bg-brand-500/10 text-center">
               <h3 className="text-2xl font-bold text-white mb-4">Stop guessing. Start landing interviews.</h3>
               <p className="text-slate-300 mb-8 max-w-xl mx-auto">
-                Upload your resume right now and let our AI scanner show you exactly what you've been missing.
+                Upload your resume right now and let our AI scanner show you exactly what you&apos;ve been missing.
               </p>
-              <Link href="/register" className="btn-primary inline-flex px-8 py-4 text-base">
+              <Link href="/scan" className="btn-primary inline-flex px-8 py-4 text-base">
                 Get Your Free ATS Score <ArrowRight size={18} />
               </Link>
             </div>

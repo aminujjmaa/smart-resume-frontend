@@ -13,7 +13,7 @@ import { motion } from "framer-motion";
 
 const navItems = [
   { href: "/dashboard",           icon: LayoutDashboard, label: "Overview" },
-  { href: "/dashboard/upload",    icon: Upload,          label: "Upload Resume" },
+  { href: "/scan",              icon: Upload,          label: "Upload Resume" },
   { href: "/dashboard/templates", icon: FileText,        label: "Templates" },
   { href: "/dashboard/linkedin",  icon: Share2,          label: "LinkedIn Review" },
   { href: "/dashboard/cover-letter", icon: Mail,         label: "Cover Letter" },
