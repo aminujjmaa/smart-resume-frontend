@@ -1,8 +1,25 @@
+import { type Metadata } from "next";
 import Link from "next/link";
 import { FileText, ArrowRight, CheckCircle2 } from "lucide-react";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import { SEO_DATA } from "@/lib/seo-data";
+
+export const metadata: Metadata = {
+  title: "ATS-Friendly Resume Examples | SmartResume AI",
+  description:
+    "See real resume examples that scored 90+ on ATS scanners. Browse by job title and learn exactly why they pass automated filters.",
+  keywords: [
+    "ATS resume examples",
+    "ATS friendly resume sample",
+    "resume examples that pass ATS",
+    "good resume example",
+    "resume template ATS",
+    "resume sample software engineer",
+    "resume sample product manager",
+  ],
+  alternates: { canonical: "/resume-examples" },
+};
 
 export default function ResumeExamplesPage() {
   return (
@@ -42,8 +59,8 @@ export default function ResumeExamplesPage() {
                 <div className="mb-8 flex-1">
                   <h3 className="text-sm font-semibold text-slate-300 mb-3">Why it works:</h3>
                   <ul className="space-y-3">
-                    {ex.whyItWorks.map((pt, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm text-slate-400">
+                    {ex.whyItWorks.map((pt) => (
+                      <li key={pt} className="flex items-start gap-2 text-sm text-slate-400">
                         <CheckCircle2 size={16} className="text-emerald-500 shrink-0 mt-0.5" />
                         <span>{pt}</span>
                       </li>

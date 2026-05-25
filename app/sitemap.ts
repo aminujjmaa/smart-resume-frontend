@@ -4,6 +4,15 @@ import { SEO_DATA } from "@/lib/seo-data";
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://smartresume.co.in";
 
+  const ATS_SCORE_SLUGS = [
+    "software-engineer",
+    "product-manager",
+    "data-analyst",
+    "project-manager",
+    "marketing-manager",
+    "business-analyst",
+  ];
+
   // Core static routes
   const routes = [
     "",
@@ -21,6 +30,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: route === "" ? 1 : 0.8,
   }));
 
+  // ATS score role-specific landing pages
+  const atsScorePages = ATS_SCORE_SLUGS.map((slug) => ({
+    url: `${baseUrl}/ats-score/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.85,
+  }));
+
   // Dynamic programmatic SEO routes
   const resumeExamples = SEO_DATA.map((job) => ({
     url: `${baseUrl}/resume-examples/${job.slug}`,
@@ -29,5 +46,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...routes, ...resumeExamples];
+  return [...routes, ...atsScorePages, ...resumeExamples];
 }

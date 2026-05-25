@@ -1,264 +1,29 @@
-"use client";
-import { useState, useCallback } from "react";
-import { useDropzone } from "react-dropzone";
-import { Upload, FileText, X, Loader2, AlertCircle, ChevronRight, CheckCircle, Search, Shield } from "lucide-react";
-import { useAnalysis } from "@/hooks/useAnalysis";
-import { useAnalysisStore } from "@/store/useAppStore";
-import ResumePreview from "@/components/resume/ResumePreview";
-import Navbar from "@/components/shared/Navbar";
-import Footer from "@/components/shared/Footer";
+import { type Metadata } from "next";
+import ScanClient from "./ScanClient";
 
-type InputMode = "file" | "text";
-
-const STEPS = [
-  { key: "uploading", label: "Uploading file..." },
-  { key: "parsing",   label: "Parsing resume content..." },
-  { key: "analyzing", label: "AI is analyzing your resume..." },
-  { key: "scoring",   label: "Calculating ATS score..." },
-];
-
-const REPORT_ITEMS = [
-  "ATS score with category breakdown",
-  "Matched and missing job keywords",
-  "Formatting and parsing risk checks",
-  "Priority fixes and bullet rewrites",
-];
+export const metadata: Metadata = {
+  title: "Free ATS Resume Scanner — Check Your ATS Score Instantly | SmartResume AI",
+  description:
+    "Upload your resume and get your ATS score in seconds. Find missing keywords, formatting issues, and weak bullet points before you apply. 100% free, no sign-up needed.",
+  keywords: [
+    "check ATS score resume",
+    "free ATS resume scanner",
+    "ATS resume checker",
+    "resume score checker free",
+    "ATS score checker online",
+    "check resume ATS compatibility",
+    "resume keyword checker",
+    "enhance resume free",
+    "improve resume online",
+    "ATS resume test",
+  ],
+  alternates: { canonical: "/scan" },
+  openGraph: {
+    title: "Free ATS Resume Scanner — Check Your Score Now",
+    description: "Get your ATS score instantly. Discover keyword gaps and formatting risks before your next application.",
+  },
+};
 
 export default function ScanPage() {
-  const [mode, setMode] = useState<InputMode>("file");
-  const [file, setFile] = useState<File | null>(null);
-  const [jobDesc, setJobDesc] = useState("");
-  const { resumeText, setResumeText, setResumeFile } = useAnalysisStore();
-  const { submitAnalysis, step, error } = useAnalysis();
-
-  const onDrop = useCallback((accepted: File[]) => {
-    if (accepted[0]) {
-      setFile(accepted[0]);
-      setResumeFile(accepted[0]);
-    }
-  }, [setResumeFile]);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      "application/pdf": [".pdf"],
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
-      "text/plain": [".txt"],
-    },
-    maxFiles: 1,
-  });
-
-  const isLoading = STEPS.map(s => s.key).includes(step);
-  const currentStepIdx = STEPS.findIndex((s) => s.key === step);
-  const hasResumeInput = Boolean(file || resumeText.trim());
-
-  const handleSubmit = async () => {
-    const fd = new FormData();
-    if (jobDesc.trim()) fd.append("job_description", jobDesc);
-    if (mode === "file" && file) {
-      fd.append("resume_file", file);
-    } else if (mode === "text" && resumeText.trim()) {
-      fd.append("resume_text", resumeText);
-    }
-    await submitAnalysis(fd);
-  };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex flex-col bg-surface-950">
-        <Navbar />
-        <div className="flex-1 flex flex-col items-center justify-center p-8 animate-fade-in">
-          <div className="w-full max-w-md">
-            <div className="text-center mb-10">
-              <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center">
-                <Loader2 size={28} className="text-brand-400 animate-spin" />
-              </div>
-              <h2 className="font-display text-2xl font-bold text-white mb-2">Analyzing Your Resume</h2>
-              <p className="text-slate-400 text-sm">Our AI is working. This takes about 15 seconds.</p>
-            </div>
-            <div className="space-y-3">
-              {STEPS.map((s, i) => {
-                const state = i < currentStepIdx ? "complete" : i === currentStepIdx ? "active" : "pending";
-                return (
-                  <div key={s.key} className={`step-indicator ${state}`}>
-                    <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 border text-xs font-bold transition-all duration-500">
-                      {state === "complete" ? "✓" : i + 1}
-                    </div>
-                    <span className="text-sm font-medium">{s.label}</span>
-                    {state === "active" && <Loader2 size={14} className="animate-spin ml-auto" />}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen flex flex-col bg-surface-950">
-      <Navbar />
-
-      <main className="flex-1 py-20 px-4">
-        <div className="mx-auto max-w-6xl animate-fade-in">
-          {/* Header */}
-          <div className="mb-10 grid gap-6 md:grid-cols-[1fr_340px] md:items-end">
-            <div>
-              <span className="mb-4 inline-flex items-center gap-2 rounded-lg border border-teal-300/20 bg-teal-300/10 px-3 py-1.5 text-xs font-semibold text-teal-200">
-                <Search size={14} /> Free ATS Resume Scanner — No sign-up needed
-              </span>
-              <h1 className="font-display text-4xl font-bold leading-tight text-white md:text-5xl">
-                Get Your Free ATS Score
-              </h1>
-              <p className="mt-3 max-w-2xl text-base leading-7 text-slate-400">
-                Upload your resume, add the target job description, and instantly get your ATS compatibility score, keyword gaps, and formatting analysis. Completely free.
-              </p>
-            </div>
-            <div className="rounded-lg border border-white/10 bg-white/[0.035] p-4">
-              <div className="flex items-start gap-3">
-                <Shield size={18} className="mt-0.5 text-teal-300" />
-                <div>
-                  <p className="text-sm font-semibold text-white">100% free — no credit card</p>
-                  <p className="mt-1 text-xs leading-5 text-slate-400">
-                    Scan your resume as many times as you like. No account required.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {error && (
-            <div className="flex items-center gap-3 px-4 py-3 rounded-xl mb-6 text-sm text-red-400 bg-red-500/10 border border-red-500/20 animate-fade-in">
-              <AlertCircle size={16} className="shrink-0" />
-              {error}
-            </div>
-          )}
-
-          <div className="grid gap-6 lg:grid-cols-[1fr_420px]">
-            {/* Input Panel */}
-            <div className="rounded-lg border border-white/10 bg-white/[0.035] p-5 md:p-6">
-              {/* Mode Toggle */}
-              <div className="mb-6 flex w-fit gap-1 rounded-lg border border-white/10 bg-slate-950/70 p-1">
-                {(["file", "text"] as InputMode[]).map((m) => (
-                  <button
-                    key={m}
-                    id={`scan-mode-${m}`}
-                    onClick={() => {
-                      setMode(m);
-                      if (m === "text") { setFile(null); setResumeFile(null); }
-                    }}
-                    className={`rounded-lg px-5 py-2 text-sm font-medium transition-all duration-200 ${
-                      mode === m ? "bg-teal-400/20 text-teal-100" : "text-slate-400 hover:text-white"
-                    }`}
-                  >
-                    {m === "file" ? "Upload File" : "Paste Text"}
-                  </button>
-                ))}
-              </div>
-
-              <div className="space-y-6">
-                {mode === "file" ? (
-                  <div className="space-y-4">
-                    <label className="block text-sm font-medium text-slate-300">Resume File</label>
-                    {file ? (
-                      <div className="flex items-center gap-4 rounded-lg border border-teal-300/20 bg-teal-300/10 p-4">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-teal-300/20 bg-slate-950">
-                          <FileText size={18} className="text-teal-300" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium text-white">{file.name}</p>
-                          <p className="text-xs text-slate-500">{(file.size / 1024).toFixed(0)} KB</p>
-                        </div>
-                        <button onClick={() => { setFile(null); setResumeFile(null); }} className="text-slate-500 transition-colors hover:text-red-400" aria-label="Remove file">
-                          <X size={18} />
-                        </button>
-                      </div>
-                    ) : (
-                      <div {...getRootProps()} className={`dropzone ${isDragActive ? "active" : ""}`}>
-                        <input {...getInputProps()} id="scan-resume-file-input" />
-                        <Upload size={32} className="mx-auto mb-3 text-teal-300" />
-                        <p className="mb-1 font-medium text-white">
-                          {isDragActive ? "Drop it here" : "Drag and drop your resume"}
-                        </p>
-                        <p className="text-sm text-slate-500">or <span className="cursor-pointer text-teal-300">browse files</span></p>
-                        <p className="mt-3 text-xs text-slate-600">PDF, DOCX, or TXT. Max 5MB.</p>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <label className="block text-sm font-medium text-slate-300">Resume Text</label>
-                    <textarea
-                      id="scan-resume-text-input"
-                      className="input min-h-56 resize-y"
-                      placeholder="Paste your full resume text here..."
-                      value={resumeText}
-                      onChange={(e) => { setResumeFile(null); setResumeText(e.target.value); }}
-                    />
-                  </div>
-                )}
-
-                <div>
-                  <label className="mb-3 block text-sm font-medium text-slate-300">
-                    Job Description <span className="font-normal text-slate-500">(Optional, recommended)</span>
-                  </label>
-                  <textarea
-                    id="scan-job-description-input"
-                    className="input min-h-48 resize-y"
-                    placeholder="Paste the full job description here..."
-                    value={jobDesc}
-                    onChange={(e) => setJobDesc(e.target.value)}
-                  />
-                  <p className="mt-2 text-xs text-slate-600">A job description makes keyword matching much more accurate.</p>
-                </div>
-
-                <button
-                  id="scan-submit-btn"
-                  onClick={handleSubmit}
-                  disabled={!hasResumeInput}
-                  className="btn-primary w-full justify-center py-4 text-base disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  Get My Free ATS Score
-                  <ChevronRight size={18} />
-                </button>
-              </div>
-            </div>
-
-            {/* Preview Panel */}
-            <aside className="space-y-5 lg:sticky lg:top-8 lg:self-start">
-              {hasResumeInput ? (
-                <ResumePreview file={file} text={mode === "text" ? resumeText : ""} />
-              ) : (
-                <div className="rounded-lg border border-white/10 bg-white/[0.035] p-6">
-                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg border border-teal-300/20 bg-teal-300/10">
-                    <FileText size={20} className="text-teal-300" />
-                  </div>
-                  <h2 className="font-display text-xl font-semibold text-white">Resume preview</h2>
-                  <p className="mt-2 text-sm leading-6 text-slate-400">
-                    Upload a file or paste text to preview your resume before running the analysis.
-                  </p>
-                </div>
-              )}
-
-              <div className="rounded-lg border border-white/10 bg-[#08101c] p-5">
-                <h2 className="font-display text-lg font-semibold text-white">Your free report includes</h2>
-                <div className="mt-4 space-y-3">
-                  {REPORT_ITEMS.map((item) => (
-                    <div key={item} className="flex items-start gap-3 text-sm text-slate-300">
-                      <CheckCircle size={16} className="mt-0.5 shrink-0 text-emerald-300" />
-                      <span>{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </aside>
-          </div>
-        </div>
-      </main>
-
-      <Footer />
-    </div>
-  );
+  return <ScanClient />;
 }

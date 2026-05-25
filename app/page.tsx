@@ -40,15 +40,37 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "SmartResume AI",
+  url: "https://smartresume.co.in",
   applicationCategory: "BusinessApplication",
   operatingSystem: "Web",
   offers: {
     "@type": "Offer",
     price: "0",
     priceCurrency: "USD",
+    description: "Free ATS resume scanner with keyword gap analysis and AI bullet rewrites",
   },
   description:
-    "AI resume scanner with ATS score, keyword gap analysis, formatting checks, and resume bullet rewriting.",
+    "Check your ATS score instantly. SmartResume AI scans your resume for keyword gaps, formatting issues, and weak bullet points so you land more interviews.",
+  featureList: [
+    "ATS score checker",
+    "Resume keyword gap analysis",
+    "AI-powered bullet point rewriter",
+    "Formatting risk detection",
+    "Free resume enhancer",
+  ],
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((faq) => ({
+    "@type": "Question",
+    name: faq.q,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: faq.a,
+    },
+  })),
 };
 
 export default function LandingPage() {
@@ -57,6 +79,10 @@ export default function LandingPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <Navbar />
       <Hero />

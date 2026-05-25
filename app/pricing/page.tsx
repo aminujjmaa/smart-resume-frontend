@@ -1,7 +1,22 @@
+import { type Metadata } from "next";
 import Link from "next/link";
 import { Check, X, Zap, HelpCircle } from "lucide-react";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
+
+export const metadata: Metadata = {
+  title: "Pricing | SmartResume AI — Free ATS Resume Scanner",
+  description:
+    "SmartResume AI is free to use. Upgrade to Premium for unlimited scans, AI bullet rewrites, LinkedIn optimization, and cover letter generation.",
+  keywords: [
+    "resume checker pricing",
+    "ATS scanner free",
+    "resume optimizer price",
+    "AI resume tool cost",
+    "free resume enhancer",
+  ],
+  alternates: { canonical: "/pricing" },
+};
 
 export default function PricingPage() {
   const faqs = [
@@ -156,8 +171,8 @@ export default function PricingPage() {
               <p className="text-slate-400">Everything you need to know about the product and billing.</p>
             </div>
             <div className="space-y-6">
-              {faqs.map((faq, i) => (
-                <div key={i} className="card p-6">
+              {faqs.map((faq) => (
+                <div key={faq.q} className="card p-6">
                   <h3 className="text-lg font-bold text-white mb-2 flex items-start gap-3">
                     <HelpCircle className="text-brand-500 shrink-0 mt-0.5" size={20} />
                     {faq.q}
