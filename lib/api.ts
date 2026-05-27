@@ -43,11 +43,15 @@ export const analysisApi = {
   history: () => apiClient.get("/analyze/history"),
 };
 
-// ── Billing ──────────────────────────────────────────
-export const billingApi = {
-  createCheckoutSession: () => apiClient.post("/billing/create-checkout-session"),
-  getCheckoutSessionStatus: (sessionId: string) =>
-    apiClient.get(`/billing/checkout-session/${sessionId}`),
+// ── Razorpay ─────────────────────────────────────────
+export const razorpayApi = {
+  createOrder: (amount: number, currency = "INR") =>
+    apiClient.post("/razorpay/create-order", { amount, currency }),
+  verifyPayment: (data: {
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    razorpay_signature: string;
+  }) => apiClient.post("/razorpay/verify-payment", data),
 };
 
 // ── Tools ────────────────────────────────────────────

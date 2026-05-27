@@ -112,7 +112,7 @@ export default function PricingPage() {
               </h2>
               <p className="text-slate-400 mb-6">For ambitious professionals.</p>
               <div className="mb-8">
-                <span className="text-4xl font-bold text-white">$19</span>
+                <span className="text-4xl font-bold text-white">₹999</span>
                 <span className="text-slate-400">/month</span>
               </div>
               <Link href="/register" className="btn-primary w-full justify-center mb-8">

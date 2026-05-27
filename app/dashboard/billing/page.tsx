@@ -1,62 +1,17 @@
 /* eslint-disable */
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuthStore } from "@/store/useAppStore";
-import { Check, Zap, CreditCard, Clock, Loader2 } from "lucide-react";
-import { authApi, billingApi } from "@/lib/api";
+import { Check, Zap, CreditCard } from "lucide-react";
+import RazorpayCheckoutButton from "@/components/billing/RazorpayCheckoutButton";
 
 export default function BillingPage() {
-  const { user, updateUser } = useAuthStore();
+  const { user } = useAuthStore();
   const isPremium = user?.plan === "premium";
-  const [isLoading, setIsLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get("success") === "true") {
-        const verifyCheckout = async () => {
-          setSuccessMsg("Payment received. Verifying your account status...");
-          const sessionId = urlParams.get("session_id");
-          const isMockCheckout = urlParams.get("mock") === "true";
-
-          if (sessionId) {
-            await billingApi.getCheckoutSessionStatus(sessionId);
-          } else if (isMockCheckout) {
-            await billingApi.getCheckoutSessionStatus("mock");
-          }
-
-          const me = await authApi.me();
-          updateUser(me.data);
-          setSuccessMsg(
-            me.data?.plan === "premium"
-              ? "Payment successful! Your account has been upgraded to Pro."
-              : "Payment is still processing. Please refresh in a moment."
-          );
-        };
-
-        verifyCheckout().catch(() => {
-          setSuccessMsg("We could not verify the payment yet. Please refresh in a moment.");
-        });
-      } else if (urlParams.get("canceled") === "true") {
-        setSuccessMsg("Checkout canceled.");
-      }
-    }
-  }, [updateUser]);
-
-  const handleUpgrade = async () => {
-    try {
-      setIsLoading(true);
-      const res = await billingApi.createCheckoutSession();
-      if (res.data?.url) {
-        window.location.href = res.data.url;
-      }
-    } catch (error) {
-      console.error("Failed to create checkout session", error);
-      alert("Failed to initiate checkout. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+  const handlePaymentSuccess = () => {
+    setSuccessMsg("🎉 Payment successful! Your account has been upgraded to Pro.");
   };
 
   return (
@@ -97,14 +52,23 @@ export default function BillingPage() {
             </p>
           </div>
 
-          <button
-            type="button"
-            className={`btn-${isPremium ? "secondary" : "primary"} shrink-0`}
-            disabled={isLoading}
-            onClick={isPremium ? undefined : handleUpgrade}
-          >
-            {isPremium ? "Manage Subscription" : "Upgrade to Pro"}
-          </button>
+          {/* Upgrade / Manage Button */}
+          {isPremium ? (
+            <button
+              type="button"
+              className="btn-secondary shrink-0"
+            >
+              Manage Subscription
+            </button>
+          ) : (
+            <div className="shrink-0 w-full md:w-auto">
+              <RazorpayCheckoutButton
+                amount={99900}
+                label="Upgrade to Pro"
+                onSuccess={handlePaymentSuccess}
+              />
+            </div>
+          )}
         </div>
 
         {/* Usage Stats (Demo) */}
@@ -134,7 +98,7 @@ export default function BillingPage() {
                 <span className="badge bg-brand-500/20 text-brand-400 mb-3 border border-brand-500/30">Most Popular</span>
                 <h4 className="font-display text-xl font-bold text-white">Pro</h4>
                 <div className="flex items-end gap-1 mt-2">
-                  <span className="font-display text-4xl font-bold text-white">$19</span>
+                <span className="font-display text-4xl font-bold text-white">₹999</span>
                   <span className="text-slate-400 pb-1">/month</span>
                 </div>
               </div>
@@ -152,14 +116,12 @@ export default function BillingPage() {
                   </li>
                 ))}
               </ul>
-              <button 
-                id="billing-upgrade-btn" 
-                className="btn-primary w-full justify-center"
-                onClick={handleUpgrade}
-                disabled={isLoading}
-              >
-                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Upgrade Now"}
-              </button>
+              <RazorpayCheckoutButton
+                id="billing-upgrade-plan-btn"
+                amount={99900}
+                label="Upgrade Now"
+                onSuccess={handlePaymentSuccess}
+              />
             </div>
           </div>
         </div>
