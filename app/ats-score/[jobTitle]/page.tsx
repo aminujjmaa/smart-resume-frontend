@@ -19,6 +19,8 @@ import { useAnalysisStore } from "@/store/useAppStore";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import ResumePreview from "@/components/resume/ResumePreview";
+import { SEO_DATA } from "@/lib/seo-data";
+import Link from "next/link";
 
 type InputMode = "file" | "text";
 type StepState = "complete" | "active" | "pending";
@@ -374,6 +376,11 @@ export default function SEOUploadPage() {
   const { jobTitle } = useParams<{ jobTitle: string }>();
   const decodedJobTitle = formatJobTitle(jobTitle);
 
+  // Generate 3 related jobs for internal linking
+  const relatedJobs = SEO_DATA
+    .filter((j) => j.slug !== jobTitle)
+    .slice(0, 3);
+
   const [mode, setMode] = useState<InputMode>("file");
   const [file, setFile] = useState<File | null>(null);
   const [jobDesc, setJobDesc] = useState("");
@@ -472,6 +479,30 @@ export default function SEOUploadPage() {
                 mode={mode}
                 resumeText={resumeText}
               />
+            </div>
+
+            {/* Related ATS Scanners (Internal Linking) */}
+            <div className="mt-20 border-t border-white/10 pt-16">
+              <h2 className="text-2xl font-bold text-white mb-8 text-center">Check ATS Scores for Other Roles</h2>
+              <div className="grid md:grid-cols-3 gap-6">
+                {relatedJobs.map((related) => (
+                  <Link 
+                    key={related.slug} 
+                    href={`/ats-score/${related.slug}`}
+                    className="card p-6 bg-white/[0.02] border border-white/5 hover:border-brand-500/50 hover:bg-white/[0.05] transition-all group text-center"
+                  >
+                    <div className="flex h-12 w-12 mx-auto items-center justify-center rounded-lg border border-teal-300/20 bg-teal-300/10 mb-4">
+                      <Search size={20} className="text-teal-300 group-hover:scale-110 transition-transform" />
+                    </div>
+                    <h3 className="text-lg font-bold text-white group-hover:text-brand-400 transition-colors">
+                      {related.h1.split(" Resume")[0]}
+                    </h3>
+                    <p className="text-slate-400 text-sm mt-2">
+                      Free ATS resume checker
+                    </p>
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         )}

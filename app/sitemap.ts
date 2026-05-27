@@ -4,14 +4,7 @@ import { SEO_DATA } from "@/lib/seo-data";
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://smartresume.co.in";
 
-  const ATS_SCORE_SLUGS = [
-    "software-engineer",
-    "product-manager",
-    "data-analyst",
-    "project-manager",
-    "marketing-manager",
-    "business-analyst",
-  ];
+  const ATS_SCORE_SLUGS = SEO_DATA.map(job => job.slug);
 
   // Core static routes
   const routes = [

@@ -44,6 +44,16 @@ export default function ResumeExamplePage({ params }: Props) {
     notFound();
   }
 
+  // Find 3 related resumes for internal linking (same category if possible, fallback to others)
+  const relatedJobs = SEO_DATA
+    .filter(j => j.slug !== job.slug && j.category === job.category)
+    .slice(0, 3);
+  
+  if (relatedJobs.length < 3) {
+    const fillers = SEO_DATA.filter(j => j.slug !== job.slug && !relatedJobs.includes(j)).slice(0, 3 - relatedJobs.length);
+    relatedJobs.push(...fillers);
+  }
+
   // Generate structured data for Google (JobPosting or Article)
   const jsonLd = {
     "@context": "https://schema.org",
@@ -96,7 +106,7 @@ export default function ResumeExamplePage({ params }: Props) {
 
             <div className="space-y-4 pt-4">
               <Link href="/register" className="btn-primary w-full justify-center py-4 text-lg">
-                Build a resume like this <ArrowRight size={20} />
+                Build your {job.h1.split(" Resume")[0]} Resume <ArrowRight size={20} />
               </Link>
               <p className="text-center text-sm text-slate-500">
                 Free to try. No credit card required.
@@ -141,6 +151,28 @@ export default function ResumeExamplePage({ params }: Props) {
             </div>
           </div>
 
+        </div>
+
+        {/* Related Resumes (Internal Linking for SEO) */}
+        <div className="max-w-5xl mx-auto mt-24 border-t border-white/10 pt-16">
+          <h2 className="text-2xl font-bold text-white mb-8">More Resume Examples</h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            {relatedJobs.map((related) => (
+              <Link 
+                key={related.slug} 
+                href={`/resume-examples/${related.slug}`}
+                className="card p-6 bg-white/[0.02] border border-white/5 hover:border-brand-500/50 hover:bg-white/[0.05] transition-all group"
+              >
+                <div className="text-brand-400 text-sm font-bold mb-2">{related.category}</div>
+                <h3 className="text-lg font-bold text-white group-hover:text-brand-400 transition-colors">
+                  {related.h1.split(" Resume")[0]}
+                </h3>
+                <p className="text-slate-400 text-sm mt-2 line-clamp-2">
+                  {related.description}
+                </p>
+              </Link>
+            ))}
+          </div>
         </div>
       </main>
 

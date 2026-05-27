@@ -22,6 +22,17 @@ export const metadata: Metadata = {
 };
 
 export default function ResumeExamplesPage() {
+  // Group jobs by category
+  const groupedJobs = SEO_DATA.reduce((acc, job) => {
+    if (!acc[job.category]) {
+      acc[job.category] = [];
+    }
+    acc[job.category].push(job);
+    return acc;
+  }, {} as Record<string, typeof SEO_DATA>);
+
+  const categories = Object.keys(groupedJobs).sort();
+
   return (
     <div className="min-h-screen flex flex-col bg-surface-900">
       <Navbar />
@@ -41,36 +52,47 @@ export default function ResumeExamplesPage() {
         </section>
 
         <section className="px-6 pb-24 relative z-10">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
-            {SEO_DATA.map((ex) => (
-              <div key={ex.slug} className="card p-8 flex flex-col h-full border border-white/5 hover:border-brand-500/30 transition-colors">
-                <div className="mb-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-brand-400 bg-brand-500/10 px-2.5 py-1 rounded-full">
-                      {ex.level}
-                    </span>
-                    <span className="flex items-center gap-1 text-emerald-400 text-sm font-bold">
-                      <FileText size={14} /> Score: {ex.score}
-                    </span>
-                  </div>
-                  <h2 className="text-xl font-bold text-white">{ex.title.split(' |')[0]}</h2>
+          <div className="max-w-6xl mx-auto space-y-20">
+            {categories.map((category) => (
+              <div key={category}>
+                <h2 className="text-3xl font-display font-bold text-white mb-8 border-b border-white/10 pb-4">
+                  {category} Resumes
+                </h2>
+                <div className="grid md:grid-cols-3 gap-8">
+                  {groupedJobs[category].map((ex) => (
+                    <div key={ex.slug} className="card p-8 flex flex-col h-full border border-white/5 hover:border-brand-500/30 transition-colors bg-white/[0.02]">
+                      <div className="mb-6">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-bold uppercase tracking-wider text-brand-400 bg-brand-500/10 px-2.5 py-1 rounded-full">
+                            {ex.level}
+                          </span>
+                          <span className="flex items-center gap-1 text-emerald-400 text-sm font-bold">
+                            <FileText size={14} /> Score: {ex.score}
+                          </span>
+                        </div>
+                        <h3 className="text-xl font-bold text-white leading-snug mt-4">{ex.h1.split(" Resume")[0]}</h3>
+                      </div>
+                      
+                      <div className="mb-8 flex-1">
+                        <p className="text-sm text-slate-400 line-clamp-3 mb-4">
+                          {ex.description}
+                        </p>
+                        <ul className="space-y-3">
+                          {ex.whyItWorks.slice(0, 2).map((pt) => (
+                            <li key={pt} className="flex items-start gap-2 text-sm text-slate-300">
+                              <CheckCircle2 size={16} className="text-emerald-500 shrink-0 mt-0.5" />
+                              <span className="line-clamp-2">{pt}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      
+                      <Link href={`/resume-examples/${ex.slug}`} className="btn-secondary w-full justify-center group mt-auto">
+                        View Resume <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                      </Link>
+                    </div>
+                  ))}
                 </div>
-                
-                <div className="mb-8 flex-1">
-                  <h3 className="text-sm font-semibold text-slate-300 mb-3">Why it works:</h3>
-                  <ul className="space-y-3">
-                    {ex.whyItWorks.map((pt) => (
-                      <li key={pt} className="flex items-start gap-2 text-sm text-slate-400">
-                        <CheckCircle2 size={16} className="text-emerald-500 shrink-0 mt-0.5" />
-                        <span>{pt}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                
-                <Link href={`/resume-examples/${ex.slug}`} className="btn-secondary w-full justify-center group">
-                  View full resume <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                </Link>
               </div>
             ))}
           </div>
