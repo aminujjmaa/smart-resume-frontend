@@ -14,7 +14,7 @@ declare global {
 }
 
 interface RazorpayCheckoutButtonProps {
-  /** Amount in paise. Default: 99900 (₹999) */
+  /** Amount in paise. Default: 9900 (₹99) */
   amount?: number;
   currency?: string;
   /** Label shown on the button. Default: "Upgrade to Pro" */
@@ -40,7 +40,7 @@ function loadRazorpayScript(): Promise<boolean> {
 }
 
 export default function RazorpayCheckoutButton({
-  amount = 99900,  // Default: ₹999 in paise
+  amount = 9900,  // Default: ₹99 in paise
   currency = "INR",
   label = "Upgrade to Pro",
   className = "",

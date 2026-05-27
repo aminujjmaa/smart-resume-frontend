@@ -2,16 +2,20 @@
 "use client";
 import { useState } from "react";
 import { useAuthStore } from "@/store/useAppStore";
-import { Check, Zap, CreditCard } from "lucide-react";
+import { Check, Zap, CreditCard, Sparkles } from "lucide-react";
 import RazorpayCheckoutButton from "@/components/billing/RazorpayCheckoutButton";
 
 export default function BillingPage() {
+  // Re-read from store on every render — RazorpayCheckoutButton calls updateUser()
+  // after verify-payment so isPremium flips without a page reload.
   const { user } = useAuthStore();
   const isPremium = user?.plan === "premium";
   const [successMsg, setSuccessMsg] = useState("");
 
   const handlePaymentSuccess = () => {
-    setSuccessMsg("🎉 Payment successful! Your account has been upgraded to Pro.");
+    // The store is already updated by RazorpayCheckoutButton via updateUser().
+    // Just show the confirmation banner; isPremium will be true on the next render.
+    setSuccessMsg("🎉 Payment verified! Your account has been upgraded to Pro. Enjoy unlimited access!");
   };
 
   return (
@@ -63,7 +67,7 @@ export default function BillingPage() {
           ) : (
             <div className="shrink-0 w-full md:w-auto">
               <RazorpayCheckoutButton
-                amount={99900}
+                amount={9900}
                 label="Upgrade to Pro"
                 onSuccess={handlePaymentSuccess}
               />
@@ -98,7 +102,7 @@ export default function BillingPage() {
                 <span className="badge bg-brand-500/20 text-brand-400 mb-3 border border-brand-500/30">Most Popular</span>
                 <h4 className="font-display text-xl font-bold text-white">Pro</h4>
                 <div className="flex items-end gap-1 mt-2">
-                <span className="font-display text-4xl font-bold text-white">₹999</span>
+                <span className="font-display text-4xl font-bold text-white">₹99</span>
                   <span className="text-slate-400 pb-1">/month</span>
                 </div>
               </div>
@@ -118,7 +122,7 @@ export default function BillingPage() {
               </ul>
               <RazorpayCheckoutButton
                 id="billing-upgrade-plan-btn"
-                amount={99900}
+                amount={9900}
                 label="Upgrade Now"
                 onSuccess={handlePaymentSuccess}
               />
