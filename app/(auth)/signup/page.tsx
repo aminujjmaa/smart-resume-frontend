@@ -3,6 +3,7 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff, Zap, ArrowRight, AlertCircle, Check } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 
 const requirements = [
   { label: "At least 8 characters", test: (p: string) => p.length >= 8 },
@@ -63,6 +64,16 @@ function SignupContent() {
               {error}
             </div>
           )}
+
+          {/* Google Sign-In */}
+          <GoogleSignInButton label="Continue with Google" />
+
+          {/* Divider */}
+          <div className="flex items-center gap-3 my-5">
+            <div className="flex-1 h-px bg-white/10" />
+            <span className="text-xs text-slate-500 font-medium">or sign up with email</span>
+            <div className="flex-1 h-px bg-white/10" />
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>

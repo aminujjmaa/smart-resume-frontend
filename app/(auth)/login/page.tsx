@@ -3,6 +3,7 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff, Zap, ArrowRight, AlertCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 
 function LoginContent() {
   const { login } = useAuth();
@@ -11,6 +12,15 @@ function LoginContent() {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Show a friendly message if Google OAuth redirected back with an error
+  const googleErrorMessages: Record<string, string> = {
+    google_denied: "Google sign-in was cancelled.",
+    google_token_failed: "Could not connect to Google. Please try again.",
+    google_invalid_token: "Google verification failed. Please try again.",
+    google_no_email: "Your Google account has no email. Please use email/password.",
+    account_conflict: "An error occurred linking your Google account. Please try again.",
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +35,15 @@ function LoginContent() {
       setLoading(false);
     }
   };
+
+  // Read ?error= set by the backend Google callback redirect
+  const searchParams = typeof window !== "undefined"
+    ? new URLSearchParams(window.location.search)
+    : null;
+  const googleError = searchParams?.get("error");
+  const googleErrorMsg = googleError ? (googleErrorMessages[googleError] ?? "Google sign-in failed. Please try again.") : "";
+
+  const displayError = error || googleErrorMsg;
 
   return (
     <div className="min-h-screen hero-bg flex items-center justify-center px-6">
@@ -43,12 +62,22 @@ function LoginContent() {
             <p className="text-slate-400 text-sm">Sign in to access your dashboard</p>
           </div>
 
-          {error && (
+          {displayError && (
             <div className="flex items-center gap-3 px-4 py-3 rounded-xl mb-6 text-sm text-red-400 bg-red-500/10 border border-red-500/20 animate-fade-in">
               <AlertCircle size={16} className="shrink-0" />
-              {error}
+              {displayError}
             </div>
           )}
+
+          {/* Google Sign-In */}
+          <GoogleSignInButton label="Continue with Google" />
+
+          {/* Divider */}
+          <div className="flex items-center gap-3 my-5">
+            <div className="flex-1 h-px bg-white/10" />
+            <span className="text-xs text-slate-500 font-medium">or sign in with email</span>
+            <div className="flex-1 h-px bg-white/10" />
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
