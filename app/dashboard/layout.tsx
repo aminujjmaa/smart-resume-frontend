@@ -4,15 +4,23 @@ import { useRouter } from "next/navigation";
 import Sidebar from "@/components/dashboard/Sidebar";
 import { useAuthStore } from "@/store/useAppStore";
 
+import { authApi } from "@/lib/api";
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, setAuth } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.replace("/login");
+      authApi.me()
+        .then((res) => {
+          setAuth(res.data, "");
+        })
+        .catch(() => {
+          router.replace("/login");
+        });
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, router, setAuth]);
 
   if (!isAuthenticated) {
     return (
