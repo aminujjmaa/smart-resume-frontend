@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useCallback } from "react";
@@ -44,6 +44,7 @@ export default function RazorpayCheckoutButton({
   currency = "INR",
   label = "Upgrade to Pro",
   className = "",
+  id,
   onSuccess,
 }: RazorpayCheckoutButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -137,7 +138,7 @@ export default function RazorpayCheckoutButton({
   return (
     <div className="flex flex-col gap-2 w-full">
       <button
-        id="razorpay-checkout-btn"
+        id={id ?? "razorpay-checkout-btn"}
         type="button"
         className={`btn-primary w-full justify-center ${className}`}
         onClick={handlePayment}

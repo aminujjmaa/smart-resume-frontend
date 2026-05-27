@@ -1,4 +1,4 @@
-/* eslint-disable */
+// billing page
 "use client";
 import { useState } from "react";
 import { useAuthStore } from "@/store/useAppStore";
