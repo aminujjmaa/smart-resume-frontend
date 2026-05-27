@@ -2,7 +2,7 @@
 "use client";
 import { useState } from "react";
 import { useAuthStore } from "@/store/useAppStore";
-import { Check, Zap, CreditCard, Sparkles } from "lucide-react";
+import { Check, Zap, CreditCard } from "lucide-react";
 import RazorpayCheckoutButton from "@/components/billing/RazorpayCheckoutButton";
 
 export default function BillingPage() {
