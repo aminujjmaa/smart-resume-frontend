@@ -6,7 +6,7 @@ import { Check, Shield, Zap } from "lucide-react";
 const plans = [
   {
     name: "Free",
-    price: "$0",
+    price: "₹0",
     period: "/month",
     description: "For one-off checks and first-time resume scans.",
     features: [
@@ -21,7 +21,7 @@ const plans = [
   },
   {
     name: "Pro",
-    price: "$19",
+    price: "₹999",
     period: "/month",
     description: "For active job seekers tailoring resumes every week.",
     features: [

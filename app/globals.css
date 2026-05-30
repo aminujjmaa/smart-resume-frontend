@@ -94,21 +94,15 @@ body {
 .btn-primary:active { transform: translateY(0); }
 
 .btn-secondary {
-  @apply inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-200;
-  background: rgba(255,255,255,0.045);
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  color: #cbd5e1;
+  @apply inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-200 bg-white/5 border border-slate-400/20 text-slate-300;
 }
 .btn-secondary:hover {
-  background: rgba(255,255,255,0.075);
-  border-color: rgba(45, 212, 191, 0.32);
-  color: #ffffff;
+  @apply bg-white/10 border-teal-400/30 text-white;
 }
 
 .btn-ghost {
-  @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-slate-400 transition-all duration-200;
+  @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-slate-400 transition-all duration-200 hover:text-slate-200 hover:bg-white/5;
 }
-.btn-ghost:hover { color: #e2e8f0; background: rgba(255,255,255,0.05); }
 
 /* ── Inputs ─────────────────────────────────────────── */
 .input {
@@ -125,9 +119,9 @@ body {
 .badge {
   @apply inline-flex items-center px-3 py-1 rounded-lg text-xs font-semibold;
 }
-.badge-matched { background: rgba(16,185,129,0.14); color: #34d399; border: 1px solid rgba(16,185,129,0.24); }
-.badge-missing  { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.22); }
-.badge-info     { background: rgba(37,99,235,0.12); color: #93c5fd; border: 1px solid rgba(37,99,235,0.22); }
+.badge-matched { @apply bg-emerald-500/15 text-emerald-400 border border-emerald-500/25; }
+.badge-missing  { @apply bg-amber-500/10 text-amber-400 border border-amber-500/20; }
+.badge-info     { @apply bg-blue-600/15 text-blue-300 border border-blue-600/25; }
 
 /* ── Section ────────────────────────────────────────── */
 .section { @apply py-20 md:py-28 px-4 sm:px-6; }
@@ -202,3 +196,23 @@ body {
 .step-indicator.pending  { @apply text-slate-500; background: rgba(255,255,255,0.03); }
 .step-indicator.active   { @apply text-brand-400; background: rgba(76,110,245,0.1); }
 .step-indicator.complete { @apply text-accent-green; background: rgba(16,185,129,0.08); }
+
+/* ── Launch Banner ───────────────────────────────────── */
+.launch-banner {
+  background: linear-gradient(90deg,
+    rgba(234, 88, 12, 0.18) 0%,
+    rgba(15, 23, 42, 0.95) 30%,
+    rgba(15, 23, 42, 0.95) 70%,
+    rgba(234, 88, 12, 0.18) 100%
+  );
+  border-bottom: 1px solid rgba(234, 88, 12, 0.2);
+  background-size: 200% 100%;
+  animation: bannerShimmer 4s ease-in-out infinite;
+}
+
+@keyframes bannerShimmer {
+  0%   { background-position: 100% 0; }
+  50%  { background-position: 0% 0; }
+  100% { background-position: 100% 0; }
+}
+

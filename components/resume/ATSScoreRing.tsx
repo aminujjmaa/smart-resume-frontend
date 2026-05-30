@@ -6,13 +6,12 @@ interface Props {
 }
 
 function getScoreColor(score: number) {
-  if (score >= 80) return { stroke: "#4c6ef5", text: "text-brand-400", label: "Excellent" };
-  if (score >= 60) return { stroke: "#10b981", text: "text-accent-green", label: "Good" };
-  if (score >= 40) return { stroke: "#f59e0b", text: "text-amber-400", label: "Fair" };
+  if (score >= 75) return { stroke: "#10b981", text: "text-accent-green", label: "Good" };
+  if (score >= 50) return { stroke: "#f59e0b", text: "text-amber-400", label: "Average" };
   return { stroke: "#ef4444", text: "text-red-400", label: "Needs Work" };
 }
 
-export default function ATSScoreRing({ score, size = 160 }: Props) {
+export default function ATSScoreRing({ score, size = 160 }: Readonly<Props>) {
   const radius = 54;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;

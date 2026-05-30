@@ -16,11 +16,13 @@ interface AnalysisState {
   currentAnalysis: Analysis | null;
   step: AnalysisStep;
   resumeText: string;
+  appliedResumeText: string; // resume text with applied AI improvements
   resumeFile: File | null;
   jobDescription: string;
   setCurrentAnalysis: (a: Analysis | null) => void;
   setStep: (s: AnalysisStep) => void;
   setResumeText: (t: string) => void;
+  setAppliedResumeText: (t: string) => void;
   setResumeFile: (f: File | null) => void;
   setJobDescription: (t: string) => void;
   reset: () => void;
@@ -33,14 +35,14 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       isAuthenticated: false,
       setAuth: (user, token) => {
-        if (typeof window !== "undefined") {
+        if (globalThis.window !== undefined) {
           clearLegacyAuthStorage();
         }
-        set({ user, token: null, isAuthenticated: true });
+        set({ user, token, isAuthenticated: true });
       },
       updateUser: (user) => set({ user }),
       clearAuth: () => {
-        if (typeof window !== "undefined") {
+        if (globalThis.window !== undefined) {
           clearLegacyAuthStorage();
           clearAuthCookie();
         }
@@ -49,7 +51,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "smartresume-auth",
-      partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
+      partialize: (state) => ({ user: state.user, token: state.token, isAuthenticated: state.isAuthenticated }),
     }
   )
 );
@@ -58,12 +60,14 @@ export const useAnalysisStore = create<AnalysisState>()((set) => ({
   currentAnalysis: null,
   step: "idle",
   resumeText: "",
+  appliedResumeText: "",
   resumeFile: null,
   jobDescription: "",
   setCurrentAnalysis: (a) => set({ currentAnalysis: a }),
   setStep: (s) => set({ step: s }),
   setResumeText: (t) => set({ resumeText: t }),
+  setAppliedResumeText: (t) => set({ appliedResumeText: t }),
   setResumeFile: (f) => set({ resumeFile: f }),
   setJobDescription: (t) => set({ jobDescription: t }),
-  reset: () => set({ currentAnalysis: null, step: "idle", resumeText: "", resumeFile: null, jobDescription: "" }),
+  reset: () => set({ currentAnalysis: null, step: "idle", resumeText: "", appliedResumeText: "", resumeFile: null, jobDescription: "" }),
 }));

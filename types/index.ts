@@ -74,6 +74,14 @@ export interface ResumeAnnotation {
   improved?: string;
 }
 
+// ── Keywords ─────────────────────────────────────────────────────────────────
+
+export interface KeywordMatch {
+  skill: string;
+  category: "Hard Skill" | "Soft Skill" | "Other";
+  found: boolean;
+}
+
 // ── Core Analysis Result ─────────────────────────────────────────────────────
 
 export interface AnalysisResult {
@@ -81,6 +89,7 @@ export interface AnalysisResult {
   score_breakdown: ScoreCategory[];
   matched_keywords: string[];
   missing_keywords: string[];
+  keyword_matches?: KeywordMatch[];
   suggestions: Suggestion[];
   bullet_improvements: BulletImprovement[];
   bullet_feedback: BulletFeedback[];

@@ -26,6 +26,16 @@ const nextConfig = {
       },
     ];
   },
+  async rewrites() {
+    // Only proxy in development, or use BACKEND_URL if provided in production
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8000';
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${backendUrl}/api/:path*`,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

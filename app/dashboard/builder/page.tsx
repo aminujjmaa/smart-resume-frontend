@@ -3,9 +3,10 @@
 import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
-import { ArrowLeft, Layout, Code2, SlidersHorizontal } from "lucide-react";
+import { ArrowLeft, Layout, Code2, SlidersHorizontal, FileDown, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useAnalysisStore } from "@/store/useAppStore";
+import { downloadPDF, downloadDOCX } from "@/lib/downloadResume";
 
 // React-PDF viewer must be loaded dynamically on the client side only
 const PDFPreview = dynamic(() => import("@/components/resume/PDFPreview"), {
@@ -697,6 +698,41 @@ export default function BuilderPage() {
     setLatexCode(latex);
   }, [templateId, visualData]);
 
+  const [dlLoading, setDlLoading] = useState<"pdf" | "docx" | null>(null);
+
+  const handleBuilderPDF = async () => {
+    setDlLoading("pdf");
+    try { await downloadPDF(latexCode, `resume-${templateId}.pdf`); }
+    catch { alert("PDF generation failed. Make sure you are logged in."); }
+    finally { setDlLoading(null); }
+  };
+
+  const handleBuilderDOCX = async () => {
+    setDlLoading("docx");
+    try {
+      // Build plain text from visual fields for DOCX
+      const text = [
+        visualData.name,
+        visualData.contact,
+        "",
+        "SUMMARY",
+        visualData.summary,
+        "",
+        "EXPERIENCE",
+        visualData.experienceTitle,
+        ...visualData.experienceBullets.split("\n").map(b => `• ${b}`),
+        "",
+        "SKILLS",
+        visualData.skills,
+        "",
+        "EDUCATION",
+        visualData.education,
+      ].join("\n");
+      await downloadDOCX(text, `resume-${templateId}.docx`);
+    } catch { alert("DOCX generation failed."); }
+    finally { setDlLoading(null); }
+  };
+
   return (
     <div className="flex flex-col h-[calc(100vh-64px)] w-full overflow-hidden bg-surface-950">
       {/* Toolbar */}
@@ -713,6 +749,27 @@ export default function BuilderPage() {
           <span className="text-xs bg-brand-500/10 text-brand-400 border border-brand-500/20 px-2 py-0.5 rounded ml-2">
             Template: {templateId}
           </span>
+        </div>
+        {/* Download buttons */}
+        <div className="flex items-center gap-2">
+          <button
+            id="builder-download-pdf"
+            onClick={handleBuilderPDF}
+            disabled={!!dlLoading}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-500/20 border border-brand-500/30 text-brand-300 hover:bg-brand-500/30 transition-colors disabled:opacity-50"
+          >
+            {dlLoading === "pdf" ? <Loader2 size={12} className="animate-spin" /> : <FileDown size={12} />}
+            PDF
+          </button>
+          <button
+            id="builder-download-docx"
+            onClick={handleBuilderDOCX}
+            disabled={!!dlLoading}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10 transition-colors disabled:opacity-50"
+          >
+            {dlLoading === "docx" ? <Loader2 size={12} className="animate-spin" /> : <FileDown size={12} />}
+            DOCX
+          </button>
         </div>
       </div>
 

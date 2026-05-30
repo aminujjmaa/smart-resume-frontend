@@ -1,34 +1,33 @@
-/* eslint-disable */
 "use client";
+
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { analysisApi } from "@/lib/api";
-import { useAnalysisStore } from "@/store/useAppStore";
+import { useAnalysisStore, useAuthStore } from "@/store/useAppStore";
 import ATSScoreRing from "@/components/resume/ATSScoreRing";
 import BulletRewriter from "@/components/resume/BulletRewriter";
-import BulletFeedbackList from "@/components/resume/BulletFeedbackList";
 import ResumePreview from "@/components/resume/ResumePreview";
+import SkillTable from "@/components/resume/SkillTable";
 import { buildResumeAnnotations } from "@/lib/resumeAnnotations";
+import { downloadPDF, downloadDOCX, buildLatexFromText } from "@/lib/downloadResume";
 import {
-  ArrowLeft, AlertTriangle, CheckCircle2, Lightbulb, Download,
-  RefreshCw, ChevronDown, ChevronUp, Zap, Target, TrendingUp, FileText
+  ArrowLeft, AlertTriangle, ChevronDown, ChevronUp,
+  FileText, Download, FileDown, Loader2, BookOpen, UserCheck, Search, Wand2,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, Variants } from "framer-motion";
 import type { Analysis, AnalysisResult, ScoreCategory, Suggestion, SuggestionSeverity } from "@/types";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  show: { opacity: 1, transition: { staggerChildren: 0.07 } },
 };
-
 const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 26 } },
 };
 
-// ── Grade badge ───────────────────────────────────────────────────────────────
 const gradeColors: Record<string, string> = {
   A: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
   B: "bg-blue-500/15 text-blue-400 border-blue-500/30",
@@ -36,34 +35,73 @@ const gradeColors: Record<string, string> = {
   D: "bg-orange-500/15 text-orange-400 border-orange-500/30",
   F: "bg-red-500/15 text-red-400 border-red-500/30",
 };
-
 const severityColors: Record<SuggestionSeverity, string> = {
   critical: "border-red-500/40 bg-red-500/5",
-  high:     "border-orange-500/40 bg-orange-500/5",
-  medium:   "border-amber-500/40 bg-amber-500/5",
-  low:      "border-slate-500/20 bg-surface-800/50",
+  high: "border-orange-500/40 bg-orange-500/5",
+  medium: "border-amber-500/40 bg-amber-500/5",
+  low: "border-slate-500/20 bg-surface-800/50",
 };
-
 const severityBadge: Record<SuggestionSeverity, string> = {
   critical: "bg-red-500/20 text-red-400",
-  high:     "bg-orange-500/20 text-orange-400",
-  medium:   "bg-amber-500/20 text-amber-400",
-  low:      "bg-slate-500/20 text-slate-400",
+  high: "bg-orange-500/20 text-orange-400",
+  medium: "bg-amber-500/20 text-amber-400",
+  low: "bg-slate-500/20 text-slate-400",
 };
 
-// ── Score Breakdown Card ──────────────────────────────────────────────────────
-function ScoreCategoryCard({ cat }: { cat: ScoreCategory }) {
-  const [open, setOpen] = useState(false);
+function ScoreCategoryCard({
+  cat,
+  resumeText,
+  isActive,
+  onActivate,
+}: {
+  readonly cat: ScoreCategory;
+  readonly resumeText?: string;
+  readonly isActive?: boolean;
+  readonly onActivate?: () => void;
+}) {
+  const [resolving, setResolving] = useState(false);
+  const [resolution, setResolution] = useState<{ resolution: string, before_example?: string | null, after_example?: string | null } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const { user } = useAuthStore();
+  const isPremium = user?.plan === "premium";
+
   const pct = (cat.score / cat.max_score) * 100;
-  const barColor =
-    pct >= 80 ? "from-emerald-500 to-emerald-400" :
-    pct >= 60 ? "from-blue-500 to-blue-400" :
-    pct >= 40 ? "from-amber-500 to-amber-400" :
-    "from-red-500 to-red-400";
+
+  let barColor = "from-red-500 to-red-400";
+  if (pct >= 80) barColor = "from-emerald-500 to-emerald-400";
+  else if (pct >= 60) barColor = "from-blue-500 to-blue-400";
+  else if (pct >= 40) barColor = "from-amber-500 to-amber-400";
+
+  const handleFixWithAI = async () => {
+    if (!isPremium) {
+      setError("Premium feature. Please upgrade to use AI resolution.");
+      return;
+    }
+    setResolving(true);
+    setError(null);
+    try {
+      const res = await analysisApi.resolveIssue({
+        category: cat.name,
+        issue: cat.why,
+        how_to_improve: cat.how_to_improve,
+        resume_text: resumeText
+      });
+      setResolution(res.data);
+    } catch (err: any) {
+      if (err.response?.status === 403) setError("Premium feature. Please upgrade.");
+      else setError("Failed to generate AI resolution. Please try again.");
+    } finally {
+      setResolving(false);
+    }
+  };
 
   return (
-    <div className="card p-4 cursor-pointer hover:border-white/10 transition-all duration-200" onClick={() => setOpen(!open)}>
-      <div className="flex items-center gap-3">
+    <div
+      className={`card p-4 text-left w-full block mb-3 border bg-slate-900/50 cursor-pointer transition-colors ${isActive ? 'border-brand-500 shadow-[0_0_15px_rgba(56,189,248,0.2)]' : 'border-white/5 hover:border-white/15'}`}
+      onClick={onActivate}
+    >
+      <div className="flex items-center gap-3 mb-4">
         <span className={`w-8 h-8 rounded-lg border text-xs font-bold flex items-center justify-center shrink-0 ${gradeColors[cat.grade] || gradeColors.F}`}>
           {cat.grade}
         </span>
@@ -73,34 +111,89 @@ function ScoreCategoryCard({ cat }: { cat: ScoreCategory }) {
             <span className="text-xs text-slate-400 shrink-0 ml-2">{cat.score}/{cat.max_score}</span>
           </div>
           <div className="w-full bg-surface-800 rounded-full h-1.5">
-            <div
-              className={`h-1.5 rounded-full bg-gradient-to-r ${barColor} transition-all duration-700`}
-              style={{ width: `${pct}%` }}
-            />
+            <div className={`h-1.5 rounded-full bg-gradient-to-r ${barColor} transition-all duration-700`} style={{ width: `${pct}%` }} />
           </div>
         </div>
-        {open ? <ChevronUp size={14} className="text-slate-500 shrink-0" /> : <ChevronDown size={14} className="text-slate-500 shrink-0" />}
       </div>
-      {open && (
-        <div className="mt-3 pt-3 border-t border-white/5 space-y-2 animate-fade-in">
-          <p className="text-xs text-slate-400"><span className="text-slate-300 font-medium">Why:</span> {cat.why}</p>
-          <p className="text-xs text-slate-400"><span className="text-slate-300 font-medium">How to improve:</span> {cat.how_to_improve}</p>
+
+      <div className="space-y-3">
+        <div>
+          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Reasoning</span>
+          <p className="text-sm text-slate-300 whitespace-pre-wrap leading-relaxed">{cat.why}</p>
         </div>
-      )}
+
+        {!resolution && (
+          <div>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">How to Improve</span>
+            <p className="text-sm text-brand-300 leading-relaxed">{cat.how_to_improve}</p>
+          </div>
+        )}
+
+        {resolution && (
+          <div className="mt-4 p-4 rounded-xl bg-brand-500/10 border border-brand-500/20 animate-fade-in">
+            <div className="flex items-center gap-2 mb-2 text-brand-400">
+              <Wand2 size={16} />
+              <span className="text-xs font-bold uppercase tracking-wider">AI Resolution Plan</span>
+            </div>
+            <p className="text-sm text-slate-200 leading-relaxed mb-3">{resolution.resolution}</p>
+
+            {resolution.before_example && resolution.after_example && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                <div className="bg-slate-900/80 rounded-lg p-3 border border-red-500/20">
+                  <span className="text-[10px] font-bold text-red-400 uppercase tracking-wider block mb-1">Original Resume Snippet</span>
+                  <p className="text-xs text-slate-300 italic">"{resolution.before_example}"</p>
+                </div>
+                <div className="bg-slate-900/80 rounded-lg p-3 border border-emerald-500/20">
+                  <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block mb-1">Suggested Rewrite</span>
+                  <p className="text-xs text-emerald-100">{resolution.after_example}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {error && <p className="text-xs text-red-400 mt-2">{error}</p>}
+
+        {!resolution && (
+          <div className="mt-4 pt-3 border-t border-white/5 flex justify-end">
+            <button
+              onClick={handleFixWithAI}
+              disabled={resolving}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-brand-500/20 text-brand-400 hover:text-brand-300 transition-colors text-xs font-medium border border-white/5 hover:border-brand-500/30 disabled:opacity-50"
+            >
+              {resolving ? <Loader2 size={14} className="animate-spin" /> : <Wand2 size={14} />}
+              Fix with AI {isPremium ? "" : "👑"}
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
-// ── Suggestion Card ───────────────────────────────────────────────────────────
-function SuggestionCard({ s }: { s: Suggestion }) {
+function SuggestionCard({
+  s,
+  isActive,
+  onActivate,
+}: {
+  readonly s: Suggestion;
+  readonly isActive?: boolean;
+  readonly onActivate?: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const sev = (s.severity || "medium") as SuggestionSeverity;
+
   return (
-    <div className={`rounded-xl border p-4 cursor-pointer ${severityColors[sev]}`} onClick={() => setOpen(!open)}>
+    <button
+      type="button"
+      className={`rounded-xl border p-4 cursor-pointer block w-full text-left mb-3 ${severityColors[sev]} transition-all ${isActive ? 'ring-2 ring-brand-500 shadow-[0_0_15px_rgba(56,189,248,0.2)]' : ''}`}
+      onClick={() => {
+        setOpen(!open);
+        if (onActivate) onActivate();
+      }}
+    >
       <div className="flex items-start gap-3">
-        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 mt-0.5 ${severityBadge[sev]}`}>
-          {sev}
-        </span>
+        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 mt-0.5 ${severityBadge[sev]}`}>{sev}</span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{s.category}</span>
@@ -111,26 +204,12 @@ function SuggestionCard({ s }: { s: Suggestion }) {
       </div>
       {open && (
         <div className="mt-3 pt-3 border-t border-white/5 space-y-2 animate-fade-in">
-          {s.why_it_matters && (
-            <p className="text-xs text-slate-300"><span className="font-medium text-blue-300">Why it matters:</span> {s.why_it_matters}</p>
-          )}
-          <p className="text-xs text-slate-300"><span className="font-medium text-brand-400">Fix:</span> {s.fix}</p>
-          {(s.evidence_to_add?.length || 0) > 0 && (
-            <div>
-              <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">Evidence to add if true</p>
-              <div className="flex flex-wrap gap-1.5">
-                {s.evidence_to_add?.map((item) => (
-                  <span key={item} className="rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px] text-slate-300">
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
+          {s.why_it_matters && <p className="text-xs text-slate-300"><span className="font-medium text-blue-300">Why it matters: </span>{s.why_it_matters}</p>}
+          <p className="text-xs text-slate-300"><span className="font-medium text-brand-400">Fix: </span>{s.fix}</p>
           {s.example && (
-            <div className="rounded-lg bg-surface-900/80 border border-white/5 p-3">
-              <p className="text-xs text-slate-500 font-medium mb-1">EXAMPLE</p>
-              <p className="text-xs text-slate-300 leading-relaxed font-mono">{s.example}</p>
+            <div className="rounded-lg bg-slate-800/50 border border-slate-700/50 p-3 mt-2 mb-2">
+              <p className="text-xs text-slate-400 font-medium mb-1">YOUR RESUME</p>
+              <p className="text-xs text-slate-300 leading-relaxed italic">"{s.example}"</p>
             </div>
           )}
           {s.strong_example && (
@@ -141,6 +220,87 @@ function SuggestionCard({ s }: { s: Suggestion }) {
           )}
         </div>
       )}
+    </button>
+  );
+}
+
+// ── Download Dropdown ─────────────────────────────────────────────────────────
+function DownloadDropdown({ resumeText }: { readonly resumeText: string }) {
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState<"pdf" | "docx" | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
+  const handlePDF = async () => {
+    setLoading("pdf");
+    setOpen(false);
+    try {
+      const latex = buildLatexFromText(resumeText);
+      await downloadPDF(latex, "smartresume-optimized.pdf");
+    } catch {
+      alert("PDF generation failed. Make sure you are logged in.");
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const handleDOCX = async () => {
+    setLoading("docx");
+    setOpen(false);
+    try {
+      await downloadDOCX(resumeText, "smartresume-optimized.docx");
+    } catch {
+      alert("DOCX generation failed. Please try again.");
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  let buttonText = "Download Resume";
+  if (loading === "pdf") buttonText = "Generating PDF…";
+  else if (loading === "docx") buttonText = "Generating DOCX…";
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        id="results-download-btn"
+        onClick={() => setOpen(!open)}
+        disabled={!!loading}
+        className="btn-primary shrink-0 gap-2"
+      >
+        {loading ? <Loader2 size={15} className="animate-spin" /> : <Download size={15} />}
+        {buttonText}
+        <ChevronDown size={13} className={`transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full mt-2 w-52 rounded-xl border border-white/10 bg-slate-900 shadow-2xl shadow-black/40 z-50 overflow-hidden animate-fade-in">
+          <button onClick={handlePDF} className="flex w-full items-center gap-3 px-4 py-3 text-sm text-slate-200 hover:bg-white/5 transition-colors">
+            <FileDown size={16} className="text-red-400 shrink-0" />
+            <div className="text-left">
+              <p className="font-medium">Download PDF</p>
+              <p className="text-xs text-slate-500">ATS-ready LaTeX PDF</p>
+            </div>
+          </button>
+          <div className="h-px bg-white/5 mx-3" />
+          <button onClick={handleDOCX} className="flex w-full items-center gap-3 px-4 py-3 text-sm text-slate-200 hover:bg-white/5 transition-colors">
+            <FileDown size={16} className="text-blue-400 shrink-0" />
+            <div className="text-left">
+              <p className="font-medium">Download DOCX</p>
+              <p className="text-xs text-slate-500">Microsoft Word format</p>
+            </div>
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -148,7 +308,8 @@ function SuggestionCard({ s }: { s: Suggestion }) {
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function ResultsPage() {
   const { jobId } = useParams<{ jobId: string }>();
-  const { jobDescription, resumeFile } = useAnalysisStore();
+  const { jobDescription, resumeFile, appliedResumeText, setAppliedResumeText } = useAnalysisStore();
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   const { data: analysis, isLoading, error } = useQuery<Analysis>({
     queryKey: ["analysis", jobId],
@@ -182,200 +343,177 @@ export default function ResultsPage() {
   const result = analysis.result_json as AnalysisResult;
   if (!result) return null;
 
-  const criticalSuggestions = result.suggestions?.filter(s => s.severity === "critical") || [];
-  const otherSuggestions = result.suggestions?.filter(s => s.severity !== "critical") || [];
   const resumeAnnotations = buildResumeAnnotations(result);
+  const resumeText = analysis.resume_text || "";
+  const workingText = appliedResumeText || resumeText;
+
+  // JOBSCAN CLONE: Grouping the categories
+  const atsFindingNames = new Set([
+    "ATS Parseability", "Technical Depth", "Engineering Complexity",
+    "Architecture Maturity", "Production Readiness Signals", "Role Alignment", "Semantic Relevance"
+  ]);
+
+  const recruiterFindingNames = new Set([
+    "Impact Quantification", "Recruiter Readability", "Repetitive Words", "Ownership Signals"
+  ]);
+
+  const atsFindings = result.score_breakdown?.filter(cat => atsFindingNames.has(cat.name)) || [];
+  const recruiterFindings = result.score_breakdown?.filter(cat => recruiterFindingNames.has(cat.name)) || [];
+
+  const atsSuggestions = result.suggestions?.filter(s => atsFindingNames.has(s.category) || s.category === "Formatting" || s.category === "Role Fit") || [];
+  const recruiterSuggestions = result.suggestions?.filter(s => !atsFindingNames.has(s.category) && s.category !== "Formatting" && s.category !== "Role Fit") || [];
+
+  const hardSkills = result.keyword_matches?.filter(k => k.category === "Hard Skill") || [];
+  const softSkills = result.keyword_matches?.filter(k => k.category === "Soft Skill") || [];
+  const otherKeywords = result.keyword_matches?.filter(k => k.category === "Other") || [];
 
   return (
-    <div className="mx-auto flex flex-col xl:flex-row max-w-7xl gap-8 p-4 md:p-8">
-      {/* Analysis Results */}
+    <div className="flex flex-col xl:flex-row max-w-7xl mx-auto gap-0 xl:gap-8 p-4 md:p-6">
+      {/* ── Left: Jobscan Style Report ── */}
       <div className="flex-1 min-w-0 order-2 xl:order-1">
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-        >
-          {/* Back */}
-          <Link href="/dashboard" className="flex items-center gap-2 text-slate-400 hover:text-white mb-6 text-sm transition-colors w-fit">
-        <ArrowLeft size={16} /> Back to Dashboard
-      </Link>
+        <motion.div variants={containerVariants} initial="hidden" animate="show">
 
-      {/* Hero Score Row */}
-      <motion.div variants={itemVariants} className="card mb-6 flex flex-col md:flex-row items-center gap-8">
-        <ATSScoreRing score={result.ats_score} size={160} />
-        <div className="flex-1 w-full">
-          <div className="flex items-center gap-3 mb-1 flex-wrap">
-            <h1 className="font-display text-2xl font-bold text-white">Analysis Complete</h1>
-            {result.seniority_signal && (
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-brand-500/15 text-brand-300 border border-brand-500/25">
-                {result.seniority_signal}
-              </span>
+          {/* Top Bar */}
+          <motion.div variants={itemVariants} className="flex items-center justify-between gap-4 mb-6 flex-wrap">
+            <Link href="/dashboard" className="flex items-center gap-2 text-slate-400 hover:text-white text-sm transition-colors">
+              <ArrowLeft size={16} /> Back to Dashboard
+            </Link>
+            <div className="flex items-center gap-3 flex-wrap">
+              <Link href="/dashboard/upload" id="results-reanalyze-btn" className="btn-secondary text-sm flex items-center gap-2">
+                <Search size={14} /> Scan Again
+              </Link>
+              {resumeText && <DownloadDropdown resumeText={workingText} />}
+            </div>
+          </motion.div>
+
+          {/* 1. MATCH RATE (Hero) */}
+          <motion.div variants={itemVariants} className="flex flex-col items-center justify-center mb-10 text-center py-6">
+            <h1 className="font-display text-3xl font-bold text-white mb-2">Match Rate</h1>
+            <p className="text-slate-400 text-sm mb-6 max-w-md mx-auto">
+              This score represents how well your resume matches the job description based on ATS guidelines and recruiter preferences.
+            </p>
+            <ATSScoreRing score={result.ats_score} size={220} />
+            {result.role_alignment_summary && (
+              <p className="text-brand-300 text-sm mt-6 font-medium bg-brand-500/10 px-4 py-2 rounded-lg border border-brand-500/20 max-w-lg mx-auto">
+                {result.role_alignment_summary}
+              </p>
             )}
-          </div>
-          {result.role_alignment_summary && (
-            <p className="text-slate-400 text-sm mb-4 leading-relaxed max-w-xl">{result.role_alignment_summary}</p>
+          </motion.div>
+
+          {/* 2. ATS FINDINGS */}
+          <motion.div variants={itemVariants} className="mb-10">
+            <div className="flex items-center gap-3 border-b border-white/10 pb-3 mb-5">
+              <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
+                <Search size={20} />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-white">ATS Findings</h2>
+                <p className="text-sm text-slate-400">Searchability, parsing, and exact keyword matches.</p>
+              </div>
+            </div>
+            <div className="space-y-3">
+              {atsFindings.map(cat => (
+                <ScoreCategoryCard
+                  key={cat.name}
+                  cat={cat}
+                  resumeText={resumeText}
+                  isActive={activeCategory === cat.name}
+                  onActivate={() => setActiveCategory(cat.name)}
+                />
+              ))}
+              {atsSuggestions.map((s) => (
+                <SuggestionCard
+                  key={s.issue}
+                  s={s}
+                  isActive={activeCategory === s.category}
+                  onActivate={() => setActiveCategory(s.category)}
+                />
+              ))}
+            </div>
+          </motion.div>
+
+          {/* 3. RECRUITER FINDINGS */}
+          <motion.div variants={itemVariants} className="mb-10">
+            <div className="flex items-center gap-3 border-b border-white/10 pb-3 mb-5">
+              <div className="w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center">
+                <UserCheck size={20} />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-white">Recruiter Findings</h2>
+                <p className="text-sm text-slate-400">Best practices, measurable results, and readability.</p>
+              </div>
+            </div>
+            <div className="space-y-3">
+              {recruiterFindings.map(cat => (
+                <ScoreCategoryCard
+                  key={cat.name}
+                  cat={cat}
+                  resumeText={resumeText}
+                  isActive={activeCategory === cat.name}
+                  onActivate={() => setActiveCategory(cat.name)}
+                />
+              ))}
+              {recruiterSuggestions.map((s) => (
+                <SuggestionCard
+                  key={s.issue}
+                  s={s}
+                  isActive={activeCategory === s.category}
+                  onActivate={() => setActiveCategory(s.category)}
+                />
+              ))}
+            </div>
+          </motion.div>
+
+          {/* 4. SKILLS MATCH */}
+          <motion.div variants={itemVariants} className="mb-10">
+            <div className="flex items-center gap-3 border-b border-white/10 pb-3 mb-5">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                <BookOpen size={20} />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-white">Skills Match</h2>
+                <p className="text-sm text-slate-400">Missing these keywords lowers your match rate.</p>
+              </div>
+            </div>
+
+            <SkillTable title="Hard Skills" skills={hardSkills} />
+            <SkillTable title="Soft Skills" skills={softSkills} />
+            <SkillTable title="Other Keywords" skills={otherKeywords} />
+          </motion.div>
+
+          {/* 5. BULLET REWRITES */}
+          {(result.bullet_improvements?.length || 0) > 0 && (
+            <motion.div variants={itemVariants} className="mb-10">
+              <div className="flex items-center gap-3 border-b border-white/10 pb-3 mb-5">
+                <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center">
+                  <AlertTriangle size={20} />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-white">AI Bullet Rewrites</h2>
+                  <p className="text-sm text-slate-400">STAR-method improvements for your weakest points.</p>
+                </div>
+              </div>
+              <BulletRewriter
+                bullets={result.bullet_improvements}
+                jobDescription={jobDescription}
+                resumeText={resumeText}
+                onApply={(updatedText) => setAppliedResumeText(updatedText)}
+              />
+            </motion.div>
           )}
-          <div className="w-full bg-surface-800 rounded-full h-2 mb-3">
-            <div
-              className="h-2 rounded-full bg-gradient-to-r from-brand-500 to-purple-500 transition-all duration-1000"
-              style={{ width: `${result.ats_score}%` }}
-            />
-          </div>
-          <div className="flex gap-4 text-sm flex-wrap">
-            <span className="text-emerald-400 font-semibold">{result.matched_keywords?.length || 0} keywords matched</span>
-            <span className="text-red-400 font-semibold">{result.missing_keywords?.length || 0} keywords missing</span>
-          </div>
-        </div>
-        <Link href="/dashboard/upload" id="results-reanalyze-btn"
-          className="btn-secondary text-sm shrink-0 flex items-center gap-2">
-          <RefreshCw size={14} /> Re-analyze
-        </Link>
-      </motion.div>
 
-      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* Score Breakdown */}
-        <div>
-          <div className="flex items-center gap-2 mb-3 text-sm font-semibold uppercase tracking-wider text-slate-300">
-            <Target size={15} /> Score Breakdown
-          </div>
-          <div className="space-y-2">
-            {result.score_breakdown?.map((cat) => (
-              <ScoreCategoryCard key={cat.name} cat={cat} />
-            ))}
-          </div>
-        </div>
-
-        {/* Keywords */}
-        <div>
-          <div className="flex items-center gap-2 mb-3 text-sm font-semibold uppercase tracking-wider text-slate-300">
-            <CheckCircle2 size={15} /> Keyword Analysis
-          </div>
-          <div className="card p-4 space-y-4 h-fit">
-            {(result.matched_keywords?.length || 0) > 0 && (
-              <div>
-                <p className="text-xs text-emerald-400 font-medium mb-2">✓ Matched Keywords</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {result.matched_keywords.map((kw) => (
-                    <span key={kw} className="badge badge-matched text-xs">{kw}</span>
-                  ))}
-                </div>
-              </div>
-            )}
-            {(result.missing_keywords?.length || 0) > 0 && (
-              <div>
-                <p className="text-xs text-red-400 font-medium mb-2">✗ Missing Keywords</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {result.missing_keywords.map((kw) => (
-                    <span key={kw} className="badge badge-missing text-xs">{kw}</span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Critical Suggestions */}
-      {criticalSuggestions.length > 0 && (
-        <motion.div variants={itemVariants} className="mb-6">
-          <div className="flex items-center gap-2 mb-3 text-sm font-semibold uppercase tracking-wider text-red-400">
-            <Zap size={15} /> Critical Issues — Fix These First
-          </div>
-          <div className="space-y-3">
-            {criticalSuggestions.map((s, i) => <SuggestionCard key={i} s={s} />)}
-          </div>
         </motion.div>
-      )}
+      </div>
 
-      {/* Other Suggestions */}
-      {otherSuggestions.length > 0 && (
-        <motion.div variants={itemVariants} className="mb-6">
-          <div className="flex items-center gap-2 mb-3 text-sm font-semibold uppercase tracking-wider text-amber-400">
-            <Lightbulb size={15} /> Improvement Suggestions
-          </div>
-          <div className="space-y-3">
-            {otherSuggestions.map((s, i) => <SuggestionCard key={i} s={s} />)}
-          </div>
-        </motion.div>
-      )}
-
-      {/* Formatting Issues */}
-      {(result.formatting_issues?.length || 0) > 0 && (
-        <motion.div variants={itemVariants} className="card mb-6">
-          <div className="flex items-center gap-2 mb-3 text-sm font-semibold uppercase tracking-wider text-orange-400">
-            <AlertTriangle size={15} /> Formatting Issues
-          </div>
-          <ul className="space-y-2">
-            {result.formatting_issues.map((issue, i) => (
-              <li key={i} className="flex items-start gap-3 text-sm text-slate-300">
-                <span className="text-orange-400 mt-0.5 shrink-0">•</span>
-                {issue}
-              </li>
-            ))}
-          </ul>
-        </motion.div>
-      )}
-
-      {/* AI Bullet Rewrites */}
-      {(result.bullet_improvements?.length || 0) > 0 && (
-        <motion.div variants={itemVariants} className="mb-6">
-          <div className="flex items-center gap-2 mb-4 text-sm font-semibold uppercase tracking-wider text-brand-400">
-            <TrendingUp size={15} /> AI-Improved Bullet Points
-          </div>
-          <BulletRewriter bullets={result.bullet_improvements} jobDescription={jobDescription} />
-        </motion.div>
-      )}
-
-      {/* Line-by-Line Bullet Feedback */}
-      {(result.bullet_feedback?.length || 0) > 0 && (
-        <motion.div variants={itemVariants} className="mb-6">
-          <div className="flex items-center gap-2 mb-4 text-sm font-semibold uppercase tracking-wider text-orange-400">
-            <Target size={15} /> Line-by-Line Bullet Feedback
-          </div>
-          <BulletFeedbackList feedbackList={result.bullet_feedback} />
-        </motion.div>
-      )}
-
-      {/* Download CTA */}
-      <motion.div variants={itemVariants} className="card flex flex-col md:flex-row items-center justify-between gap-4">
-        <div>
-          <h3 className="font-semibold text-white mb-1">Download Optimized Resume</h3>
-          <p className="text-slate-400 text-sm">Get a clean version with all AI improvements applied</p>
-        </div>
-        <button
-          id="download-resume-btn"
-          type="button"
-          className="btn-primary shrink-0"
-          onClick={() => {
-            const text = analysis.resume_text || "";
-            if (!text.trim()) return;
-            const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "resume.txt";
-            a.click();
-            URL.revokeObjectURL(url);
-          }}
-          disabled={!analysis.resume_text?.trim()}
-        >
-          <Download size={16} /> Download Resume
-        </button>
-      </motion.div>
-      </motion.div>
-    </div>
-
-      {/* Original Resume */}
-      <aside className="w-full xl:w-[440px] shrink-0 xl:sticky xl:top-8 xl:self-start order-1 xl:order-2">
+      {/* ── Right: Sticky Annotated Resume ── */}
+      <aside className="w-full xl:w-[420px] shrink-0 xl:sticky xl:top-8 xl:self-start order-1 xl:order-2">
         <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.035] shadow-2xl shadow-black/20">
           <div className="flex items-start justify-between gap-4 border-b border-white/10 bg-surface-950/70 px-4 py-4">
             <div className="min-w-0">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-brand-300">
-                <FileText size={15} /> Original Document
+                <FileText size={15} /> Annotated Resume
               </div>
-              <p className="mt-1 text-sm text-slate-400">
-                Weak lines are highlighted with exact fixes.
-              </p>
+              <p className="mt-1 text-sm text-slate-400">Issues are highlighted inline.</p>
             </div>
             <span className="shrink-0 rounded-full border border-amber-500/25 bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-200">
               {resumeAnnotations.length} issues
@@ -386,11 +524,12 @@ export default function ResultsPage() {
             className="rounded-none border-0 bg-transparent"
             file={resumeFile}
             showHeader={false}
-            text={analysis.resume_text || ""}
+            text={resumeText}
             title="Resume Markup"
+            activeCategory={activeCategory}
           />
         </div>
       </aside>
-  </div>
-);
+    </div>
+  );
 }

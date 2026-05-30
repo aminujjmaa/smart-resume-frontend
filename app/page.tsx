@@ -6,6 +6,7 @@ import HowItWorks from "@/components/landing/HowItWorks";
 import Features from "@/components/landing/Features";
 import Testimonials from "@/components/landing/Testimonials";
 import Pricing from "@/components/landing/Pricing";
+import LaunchBanner from "@/components/landing/LaunchBanner";
 import Link from "next/link";
 import { ArrowRight, HelpCircle, Search } from "lucide-react";
 
@@ -90,6 +91,7 @@ export default function LandingPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
+      <LaunchBanner />
       <Navbar />
       <Hero />
       <HowItWorks />

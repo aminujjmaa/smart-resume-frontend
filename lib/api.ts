@@ -1,13 +1,24 @@
 import axios from "axios";
 import { useAuthStore } from "@/store/useAppStore";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+const API_URL = process.env.NODE_ENV === "production" ? (process.env.NEXT_PUBLIC_API_URL || "/api/v1") : "/api/v1";
 
 export const apiClient = axios.create({
   baseURL: API_URL,
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
+
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = useAuthStore.getState().token;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 // Handle 401 — clear token and redirect to login
 apiClient.interceptors.response.use(
@@ -41,6 +52,12 @@ export const analysisApi = {
   rewrite: (data: { bullet_point: string; job_description: string }) =>
     apiClient.post("/analyze/rewrite", data),
   history: () => apiClient.get("/analyze/history"),
+  resolveIssue: (data: {
+    category: string;
+    issue: string;
+    how_to_improve: string;
+    resume_text?: string;
+  }) => apiClient.post("/analyze/resolve-issue", data),
 };
 
 // ── Razorpay ─────────────────────────────────────────
@@ -75,3 +92,10 @@ export const adminApi = {
   getStats: () => apiClient.get("/admin/stats"),
   getUsers: (params?: { skip?: number; limit?: number }) => apiClient.get("/admin/users", { params }),
 };
+
+// ── LaTeX ────────────────────────────────────────────
+export const latexApi = {
+  compile: (source: string) =>
+    apiClient.post("/latex/compile", { source }, { responseType: "blob", withCredentials: true }),
+};
+

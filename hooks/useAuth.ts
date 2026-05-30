@@ -22,8 +22,8 @@ export function useAuth() {
   const login = useCallback(
     async (email: string, password: string) => {
       const res = await authApi.login({ email, password });
-      const { user: userData } = res.data;
-      setAuth(userData, "");
+      const { user: userData, access_token } = res.data;
+      setAuth(userData, access_token);
       redirectAfterAuth();
     },
     [setAuth, redirectAfterAuth]
@@ -32,8 +32,8 @@ export function useAuth() {
   const register = useCallback(
     async (email: string, password: string, full_name?: string) => {
       const res = await authApi.register({ email, password, full_name });
-      const { user: userData } = res.data;
-      setAuth(userData, "");
+      const { user: userData, access_token } = res.data;
+      setAuth(userData, access_token);
       redirectAfterAuth();
     },
     [setAuth, redirectAfterAuth]
