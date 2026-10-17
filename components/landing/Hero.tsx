@@ -33,7 +33,7 @@ export default function Hero() {
           </p>
 
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link href="/dashboard/upload" id="hero-cta-primary" className="btn-primary px-8 py-4 text-base">
+            <Link href="/scan" id="hero-cta-primary" className="btn-primary px-8 py-4 text-base">
               Scan My Resume Free
               <ArrowRight size={18} />
             </Link>

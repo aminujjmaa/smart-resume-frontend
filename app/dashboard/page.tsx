@@ -53,7 +53,7 @@ export default function DashboardOverview() {
 
       {/* Quick actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-        <Link href="/dashboard/upload" id="dash-upload-cta" className="card group flex items-center gap-5 cursor-pointer">
+        <Link href="/scan" id="dash-upload-cta" className="card group flex items-center gap-5 cursor-pointer">
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 border border-brand-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
             <Upload size={24} className="text-brand-400" />
           </div>

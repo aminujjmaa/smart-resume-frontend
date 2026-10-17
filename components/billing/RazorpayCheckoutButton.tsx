@@ -7,6 +7,7 @@ import { razorpayApi, authApi } from "@/lib/api";
 import { useAuthStore } from "@/store/useAppStore";
 import { PRO_PERIOD, PRO_PRICE } from "@/lib/pricing";
 import type { SubscriptionSummary } from "@/types";
+import { track } from "@/lib/analytics";
 
 // Razorpay global type declaration
 declare global {
@@ -94,6 +95,7 @@ export default function RazorpayCheckoutButton({
             const verified = await razorpayApi.verifySubscription(response);
             const me = await authApi.me();
             updateUser(me.data);
+            track("subscription_activated");
             onSuccess?.(verified.data as SubscriptionSummary);
           } catch (err: any) {
             setErrorMsg(
@@ -109,6 +111,7 @@ export default function RazorpayCheckoutButton({
       };
 
       const rzp = new window.Razorpay(options);
+      track("checkout_opened");
       rzp.on("payment.failed", (response: any) => {
         setErrorMsg(`Payment failed: ${response.error?.description || "Unknown error"}. Please try again.`);
         setIsLoading(false);

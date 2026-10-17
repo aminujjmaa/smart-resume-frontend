@@ -4,26 +4,30 @@ import Footer from "@/components/shared/Footer";
 import Hero from "@/components/landing/Hero";
 import HowItWorks from "@/components/landing/HowItWorks";
 import Features from "@/components/landing/Features";
-import Testimonials from "@/components/landing/Testimonials";
 import Pricing from "@/components/landing/Pricing";
-import LaunchBanner from "@/components/landing/LaunchBanner";
 import Link from "next/link";
 import { ArrowRight, HelpCircle, Search } from "lucide-react";
 import { PRO_PRICE_PAISE } from "@/lib/pricing";
+import { getRole, type RoleSEO } from "@/lib/seo-data";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
 
-const roleLinks = [
-  "Software Engineer",
-  "Product Manager",
-  "Data Analyst",
-  "Project Manager",
-  "Marketing Manager",
-  "Business Analyst",
-];
+const roleLinks: RoleSEO[] = [
+  "software-engineer",
+  "fresher-software-engineer",
+  "data-analyst",
+  "java-developer",
+  "business-analyst",
+  "digital-marketing-executive",
+  "sales-executive",
+  "hr-executive",
+  "accounts-executive",
+]
+  .map(getRole)
+  .filter((role): role is RoleSEO => Boolean(role));
 
 const faqs = [
   {
@@ -108,12 +112,10 @@ export default function LandingPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
-      <LaunchBanner />
       <Navbar />
       <Hero />
       <HowItWorks />
       <Features />
-      <Testimonials />
       <Pricing />
 
       <section className="section bg-surface-950">
@@ -132,16 +134,15 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {roleLinks.map((role) => {
-              const slug = role.toLowerCase().replace(/\s+/g, "-");
               return (
                 <Link
-                  key={role}
-                  href={`/ats-score/${slug}`}
+                  key={role.slug}
+                  href={`/ats-score/${role.slug}`}
                   className="group flex items-center justify-between rounded-lg border border-white/10 bg-white/[0.035] px-5 py-4 transition-all hover:border-teal-300/25 hover:bg-white/[0.055]"
                 >
                   <span className="flex items-center gap-3 font-semibold text-slate-200">
                     <Search size={17} className="text-teal-300" />
-                    {role} ATS scanner
+                    {role.role} resume checker
                   </span>
                   <ArrowRight size={16} className="text-slate-500 transition-transform group-hover:translate-x-1 group-hover:text-teal-300" />
                 </Link>

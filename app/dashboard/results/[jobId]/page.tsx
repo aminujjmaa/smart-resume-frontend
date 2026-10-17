@@ -22,6 +22,7 @@ import type {
   Analysis, AnalysisResult, MissingKeyword,
   FormattingRisk, ResumeAnnotation,
 } from "@/types";
+import ScoreExplanation from "@/components/report/ScoreExplanation";
 
 // ── Animation variants ─────────────────────────────────────────────────────────
 const fadeUp: Variants = {
@@ -275,7 +276,7 @@ export default function ResultsPage() {
   if (error || !analysis) {
     return (
       <div className="p-8 text-center">
-        <p className="text-red-400">Failed to load results. <Link href="/dashboard/upload" className="underline">Try again</Link></p>
+        <p className="text-red-400">Failed to load results. <Link href="/scan" className="underline">Try again</Link></p>
       </div>
     );
   }
@@ -321,6 +322,8 @@ export default function ResultsPage() {
           <ScoreBar label="Formatting & ATS" pct={result.score_breakdown?.formatting_score_pct ?? 0} />
         </div>
 
+        <ScoreExplanation result={result} />
+
         {/* Section navigation */}
         <div className="space-y-1">
           <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600 px-3 mb-2">Sections</p>
@@ -357,7 +360,7 @@ export default function ResultsPage() {
             </span>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <Link href="/dashboard/upload" id="results-reanalyze-btn" className="btn-secondary text-sm flex items-center gap-2">
+            <Link href="/scan" id="results-reanalyze-btn" className="btn-secondary text-sm flex items-center gap-2">
               <Search size={13} /> Scan Again
             </Link>
             {resumeText && <DownloadDropdown resumeText={workingText} />}

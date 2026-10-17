@@ -3,73 +3,54 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 
 import Providers from "./providers";
+import { SITE } from "@/lib/site";
+import { JsonLd } from "@/lib/jsonld";
+
+const DEFAULT_TITLE = "SmartResume AI | Free ATS Resume Checker & Score";
+const DEFAULT_DESCRIPTION =
+  "Check your resume's ATS score free. Find missing keywords from the job description, formatting risks and weak bullets — and fix them before you apply. No sign-up needed.";
+
+const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION;
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://smartresume.co.in"),
-  title: "SmartResume AI | Free ATS Resume Scanner & Resume Score Checker",
-  description:
-    "Check your ATS score instantly. SmartResume AI scans your resume for keyword gaps, formatting issues, and weak bullet points so you land more interviews. Free, no sign-up needed.",
-  keywords: [
-    // Core high-intent
-    "check ATS score resume",
-    "ATS resume checker free",
-    "free ATS resume scanner",
-    "resume score checker",
-    "ATS score checker",
-    // Enhance / improve variants
-    "enhance CV",
-    "improve resume",
-    "enhance resume",
-    "resume enhancer",
-    "CV enhancer",
-    "AI resume enhancer",
-    "resume optimizer",
-    "resume improvement tool",
-    // Builder / maker variants
-    "ATS resume builder",
-    "ATS friendly resume",
-    "resume keyword checker",
-    "resume keyword scanner",
-    // Broader searches
-    "AI resume scanner",
-    "resume checker",
-    "CV checker",
-    "resume review tool",
-    "best resume checker",
-    "online resume checker",
-    "resume analysis tool",
-    "job application resume",
-  ],
-
+  metadataBase: new URL(SITE.url),
+  title: { default: DEFAULT_TITLE, template: "%s | SmartResume AI" },
+  description: DEFAULT_DESCRIPTION,
+  applicationName: SITE.name,
   openGraph: {
-    title: "SmartResume AI | Free ATS Resume Scanner & Score Checker",
-    description:
-      "Instantly check your ATS resume score. Find missing keywords, formatting risks, and get AI-powered bullet rewrites — completely free.",
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
     type: "website",
-    siteName: "SmartResume AI",
+    siteName: SITE.name,
+    locale: "en_IN",
   },
   twitter: {
     card: "summary_large_image",
-    title: "SmartResume AI | Free ATS Resume Scanner",
-    description:
-      "Check your ATS score free. Find keyword gaps, fix formatting, and get AI bullet rewrites — no sign-up required.",
+    title: DEFAULT_TITLE,
+    description: "Free ATS resume checker: score, missing keywords and fixes in under a minute.",
   },
   robots: {
     index: true,
     follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-snippet": -1,
-      "max-image-preview": "large",
-    },
+    googleBot: { index: true, follow: true, "max-snippet": -1, "max-image-preview": "large" },
   },
+  ...(googleVerification ? { verification: { google: googleVerification } } : {}),
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: SITE.name,
+  url: SITE.url,
+  email: SITE.supportEmail,
+  areaServed: "IN",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en-IN">
       <body className="antialiased">
+        <JsonLd data={organizationJsonLd} />
         <Providers>{children}</Providers>
         <Analytics />
       </body>

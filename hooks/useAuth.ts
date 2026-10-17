@@ -3,6 +3,7 @@ import { useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { authApi } from "@/lib/api";
 import { useAuthStore } from "@/store/useAppStore";
+import { track } from "@/lib/analytics";
 
 function safeDashboardRedirect(next: string | null): string {
   if (!next || !next.startsWith("/dashboard")) return "/dashboard";
@@ -32,6 +33,7 @@ export function useAuth() {
     async (email: string, password: string, full_name?: string) => {
       const res = await authApi.register({ email, password, full_name });
       setAuth(res.data.user);
+      track("signup_completed", { method: "email" });
       redirectAfterAuth();
     },
     [setAuth, redirectAfterAuth]

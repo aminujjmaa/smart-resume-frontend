@@ -1,0 +1,772 @@
+[
+  {
+    "slug": "ats-resume-for-freshers-india",
+    "title": "ATS-Friendly Resume for Freshers in India: A Step-by-Step Guide",
+    "metaTitle": "ATS Resume for Freshers in India: Step-by-Step Guide",
+    "metaDescription": "Make an ATS-friendly fresher resume that gets shortlisted: section order, projects, internships, CGPA, one-page layout, file format and keywords from the JD.",
+    "updatedAt": "2026-10-17",
+    "readingMinutes": 9,
+    "summary": "An ATS-friendly fresher resume is a one-page, single-column document with standard headings, your degree and CGPA near the top, two to four well-described projects, any internships, and skills written in the same words the job description uses. Save it as a text-based PDF, leave out personal details like your photo and date of birth, and tailor your skills and project bullets for each role you apply to.",
+    "sections": [
+      {
+        "heading": "What an ATS does with a fresher's resume",
+        "paragraphs": [
+          "An applicant tracking system, or ATS, is the software employers use to collect applications, store them and help recruiters work through them. When you upload your resume on a careers page or hiring portal, the system usually tries to read the text and split it into fields such as name, contact details, education, skills and experience. Recruiters then search and filter those records, or review everyone who applied to a particular opening.",
+          "For a fresher, two things follow. First, the software has to read your resume cleanly, so that your degree, CGPA and skills land in the right fields instead of turning into jumbled text. Second, your resume has to contain the words a recruiter is likely to search for, written the way the job description writes them. Be sceptical of dramatic claims that software silently rejects most resumes. In many hiring processes a recruiter still decides who gets shortlisted — but a resume that parses badly or misses the obvious keywords is much harder for that recruiter to find."
+        ]
+      },
+      {
+        "heading": "Step 1: Choose a layout that parses cleanly",
+        "paragraphs": [
+          "Start in Word or Google Docs with a plain, single-column layout. Two-column templates, text boxes, icons and skill bars look impressive in a template gallery, but some parsers read columns in the wrong order or skip text that sits inside graphics. A simple layout also prints cleanly when an interview panel asks for a hard copy."
+        ],
+        "bullets": [
+          "One column, read top to bottom, with standard headings: Education, Skills, Projects, Internships, Certifications and Achievements.",
+          "A common font such as Calibri, Arial or Times New Roman at 10.5 to 12 points for body text, with comfortable margins.",
+          "Your name and contact details in the main body of the page, not in the header or footer, which some systems ignore.",
+          "Written labels instead of icons: type Phone, Email and LinkedIn rather than using symbols.",
+          "No photo, charts, skill-rating bars, or tables holding important information.",
+          "One date format used everywhere, such as Jun 2025 – Aug 2025."
+        ]
+      },
+      {
+        "heading": "Step 2: Put the sections in the right order",
+        "paragraphs": [
+          "For freshers, education is still a key credential and one of the first things Indian employers check for eligibility, so it sits near the top. Keep the headings conventional — both a parser and a recruiter instantly recognise Projects, but neither knows what to do with a heading like My Creations.",
+          "This order works for most fresher roles. If you have an internship that closely matches the job, move it above Projects."
+        ],
+        "bullets": [
+          "Header: full name, phone number with +91, a professional email address, city and state, your LinkedIn URL, and a GitHub or portfolio link for technical and design roles.",
+          "Summary: two or three lines on who you are and the role you want.",
+          "Education: degree, branch, college, years and CGPA, then Class 12 and Class 10 with board, year and score.",
+          "Skills: grouped into languages, tools, frameworks and core concepts.",
+          "Projects: two to four, the most relevant first.",
+          "Internships or training: role, organisation, dates and what you did.",
+          "Certifications, achievements and positions of responsibility."
+        ],
+        "example": {
+          "label": "Example summary",
+          "text": "Final-year B.Tech (Computer Science) student with hands-on work in Python, SQL and Power BI. Built a sales dashboard for a retail client during a two-month internship. Looking for an entry-level Data Analyst role."
+        }
+      },
+      {
+        "heading": "Step 3: Write projects and internships like real work",
+        "paragraphs": [
+          "Projects are where a fresher proves skill. A recruiter wants to know what you built, which tools you used, what was difficult and what came out of it. Write each project as a title line with the tech stack, followed by two or three bullets that start with a strong verb and include a result wherever you honestly have one. Use only numbers you can explain — interviewers routinely pick one project and go deep, so every bullet should be something you can talk about for five minutes.",
+          "Internships follow the same pattern: your role, the type of organisation if its name isn't well known, the dates, and your own contribution rather than the team's. A two-month internship where you cleaned data and built one dashboard is worth describing precisely, while 'worked on various tasks' wastes the line. Compare these:"
+        ],
+        "bullets": [
+          "Weak: Made a library management system using Java and MySQL. Did coding and testing.",
+          "Better: Built a library management system in Java and MySQL for the department library, with book search, due-date reminders and automatic fine calculation; wrote JUnit tests for the core modules.",
+          "Weak: Worked on data analysis during internship.",
+          "Better: Cleaned and merged three months of sales data using Excel and SQL, and built a Power BI dashboard that the sales team used in its weekly reviews."
+        ]
+      },
+      {
+        "heading": "Step 4: Show CGPA, marks and certifications correctly",
+        "paragraphs": [
+          "Write your CGPA with its scale on the same line as your degree — CGPA 7.8/10 — or your percentage if your university awards marks. Add Class 12 and Class 10 on one line each with board, year and score. Many Indian employers set eligibility rules for all three levels, commonly something like 60% or a 6.0 CGPA, and recruiters check these numbers early.",
+          "If your score is below a particular company's cut-off, leaving it off won't get you past the eligibility question on the application form. Put that energy into roles without strict cut-offs and into stronger projects. If your recent semesters are much better than your early ones, you can add them alongside the overall CGPA, never in place of it.",
+          "For certifications, quality beats quantity. Two relevant certifications — an NPTEL course with a good score, a recognised cloud or networking associate exam, or a substantial course in your target skill — carry more weight than a list of fifteen short course completions. Write the certificate name, the issuing body and the year."
+        ],
+        "example": {
+          "label": "Education and certification lines",
+          "text": "B.Tech, Electronics and Communication Engineering — XYZ Institute of Technology, Nagpur | 2022–2026 | CGPA 8.2/10. Certification: Python for Data Science — NPTEL, 2025 (score 78%)."
+        }
+      },
+      {
+        "heading": "Step 5: Match keywords from the job description",
+        "paragraphs": [
+          "Every job description tells you which words matter. Before applying, read it once, note the skills, tools and qualifications listed under requirements, and check whether your resume uses the same terms. If the JD says REST APIs and your resume says backend web services, a keyword search may not match you, and a recruiter skimming quickly may not connect the two.",
+          "Mirror the exact wording only where it's true. Put the skill in your Skills section and, wherever possible, inside a project or internship bullet that shows you used it — a keyword in context is far more convincing than one sitting in a list. For common acronyms, write the full form once along with the short form, such as Search Engine Optimization (SEO) or Natural Language Processing (NLP)."
+        ],
+        "bullets": [
+          "Mark the must-have skills in the JD and make sure each one you genuinely have appears on your resume.",
+          "Use the job title from the posting in your summary if it matches what you want, for example Graduate Engineer Trainee or Associate Data Analyst.",
+          "Don't paste the JD into your resume or hide keywords in white text. Recruiters see the parsed text, and it looks dishonest.",
+          "Before applying, run your resume through a free ATS checker against the JD to spot missing keywords and parsing problems."
+        ]
+      },
+      {
+        "heading": "Step 6: Leave out personal details and filler",
+        "paragraphs": [
+          "Resume templates passed around in college WhatsApp groups often carry old habits that waste space or create privacy risks. For private-sector jobs, remove these:"
+        ],
+        "bullets": [
+          "Photo, date of birth, gender, marital status, religion, caste and father's name. None of them show your ability to do the job.",
+          "Your full postal address and Aadhaar, PAN or passport numbers. City and state are enough.",
+          "The Declaration paragraph with signature, place and date, unless a specific application format asks for it.",
+          "Generic objectives such as 'to work in a challenging environment', and soft-skill lists like hardworking, punctual and quick learner.",
+          "Hobbies like listening to music or watching movies. Keep an interest only if it says something real, such as competitive chess or running a college club.",
+          "Achievements from before Class 10, certificates from every one-day workshop or webinar, and references."
+        ]
+      },
+      {
+        "heading": "Step 7: Tailor it for every application",
+        "paragraphs": [
+          "Sending one identical resume to fifty openings is one of the most common fresher mistakes. You don't need to rewrite it each time: keep a master version with everything, and spend ten minutes adjusting a copy for each role."
+        ],
+        "bullets": [
+          "Reorder your skills so the ones named in the JD come first.",
+          "Swap in the project that best fits the role — a dashboard project for analyst roles, an API project for backend roles.",
+          "Update the summary with the exact job title from the posting.",
+          "Keep every fact the same across versions; only the selection and order should change."
+        ]
+      },
+      {
+        "heading": "Step 8: Keep it to one page and save it correctly",
+        "paragraphs": [
+          "Freshers should fit everything on one page. If you're spilling over, cut the weakest project, trim bullets to one or two lines and keep school details to board, year and score. A second page is reasonable only if you have substantial research, publications or several long internships.",
+          "Export the final version as a PDF from Word or Google Docs, not a scanned copy or a photo of a printout, because text inside an image can't be read as text. Keep a DOCX copy too, since some portals ask for Word files. Name the file clearly: Priya-Sharma-Data-Analyst-Resume.pdf tells a recruiter exactly what it is; resume-final-2.pdf doesn't.",
+          "Then do a quick test. Open the PDF, select all the text, copy it and paste it into a plain text editor. If the words come out in a sensible order with headings intact, a parser has a good chance of reading it too. If lines are jumbled or missing, simplify the layout and try again."
+        ]
+      }
+    ],
+    "faqs": [
+      {
+        "q": "Should a fresher's resume be one page or two?",
+        "a": "One page for almost every fresher. Recruiters screening entry-level applications skim quickly, and a tight page shows you can prioritise. Go to two pages only if you have substantial extra material, such as research publications or several long internships."
+      },
+      {
+        "q": "Is PDF or Word better for an ATS?",
+        "a": "A text-based PDF exported from Word or Google Docs is a safe default and keeps your formatting intact. Some portals specifically ask for DOCX, so keep a Word version ready. Avoid scanned PDFs and image files, which can't be read as text."
+      },
+      {
+        "q": "Should a fresher write an objective or a summary?",
+        "a": "A short, targeted summary works better than a generic objective. Two or three lines naming your degree, your strongest relevant skill or project and the role you want give the recruiter instant context. If you can't make it specific, skip it and let your education and projects speak."
+      },
+      {
+        "q": "Do I need to mention Class 10 and Class 12 marks?",
+        "a": "Yes, for most fresher applications in India. Many employers set eligibility criteria across Class 10, Class 12 and graduation, and recruiters check all three. Keep each to a single line with board, year and percentage or CGPA."
+      },
+      {
+        "q": "Can I use a two-column or designer template?",
+        "a": "You can, but test it first. Many designed templates use columns, text boxes and graphics that some parsers read out of order. Run the copy-paste test on it and compare the result with a simple single-column version before you decide."
+      }
+    ],
+    "relatedRoles": [
+      "fresher-software-engineer",
+      "data-analyst",
+      "business-analyst",
+      "mechanical-engineer",
+      "digital-marketing-executive"
+    ]
+  },
+  {
+    "slug": "naukri-resume-and-profile-tips",
+    "title": "Naukri Resume & Profile Tips That Get Recruiter Views",
+    "metaTitle": "Naukri Profile Tips: Resume Headline, Key Skills & More",
+    "metaDescription": "Practical Naukri tips: write a headline, key skills and summary recruiters search for, fill CTC and notice period honestly and attach an ATS-friendly resume.",
+    "updatedAt": "2026-10-17",
+    "readingMinutes": 9,
+    "summary": "Recruiters on Naukri usually find candidates by searching for job titles and skills, then narrowing the results by experience, location, notice period and salary. Put the right titles and skills in your resume headline, key skills and profile summary, fill every field honestly — especially CTC and notice period — stay genuinely active, and attach a clean, ATS-friendly resume that matches your profile.",
+    "sections": [
+      {
+        "heading": "How recruiters search for candidates on Naukri",
+        "paragraphs": [
+          "Picture the other side of the screen. A recruiter with an opening for a Java developer in Pune with two to four years of experience types a few keywords, narrows the results by experience, location, notice period and salary range, and then scans a list of profiles. They glance at the headline and a few key details first, and open only the profiles that look like a match.",
+          "Naukri doesn't publish exactly how it ranks search results, so be wary of anyone selling a secret formula. What you control is how closely your profile matches the words recruiters type, how complete and current your details are, and how quickly you respond when someone reaches out. Every tip below works on one of those three."
+        ]
+      },
+      {
+        "heading": "Write a resume headline that matches real searches",
+        "paragraphs": [
+          "Your resume headline is one of the first things a recruiter sees about you, so treat it as a job title plus proof. State your target role, your experience level, your two or three strongest skills and one differentiator. Use the titles people actually search for — Software Engineer, Data Analyst, Accounts Executive — rather than internal designations like Associate L1 or Engineer Band B. If your official title is unusual, add the common title next to it.",
+          "Skip empty phrases like 'seeking a challenging position' or 'hardworking and dedicated professional'. They take up space and match nothing a recruiter will type. Compare:"
+        ],
+        "bullets": [
+          "Weak: Fresher looking for a job in a reputed company.",
+          "Better: B.Tech CSE 2026 | Java, Spring Boot, MySQL | Built a REST API inventory app | Immediate joiner",
+          "Weak: Working as executive in accounts department.",
+          "Better: Accounts Executive, 2 years | Tally, GST returns, TDS, bank reconciliation | 30-day notice period"
+        ]
+      },
+      {
+        "heading": "Choose key skills recruiters will actually type",
+        "paragraphs": [
+          "Recruiters build their searches around skills, so your key skills list should contain the exact terms they're likely to type: programming languages, tools, frameworks, platforms, methods and domain knowledge. Someone hiring a digital marketer searches for SEO, Google Ads or social media marketing, never 'creative thinker'.",
+          "Put the skills most relevant to your target roles first, and remove anything you used once in a college lab and can't discuss in an interview. Recruiters and interviewers often ask about the first few skills they see."
+        ],
+        "bullets": [
+          "Use standard spellings: JavaScript, Node.js, MySQL, Power BI, AutoCAD.",
+          "Where both forms are common, include the full form and the acronym, such as Search Engine Optimization and SEO.",
+          "Add tools and methods named in the job descriptions you're targeting, if you genuinely have them.",
+          "Leave soft skills out of this list; show communication or leadership through your summary and work details instead.",
+          "Review the list every few months as you learn new tools or change direction."
+        ]
+      },
+      {
+        "heading": "Write a profile summary that reads like a short pitch",
+        "paragraphs": [
+          "The profile summary is where a recruiter decides whether to call you. Keep it to four or five lines: what you do, what you've achieved, which tools you're strongest in, what you're looking for, and practical details such as preferred cities if they matter. Write plainly, and include a number only if it's true and you can explain it.",
+          "Freshers can follow the same structure, with projects and internships in place of work experience. The aim is to answer the recruiter's first question — can this person do the job I'm hiring for? — before they've scrolled."
+        ],
+        "example": {
+          "label": "Example profile summary",
+          "text": "Data analyst with 1.5 years of experience in retail analytics. I write SQL queries, build Excel models and create Power BI dashboards that the sales and operations teams use in weekly reviews. Recently automated a manual stock report, cutting preparation time from a full day to under an hour. Looking for analyst roles in Bengaluru, Hyderabad or remote."
+        }
+      },
+      {
+        "heading": "Complete employment, projects and accomplishments",
+        "paragraphs": [
+          "Recruiters who open your profile read the employment and project details to check whether your headline is backed by real work. For each job, give the designation, dates and two or three lines on what you handled, with tools and results. Freshers should treat internships and academic projects the same way: what the project was, your role, the tech stack and the outcome.",
+          "Use the accomplishment sections the profile offers — certifications, online profiles, work samples, publications or presentations — wherever you have something genuine. A link to a GitHub repository, a design portfolio, a live dashboard or a published article lets a recruiter check your skills in a minute."
+        ],
+        "bullets": [
+          "Use the same designations, dates and employer names as on your resume and offer letters.",
+          "Fill in tool or software details such as version and years of use wherever the form asks.",
+          "Keep education complete, including Class 10 and 12 for fresher and junior roles."
+        ]
+      },
+      {
+        "heading": "Set career preferences that match your search",
+        "paragraphs": [
+          "Preference fields such as desired role, industry, job type, preferred locations and expected salary help recruiters judge whether you fit an opening before they call. Fill them deliberately. Choose a few locations you'd genuinely move to, plus remote if you're open to it, rather than ticking every metro or only your hometown. Pick role and industry labels that match the jobs you want next, not just your current one if you're switching.",
+          "If you're open to relocation, contract roles or shift work, say so. If you're not, don't tick those options just to look flexible; a recruiter who arranges an interview only to find you won't relocate is unlikely to call you again."
+        ]
+      },
+      {
+        "heading": "Fill notice period and CTC honestly",
+        "paragraphs": [
+          "Recruiters filter by notice period and salary because those details decide whether a hire is even possible. Enter your actual contractual notice period. If you've already resigned, update it and mention your last working day in your summary. If your employer allows early release or a buyout, say you can negotiate rather than entering a shorter period than your contract says.",
+          "For current CTC, enter the figure from your latest offer or increment letter and be ready to explain the fixed and variable split. Don't inflate it. Employers commonly ask for recent payslips, Form 16 or an offer letter before releasing an offer, and a mismatch can end the process at the very last step. Freshers should never present an internship stipend as a salary.",
+          "For expected CTC, check what similar roles in your city pay — job postings that show salary ranges, seniors and peers in the same field — and enter a realistic figure. If a role you want typically pays ₹5–7 lakh a year, asking for ₹12 lakh can quietly take you out of a recruiter's salary filter for jobs you'd happily accept."
+        ]
+      },
+      {
+        "heading": "Stay active without spamming",
+        "paragraphs": [
+          "Many job seekers edit their Naukri profile every day because they've heard it pushes them up the results. Nobody outside the platform can confirm exactly how that works. There's a simpler reason to stay active anyway: recruiters prefer candidates who are clearly looking and likely to respond, and an up-to-date profile signals both.",
+          "Make genuine updates — a new skill, a certification, a project, a sharper summary for a new target role or an improved resume — rather than cosmetic edits. Log in regularly, apply to openings that genuinely match, and reply to recruiter calls and messages within a day or two, even if the answer is a polite no."
+        ],
+        "bullets": [
+          "Weekly: review recommended and newly posted jobs, and apply to the ones that genuinely fit.",
+          "Monthly: refresh your summary or resume with any new work, skill or certification.",
+          "Always: respond to recruiters promptly; ignoring them wastes the visibility you've worked for.",
+          "If you're employed, check the privacy settings. Job portals commonly let you hide your profile from chosen companies, such as your current employer."
+        ]
+      },
+      {
+        "heading": "Attach an ATS-friendly resume that matches your profile",
+        "paragraphs": [
+          "When a recruiter likes your profile, they usually download your attached resume, forward it to a hiring manager and often add it to their company's own applicant tracking system. So the attachment has to work outside Naukri too: a single-column layout, standard headings, a text-based PDF or DOCX, and no important details trapped in images, text boxes or tables.",
+          "Your resume and profile must tell the same story. Job titles, dates, skills and education should match exactly; recruiters notice when a profile says three years and the resume says two and a half. Keep CTC and notice period out of the resume itself — they belong in the profile fields."
+        ],
+        "bullets": [
+          "Name the file clearly, for example Rahul-Verma-Java-Developer.pdf.",
+          "Make sure the skills in your resume match the key skills on your profile.",
+          "Use a phone number and email address you check every day.",
+          "Run your resume through a free ATS checker before uploading to catch parsing problems and missing keywords."
+        ]
+      },
+      {
+        "heading": "Common Naukri profile mistakes to fix today",
+        "paragraphs": [
+          "Most weak profiles share the same handful of problems, and fixing them takes about an hour. While you're at it, keep your LinkedIn, Indeed and Foundit profiles consistent with the same headline, skills and dates, so recruiters who cross-check see one clear, credible story. Check your Naukri profile against this list:"
+        ],
+        "bullets": [
+          "A headline that says only Fresher or Looking for a job.",
+          "Key skills full of soft skills, or tools you no longer use.",
+          "A final-year resume still attached after two years of work.",
+          "An inflated CTC, or a notice period you can't honour.",
+          "A summary copied from a template, sometimes with someone else's details still in it.",
+          "Different job titles or dates on Naukri, LinkedIn and your resume."
+        ]
+      }
+    ],
+    "faqs": [
+      {
+        "q": "How often should I update my Naukri profile?",
+        "a": "Update it whenever something real changes — a new skill, project, certification or job — and review it at least once a month. Daily cosmetic edits are a popular habit, but there's no public confirmation that they help. Logging in, applying to relevant roles and responding to recruiters are more dependable habits."
+      },
+      {
+        "q": "What should a fresher write in the Naukri resume headline?",
+        "a": "Your degree and graduation year, target role, two or three core skills and one proof point such as a project or internship. For example: B.Com 2026 | Tally, GST basics, Advanced Excel | Internship at a CA firm | Immediate joiner. Avoid generic lines like 'fresher looking for a job'."
+      },
+      {
+        "q": "Should I show my real CTC on Naukri if it's low?",
+        "a": "Yes. Employers commonly verify CTC with payslips or offer letters before making an offer, and a mismatch can lead to a withdrawn offer. If you're underpaid, make the case for a higher expected CTC during the conversation, based on your skills, the role and market rates."
+      },
+      {
+        "q": "How many key skills should I add on Naukri?",
+        "a": "Add every specific skill related to your target roles that you can confidently discuss in an interview, with the most important ones first. A focused list of relevant tools and methods is more useful than a long list of everything you've touched. Remove outdated or irrelevant skills when you change direction."
+      },
+      {
+        "q": "Does the resume I upload on Naukri need to be ATS-friendly?",
+        "a": "Yes. Recruiters often download it, forward it to hiring managers or add it to their own company's applicant tracking system, so it must read cleanly outside the portal. A single-column, text-based PDF or DOCX with standard headings is the safest choice."
+      }
+    ],
+    "relatedRoles": [
+      "software-engineer",
+      "java-developer",
+      "data-analyst",
+      "accounts-executive",
+      "sales-executive"
+    ]
+  },
+  {
+    "slug": "campus-placement-resume-checklist",
+    "title": "Campus Placement Resume Checklist (2026)",
+    "metaTitle": "Campus Placement Resume Checklist 2026 for Freshers",
+    "metaDescription": "A 2026 campus placement resume checklist: TPO format rules, section order, projects for CS and non-CS branches, coding profiles and versions per company type.",
+    "updatedAt": "2026-10-17",
+    "readingMinutes": 9,
+    "summary": "For campus placements, follow your placement cell's prescribed format if it has one, keep the resume to one page, and put education first, followed by skills, projects, internships, certifications and achievements. Choose projects that fit your branch, link only coding profiles that help you, check every number against your marksheets, and keep separate versions for service, product and core companies with identical facts.",
+    "sections": [
+      {
+        "heading": "Start with your placement cell's rules",
+        "paragraphs": [
+          "Before you design anything, find out what your training and placement office expects. Many colleges prescribe a common template, font, file-naming convention and deadline, and some placement cells send back resumes that don't follow it. When one portal forwards an entire batch's resumes to every visiting company, uniform formatting is the point — your content should stand out, not your design.",
+          "If your college has no fixed format, use a clean, single-column layout that works on paper, on company hiring portals and in applicant tracking systems. Then tick off the rules most placement cells enforce:"
+        ],
+        "bullets": [
+          "One page, usually a PDF, named the way the placement cell asks — often roll number, name and branch.",
+          "The prescribed template, font and section order, without shrinking margins to squeeze in extra lines.",
+          "CGPA updated to the latest declared semester, with Class 10 and Class 12 scores matching your marksheets exactly.",
+          "The email address registered on the placement portal, usually your college ID.",
+          "No claims you can't back up, since companies and placement cells can ask for certificates during a drive.",
+          "A photo and declaration only if the format requires them."
+        ]
+      },
+      {
+        "heading": "Use a section order that suits campus drives",
+        "paragraphs": [
+          "Education comes first on a campus resume because that's where eligibility is checked. After that, lead with your strongest evidence for the kind of role you want."
+        ],
+        "bullets": [
+          "Header: name, phone, email, LinkedIn, and GitHub or a portfolio for tech and design roles.",
+          "Education: degree, branch, CGPA with scale and semester, then Class 12 and Class 10 with board, year and score. Include your diploma if you joined through lateral entry.",
+          "Skills: grouped into languages, tools and core subjects.",
+          "Projects: two to four, with the tech stack and your role.",
+          "Internships and industrial training.",
+          "Certifications, then coding profiles or competitive exam scores where relevant.",
+          "Achievements and positions of responsibility, plus one line of extracurriculars only if it's meaningful."
+        ]
+      },
+      {
+        "heading": "Skills: list only what you can defend",
+        "paragraphs": [
+          "Campus interviewers often start from your Skills section and ask about the first few items, so order and honesty both matter. Group skills into clear categories and list only what you can actually use and discuss. Two languages you know well beat six you've seen once in a lab."
+        ],
+        "bullets": [
+          "Languages: for example Java, Python or C++.",
+          "Tools and frameworks: Git, MySQL, React, AutoCAD or MATLAB — whatever fits your branch and target role.",
+          "Core subjects: DBMS, operating systems, computer networks and OOP for CS; subjects like thermodynamics, strength of materials, power systems or surveying for core branches.",
+          "No skill-level bars, percentages or vague lines like basic knowledge of all MS Office tools."
+        ]
+      },
+      {
+        "heading": "Projects for CS and IT branches",
+        "paragraphs": [
+          "For computer science, IT and related branches, projects carry much of the weight, especially with product companies. Interviewers want proof that you've built something end to end and understand the decisions you made. A to-do app copied from a tutorial won't stand out; a project that solves a real problem, stores data, handles users and is deployed will.",
+          "For each project, give a one-line description, the tech stack, two bullets on what you built and what was hard about it, and a link to the code or a live demo. The GitHub repository should have a clear README and open without a login. For team projects, state the team size and your specific contribution. Prefer one deep project over three shallow clones, and be ready to explain every design choice."
+        ],
+        "example": {
+          "label": "Strong CS project entry",
+          "text": "Campus Lost-and-Found Portal | React, Node.js, MongoDB — Built a web app where students post and claim lost items, with image upload, search filters and email alerts. Designed the database schema and REST APIs, and deployed it on a free cloud tier for hostel residents to use during the semester."
+        }
+      },
+      {
+        "heading": "Projects for non-CS branches",
+        "paragraphs": [
+          "Mechanical, civil, electrical, electronics, chemical and other core branches should lead with branch-specific work: the major project, mini projects, industrial or in-plant training and design competitions. Name the software and methods you used — AutoCAD, SolidWorks, ANSYS, MATLAB, STAAD.Pro, PLC programming — because core recruiters screen for them.",
+          "Quantify where you genuinely can: the load you designed for, the efficiency you measured, the cost you estimated. If you're from a non-CS branch applying for IT or analytics roles, keep your best core project and add one or two software or data projects to show the switch is real rather than a backup plan."
+        ],
+        "example": {
+          "label": "Core project example",
+          "text": "Design and Analysis of a Two-Wheeler Disc Brake Rotor — Modelled the rotor in SolidWorks and ran thermal and structural analysis in ANSYS; compared three materials and recommended the one with the lowest peak temperature in simulation. Team of four; handled the modelling and analysis."
+        }
+      },
+      {
+        "heading": "Internships and training: describe the work, not the certificate",
+        "paragraphs": [
+          "List internships and industrial training with the type of organisation, your role, the dates and what you actually did. Be careful with short online or virtual internship programmes that mainly issue certificates. If the work was a guided course with a small assignment, describe it honestly as training rather than industry experience. Interviewers ask about internships in detail, and an inflated one unravels quickly.",
+          "For core branches, mandatory in-plant or industrial training counts. Write what you observed and worked on — a production process, quality checks, site supervision, a maintenance schedule — rather than just the duration and the plant's name."
+        ]
+      },
+      {
+        "heading": "Coding profiles, aptitude and certifications",
+        "paragraphs": [
+          "Product companies and specialised high-package roles lean heavily on coding tests, so a solid coding profile strengthens a CS resume. Link LeetCode, CodeChef, Codeforces or HackerRank only when the numbers help you: a meaningful rating, a good contest rank or a sustained record of solved problems. A profile with a handful of easy problems draws attention for the wrong reason.",
+          "Aptitude doesn't need a line on your resume; it's tested directly in the online assessment. Certifications are different. NPTEL courses with good scores, recognised cloud or networking associate certifications and branch-relevant courses all add value, while certificates from webinars and one-day workshops only add clutter. Write these lines precisely:"
+        ],
+        "bullets": [
+          "Coding profile: the platform and the number that matters, for example CodeChef 3-star (highest rating 1720) or 450+ problems solved on LeetCode — only if accurate.",
+          "GitHub: link it only if your pinned repositories are your own, documented work.",
+          "Certification: name, issuing body and year, for example Cloud Computing — NPTEL, 2025, adding the score if it's good."
+        ]
+      },
+      {
+        "heading": "Achievements and positions of responsibility",
+        "paragraphs": [
+          "Achievements show how you perform when it counts. Hackathon results such as reaching the Smart India Hackathon finals, paper presentations, a good GATE score for core roles, scholarships, university-level sports and NSS or NCC certificates all deserve a line. Write the level and the result, not just participation.",
+          "Positions of responsibility — placement coordinator, club secretary, fest organiser, class representative — show ownership. Add one line on what you actually did, such as handling a budget, coordinating sponsors or running events. Compare:"
+        ],
+        "bullets": [
+          "Weak: Participated in a hackathon.",
+          "Better: Finalist, Smart India Hackathon — built a crop-disease detection app in a team of six.",
+          "Weak: Member of college fest committee.",
+          "Better: Sponsorship lead, annual tech fest — pitched to local businesses and raised ₹1.2 lakh with a team of five."
+        ]
+      },
+      {
+        "heading": "Make versions for service, product and core companies",
+        "paragraphs": [
+          "Keep one master resume with everything, then build focused versions. The facts must stay identical across versions — same CGPA, dates and project details — because placement cells and companies may see more than one copy. Only the emphasis and order change."
+        ],
+        "bullets": [
+          "Service companies and mass recruiters: emphasise consistent academics, fundamentals such as programming, DBMS, operating systems and networking, certifications and communication. Keep the page simple and easy to scan.",
+          "Product companies: lead with strong projects, coding profiles and problem-solving achievements. Show depth — scale, performance, design choices — and link to your code.",
+          "Core companies: lead with branch projects, plant or site internships, discipline-specific software and core certifications. Move IT skills lower.",
+          "Analytics, consulting and finance roles: highlight Excel, SQL, statistics, case competitions and any internship with measurable outcomes.",
+          "If your placement portal allows only one resume, build a balanced version aimed at the company type you want most."
+        ]
+      },
+      {
+        "heading": "Final proofreading checklist before you submit",
+        "paragraphs": [
+          "Placement deadlines are tight, and small errors look careless to a recruiter comparing an entire batch. Go through this list before every submission:"
+        ],
+        "bullets": [
+          "CGPA, percentages and years match your marksheets exactly.",
+          "Phone number and email are correct and active.",
+          "The file name follows the placement cell's convention, and the PDF still fits on one page when opened on a phone and a laptop.",
+          "Every link opens: LinkedIn, GitHub, portfolio and any live demo.",
+          "Technologies are spelt correctly: JavaScript, MySQL, GitHub, Node.js.",
+          "Tense is consistent — past for finished work, present for ongoing work.",
+          "There are no spelling or grammar errors; read it aloud, then ask a senior or friend to check.",
+          "If you used an AI tool to polish the wording, every claim is still accurate and sounds like you.",
+          "You can explain every line, including every tool in your Skills section.",
+          "If companies will collect it through their own portals, run it through a free ATS checker to confirm it parses cleanly."
+        ]
+      }
+    ],
+    "faqs": [
+      {
+        "q": "Should I put a photo on my campus placement resume?",
+        "a": "Only if your placement cell's format requires one. Most private-sector recruiters don't need a photo, and images can interfere with some resume parsers. If the template demands it, use a recent, formal passport-style photo."
+      },
+      {
+        "q": "Can I use different resumes for different companies during placements?",
+        "a": "Yes, if your placement portal allows more than one. Build versions for service, product and core companies, but keep every fact identical. If the portal allows only one, write a balanced version aimed at the company type you want most."
+      },
+      {
+        "q": "What if I have no internship before placements?",
+        "a": "Strengthen your projects, certifications and coding or core-tool skills instead. A solid final-year project with a working demo, an NPTEL course with a good score or a stint of in-plant training can do much of the same job. Describe them with the same detail you'd give an internship."
+      },
+      {
+        "q": "Should I mention my JEE rank or GATE score?",
+        "a": "A good GATE score is worth adding for core roles because it signals strong fundamentals. A JEE rank adds little at the placement stage unless it's genuinely exceptional. Never round up ranks or scores; they can be checked."
+      },
+      {
+        "q": "How many projects should a campus resume have?",
+        "a": "Two to four. Pick the ones most relevant to the company type and the ones you can explain in depth. Interviewers usually choose one project and question it closely, so quality matters far more than count."
+      }
+    ],
+    "relatedRoles": [
+      "fresher-software-engineer",
+      "mechanical-engineer",
+      "civil-engineer",
+      "data-analyst",
+      "qa-engineer"
+    ]
+  },
+  {
+    "slug": "cgpa-backlogs-and-gaps-on-resume",
+    "title": "How to Show CGPA, Backlogs and Career Gaps on Your Resume",
+    "metaTitle": "How to Show CGPA, Backlogs and Gap Years on a Resume",
+    "metaDescription": "When to show CGPA or percentage, how to convert CGPA, how to handle active or cleared backlogs honestly and how to explain a gap year on your resume.",
+    "updatedAt": "2026-10-17",
+    "readingMinutes": 9,
+    "summary": "Show your CGPA with its scale if you're a fresher or the employer asks for it, and convert it to a percentage only with your university's official formula. Keep backlogs off the resume itself but answer every form question about them honestly, and show a gap of more than about six months as a dated line with a brief, true reason such as exam preparation, health, family or upskilling.",
+    "sections": [
+      {
+        "heading": "Should you include CGPA on your resume?",
+        "paragraphs": [
+          "If you're a fresher or have up to two or three years of experience in India, include your CGPA or percentage. Many entry-level employers check academic eligibility, and an education line without a score makes a recruiter assume the worst. Write it with the scale — CGPA 7.4/10 — so nobody has to guess.",
+          "As experience grows, academics matter less. After a few years of solid work you can drop your school marks and keep only your degree, and many professionals drop the graduation score too. The exceptions are application forms that ask for scores, and roles with strict academic criteria, such as some government, public-sector or research positions.",
+          "For freshers, how you present the number depends on where it stands:"
+        ],
+        "bullets": [
+          "Comfortably above common cut-offs, such as 60% or a 6.0 CGPA: show it right next to your degree.",
+          "Below a particular company's cut-off: show it anyway, since the form will ask, and focus on employers that weigh skills tests and projects more heavily.",
+          "Strong upward trend: add recent semester scores in a short line, such as SGPA 8.4 and 8.7 in semesters 6 and 7, alongside the overall CGPA — never instead of it."
+        ]
+      },
+      {
+        "heading": "How to convert CGPA to percentage",
+        "paragraphs": [
+          "There's no single national formula for converting CGPA to percentage in India. Universities publish their own: some multiply by 10, some use an equation such as (CGPA − 0.75) × 10, and others use different formulas or grade tables. For Class 10 results from CBSE's CGPA years, the board's guidance was to multiply by 9.5 for an indicative percentage.",
+          "Use the formula printed on your marksheet or transcript, or published in your university's official notice. If an application asks for a percentage and your university gives only CGPA, enter the converted figure and keep the conversion certificate or notice handy. Don't use a more generous formula you found online, because background verification teams compare what you declared with your documents."
+        ],
+        "example": {
+          "label": "Education line with conversion",
+          "text": "B.E. Mechanical Engineering — XYZ College of Engineering, Pune | 2021–2025 | CGPA 7.6/10 (68.5% as per university formula)"
+        }
+      },
+      {
+        "heading": "Active backlogs vs cleared backlogs",
+        "paragraphs": [
+          "Backlogs go by different names — arrears, KTs, ATKT or supplementary exams — but employers usually ask about them in two ways. Active backlogs are papers you haven't cleared yet. Backlog history covers papers you failed at some point and cleared later. Many campus drives require zero active backlogs by the time you join, and some also cap the number of past backlogs.",
+          "You don't need to list backlogs on your resume. Your final CGPA already reflects your results, and a resume isn't a confession. But application forms and placement portals often ask directly, and those answers may be used to filter candidates automatically. Answer them accurately. Marksheets often show the exam session in which each subject was cleared, and a mismatch found during background verification can cost you an offer, even after you've joined."
+        ],
+        "bullets": [
+          "Read each question carefully: active backlogs, total backlogs and backlog history are different questions.",
+          "When a form asks for backlog history, count every paper you failed, even if you cleared it at the next attempt.",
+          "Use the same count whatever your university calls them — arrears, KTs or supplementaries."
+        ]
+      },
+      {
+        "heading": "Handling backlogs in applications and interviews",
+        "paragraphs": [
+          "Most recruiters care less about a backlog you cleared two years ago than about how you talk about it. A short, factual answer that shows what changed is far more convincing than defensiveness."
+        ],
+        "bullets": [
+          "Active backlog: clear it first if you can, and check each company's rule before applying. Fresher offers are commonly conditional on clearing all papers and completing the degree.",
+          "Cleared backlogs: apply where the rules allow, and declare the number correctly on every form.",
+          "In interviews: say what happened, what you changed and where the evidence is, such as better later semesters or strong projects.",
+          "Don't blame professors, the university or the syllabus. It sounds like an excuse, even when it's partly true.",
+          "Look beyond strict cut-offs. Some employers, particularly startups and smaller firms, put more weight on skills tests and project work than on academic history."
+        ],
+        "example": {
+          "label": "Sample interview answer",
+          "text": "I had two backlogs in my second year. I struggled with engineering maths and didn't ask for help early enough. I cleared both in the next attempt, started solving previous papers every week, and my SGPA has been above 8 for the last four semesters."
+        }
+      },
+      {
+        "heading": "Education gaps: drop years for JEE, NEET and other exams",
+        "paragraphs": [
+          "Not every gap comes after graduation. Many students take a drop year after Class 12 to prepare for JEE, NEET or another entrance exam, or lose a year to illness or a change of course. Some campus drives specify a maximum allowed gap in education, so check the criteria and answer the form question accurately.",
+          "On the resume itself, your education dates already show the gap, and a drop year for entrance preparation is common and easily understood. You don't need a separate line for it. If an interviewer asks, answer in a sentence or two: you prepared for an entrance exam, what you learned from it, and how it led you to your current course."
+        ]
+      },
+      {
+        "heading": "Should you explain a career gap on your resume?",
+        "paragraphs": [
+          "A few months between graduation and your first job rarely needs explaining; job searches take time. A gap longer than about six months is worth addressing, because a recruiter scanning your dates will notice the blank and fill it with their own guess. One honest line removes the guesswork.",
+          "Treat the gap as a dated entry in your timeline, with a neutral title and one line of substance. You don't owe anyone private details, especially about health or family, but the time should be visibly accounted for. Here's how common reasons can look:"
+        ],
+        "bullets": [
+          "Civil services: Full-time preparation for UPSC Civil Services Examination, Jun 2023 – Aug 2025; cleared Prelims once.",
+          "GATE or CAT: Preparation for GATE (Mechanical), Jul 2024 – Feb 2025; qualified with a GATE score of 612.",
+          "Health: Career break for health reasons, Jan 2024 – Oct 2024; fully recovered. No further detail is needed.",
+          "Family: Career break for family responsibilities, including a parent's care. Add any part-time work or courses from the period.",
+          "Upskilling: Career break for self-directed learning in data analytics; completed two certifications and built three portfolio projects, listed below.",
+          "Freelancing or a family business: list it as work experience with real responsibilities, not as a gap."
+        ]
+      },
+      {
+        "heading": "Talking about a gap year in interviews",
+        "paragraphs": [
+          "Interviewers ask about gaps to check two things: whether the time was used purposefully, and whether you're committed to this job now rather than treating it as a fallback.",
+          "For exam preparation, don't apologise and don't pretend it wasn't serious. Show what transfers — discipline, depth in your subjects, the ability to study consistently for months — and be clear about where you stand now. If you're still planning another attempt, be honest with yourself about whether you can commit; joining and leaving within months hurts your reputation more than the gap ever would. Prepare a 30-second answer in three parts:"
+        ],
+        "bullets": [
+          "What you did: one or two factual sentences, with dates.",
+          "What you gained: a skill, a score or a habit that matters for this job.",
+          "Why now: what you've done recently that shows you're committed to this path."
+        ],
+        "example": {
+          "label": "Sample answer after UPSC preparation",
+          "text": "After graduation, I prepared full-time for the civil services exam for two years and cleared the prelims once. It taught me to plan a huge syllabus, write clearly under time pressure and stay consistent. I've decided to build my career in business analysis, and in the last six months I've completed an SQL and Power BI course and built two dashboards, which are on my resume."
+        }
+      },
+      {
+        "heading": "What never to do: fake dates or fake experience",
+        "paragraphs": [
+          "The temptation is real: stretch an internship to cover the gap, invent a job at a relative's company or change your graduation year. Don't. Background verification routinely checks education records, previous employers and dates, often by contacting the institution or company directly. A discovered lie can lead to a withdrawn offer or termination — a far bigger problem than the gap itself.",
+          "The same goes for experience certificates sold by agents for a fee. They're forgeries, and using one can bring legal trouble on top of losing the job. Honest framing works better than you'd expect: recruiters see gaps and backlogs all the time, and what they're judging is whether your explanation is calm, credible and backed by what you did next."
+        ]
+      },
+      {
+        "heading": "Quick reference: what to show in each situation",
+        "paragraphs": [
+          "Use this list whenever you update your resume or fill in an application form. The rule underneath all of it is simple: present the facts in their best honest light, and never change the facts themselves."
+        ],
+        "bullets": [
+          "CGPA comfortably above cut-offs: show it with the scale next to your degree.",
+          "CGPA below a company's cut-off: show it anyway, and target roles that weigh skills and projects.",
+          "University gives CGPA, form wants a percentage: use the official formula and keep the proof.",
+          "Cleared backlogs: leave them off the resume and declare them accurately on forms.",
+          "Active backlogs: clear them first and check each company's eligibility rule.",
+          "Drop year before college: no separate line needed; answer form questions accurately.",
+          "Career gap under about six months: usually no explanation needed.",
+          "Longer career gap: one dated line with a neutral reason and what you did during it."
+        ]
+      }
+    ],
+    "faqs": [
+      {
+        "q": "Is it okay to leave CGPA off my resume?",
+        "a": "For experienced professionals, yes — after a few years of work, your experience matters more. For freshers in India, leaving it out usually makes recruiters assume it's low, and application forms will ask for it anyway. Include it with the scale and let your projects and skills do the rest."
+      },
+      {
+        "q": "How do I convert CGPA to percentage for job applications?",
+        "a": "Use your university's official formula, usually printed on the marksheet or published in a university notice. Formulas differ between universities, so don't pick one from the internet. Mention the formula if asked, and keep the conversion certificate handy."
+      },
+      {
+        "q": "Will companies find out about backlogs I've cleared?",
+        "a": "Very likely, if they ask. Marksheets and transcripts often show when each subject was cleared, and background verification compares your declarations with those documents. Declaring cleared backlogs honestly is far safer than hiding them."
+      },
+      {
+        "q": "How do I explain a one-year gap for GATE or CAT preparation?",
+        "a": "Add a dated line such as 'Preparation for GATE (Electrical), Jul 2024 – Feb 2025', and include your score if it's decent. In interviews, explain what you learned and why you're choosing this job now. Interviewers mainly want to know you're committed."
+      },
+      {
+        "q": "Do I have to mention health reasons for a career gap?",
+        "a": "No. You can write 'Career break — health reasons' or 'Career break — personal reasons', and add that you've fully recovered if that's true. You're not obliged to share medical details. In interviews, keep it brief and move the conversation to what you're ready to do now."
+      }
+    ],
+    "relatedRoles": [
+      "fresher-software-engineer",
+      "business-analyst",
+      "mechanical-engineer",
+      "civil-engineer",
+      "operations-executive"
+    ]
+  },
+  {
+    "slug": "resume-vs-cv-vs-biodata",
+    "title": "Resume vs CV vs Biodata: Which One Should You Send?",
+    "metaTitle": "Resume vs CV vs Biodata: Differences and When to Use",
+    "metaDescription": "Resume, CV or biodata? Learn the differences, when Indian employers, government bodies and universities ask for each, and which personal details to leave out.",
+    "updatedAt": "2026-10-17",
+    "readingMinutes": 9,
+    "summary": "A resume is a short, tailored document for private-sector jobs; a CV is a longer, complete record of your academic and research work, used for teaching, research and some international roles; and a biodata is a traditional Indian format led by personal details, now mostly limited to prescribed government formats. For most private-sector jobs in India, send a resume — even when the posting says CV — and leave out your photo, date of birth, religion, marital status and father's name.",
+    "sections": [
+      {
+        "heading": "The short answer",
+        "paragraphs": [
+          "For a private-sector job in India — IT, sales, finance, marketing, operations or engineering — send a resume. Job posts often say 'send your CV', but in Indian corporate hiring the two words are used interchangeably, and recruiters expect a short, tailored document.",
+          "Send a full CV when you're applying for an academic, research or teaching position, a PhD or postdoc, a fellowship, or when an organisation explicitly asks for a detailed CV with publications. Send a biodata only when a form or notification specifically asks for one, usually in a prescribed format, and follow that format exactly. In one line each:"
+        ],
+        "bullets": [
+          "Resume: one or two pages, tailored to each job, focused on skills and results.",
+          "CV: no fixed length, comprehensive, focused on academic record, research and publications.",
+          "Biodata: personal particulars plus education and work history, usually in a fixed format."
+        ]
+      },
+      {
+        "heading": "What a resume is, and why it's the default",
+        "paragraphs": [
+          "A resume is a marketing document, not an autobiography. It shows a specific employer why you fit a specific role, using only the most relevant parts of your education, skills, projects and experience. Freshers should keep it to one page; experienced professionals can use two.",
+          "Because it's tailored, you'll end up with several versions — say, one for data analyst roles and another for business analyst roles — built from a master copy. Most private-sector applications now pass through job portals or applicant tracking systems, so a resume should also be simple and machine-readable: single column, standard headings and a text-based PDF or DOCX. A typical resume includes:"
+        ],
+        "bullets": [
+          "Name and contact details: phone, email, city, and LinkedIn or a portfolio if relevant.",
+          "A two- or three-line summary aimed at the role.",
+          "Skills, experience or internships, projects, education, certifications and selected achievements."
+        ]
+      },
+      {
+        "heading": "What a CV means in the Indian context",
+        "paragraphs": [
+          "Curriculum vitae is Latin for 'course of life'. In academic use, a CV is a complete record: degrees, thesis, research experience, publications, conference presentations, teaching, grants, fellowships, awards, professional memberships and referees. It grows across a career and can run to many pages for an established researcher.",
+          "In India you'll need this kind of CV for faculty positions at colleges and universities, research posts such as JRF, SRF or project associate roles, PhD and postdoctoral applications, and many fellowships. Some institutions provide their own CV format or application form; when they do, use it.",
+          "One more wrinkle: in the UK and much of Europe, CV simply means a job-application document like an Indian resume, usually up to two pages, while in the US it usually means the academic version. If you're applying abroad, check which one the employer means."
+        ]
+      },
+      {
+        "heading": "What a biodata is and when it's still used",
+        "paragraphs": [
+          "Biodata, short for biographical data, is a traditional Indian format that leads with personal particulars — date of birth, gender, father's name, nationality, religion, marital status, permanent address and languages known — followed by education and work history. It usually ends with a declaration, signature, place and date.",
+          "Today it survives mainly in government and public-sector hiring, especially for contractual, consultant or deputation posts where the advertisement asks for a bio-data in a prescribed format. Some smaller, traditionally run businesses may still ask for one as well. And then there's the marriage biodata, a completely different document that should never be mixed up with a job application."
+        ]
+      },
+      {
+        "heading": "Government and PSU applications follow their own rules",
+        "paragraphs": [
+          "Government departments, PSUs and public institutions publish a detailed notification for each recruitment, and that notification overrides any general advice about resumes. Large recruitments run by UPSC, SSC, state public service commissions and many PSUs use online application forms, where the form itself is the format. Smaller contractual or deputation posts often ask for a bio-data in an annexed format, along with self-attested copies of certificates.",
+          "Here, personal details are expected: date of birth for age limits, category for reservation, and often father's name and permanent address for verification. Fill everything exactly as it appears on your certificates, follow the photo and signature specifications to the letter, and keep any category, EWS or disability certificates ready in the format the notification prescribes."
+        ]
+      },
+      {
+        "heading": "Personal details to leave out of a private-sector resume",
+        "paragraphs": [
+          "Many Indian resumes still carry biodata habits because templates get copied from seniors and relatives. Leaving these details out isn't about hiding anything: it keeps attention on your skills, frees space for evidence and protects your privacy. Employers who genuinely need personal details collect them through their own forms after shortlisting. For private-sector jobs, drop the following:"
+        ],
+        "bullets": [
+          "Photo: not needed unless the employer asks, as some customer-facing or aviation roles might. Images can also confuse some resume parsers.",
+          "Date of birth and age: irrelevant to your ability, and they can invite age bias.",
+          "Religion and caste: irrelevant for private-sector roles; reservation details belong only in government forms that ask for them.",
+          "Marital status and gender: unrelated to the job and a common source of unconscious bias, particularly against women.",
+          "Father's or mother's name: a biodata convention with no use for a recruiter.",
+          "Aadhaar, PAN or passport numbers: a real identity-theft risk on a document that gets forwarded across inboxes. Share them only during formal onboarding.",
+          "Full permanent address, height, weight and blood group: city and state are enough.",
+          "Declaration, signature, place and date: unnecessary unless a specific format asks for it."
+        ]
+      },
+      {
+        "heading": "When a private employer asks for personal details",
+        "paragraphs": [
+          "Sometimes a private company's application form or HR team asks for your date of birth, a photo, your father's name or ID numbers. That's normal at the right stage: employers need these for background verification, payroll, insurance and statutory registrations once an offer is on the table. Provide them in the form or document the employer asks for, rather than adding them to every resume you send.",
+          "If a request feels premature — for example, someone wants your Aadhaar or bank details before any interview — check that the recruiter and the company are genuine before sharing anything. Fake job offers that collect documents and registration fees are a known problem, and a genuine employer won't charge you to apply."
+        ]
+      },
+      {
+        "heading": "Resume, CV and biodata side by side",
+        "paragraphs": [
+          "Here's how the three compare on the points that cause the most confusion:"
+        ],
+        "bullets": [
+          "Length — resume: one page for freshers, up to two for experienced professionals; CV: as long as your record requires; biodata: one or two pages, or whatever the format specifies.",
+          "Personal details — resume: name and contact details only; CV: contact details, plus anything the institution asks for; biodata: full personal particulars as prescribed.",
+          "Tailoring — resume: adjusted for every role; CV: updated as your record grows and ordered to suit each application; biodata: fixed format.",
+          "Key sections — resume: summary, skills, experience, projects, education; CV: education, research, publications, teaching, grants, conferences, referees; biodata: personal particulars, education, experience, declaration.",
+          "Format — resume and CV: clean, single-column and machine-readable; biodata: whatever the notification prescribes."
+        ]
+      },
+      {
+        "heading": "Which one to send in common Indian situations",
+        "paragraphs": [
+          "When an employer's instructions are clear, follow them over any general rule, including this guide. Otherwise, here's what to send in the situations Indian job seekers meet most often:"
+        ],
+        "bullets": [
+          "Campus placement or off-campus fresher job: a one-page resume, in your placement cell's format if it has one.",
+          "A job post on Naukri, LinkedIn, Indeed or Foundit that says 'send your CV': a resume.",
+          "Assistant professor post at a college or university: an academic CV, or the institution's application form along with your CV.",
+          "Research project post such as JRF or project associate: a detailed CV, or the bio-data format given in the advertisement.",
+          "Contractual or consultant post in a government department or PSU asking for bio-data: the exact format in the notification, filled in completely.",
+          "Applying to companies abroad: check the country — a two-page CV in the UK sense, or a resume in the US sense.",
+          "Walk-in interview: printed copies of your resume, plus original certificates and a set of photocopies."
+        ]
+      },
+      {
+        "heading": "Turning one document into another",
+        "paragraphs": [
+          "You don't need to write three documents from scratch. Keep a master record — one long file with every course, project, internship, publication, award and date — and build from it. A resume is a selection from that record, a CV is its full academic and professional version, and a biodata is your personal particulars plus a summary of the rest, in whatever format is prescribed.",
+          "When you turn an old biodata-style document into a modern resume, delete the personal particulars and the declaration, add a short targeted summary, move skills and projects up, and rewrite duties as achievements. Then run your resume through a free ATS checker to confirm it reads cleanly before you send it."
+        ]
+      }
+    ],
+    "faqs": [
+      {
+        "q": "Are a CV and a resume the same thing in India?",
+        "a": "In everyday Indian corporate hiring, yes — recruiters use the words interchangeably and expect a short, tailored document. The difference matters in academia and research, where a CV means a full record including publications, and when applying abroad, where the meaning depends on the country."
+      },
+      {
+        "q": "Should I put a photo on my resume in India?",
+        "a": "Not for most private-sector jobs. A photo doesn't show your skills, can invite bias and may confuse some resume parsers. Add one only when the employer or the role specifically asks for it."
+      },
+      {
+        "q": "What is the difference between a biodata and a resume for a job?",
+        "a": "A biodata leads with personal particulars such as date of birth, parents' names, religion and marital status, followed by education and experience in a fixed format. A resume focuses on the skills, experience and achievements relevant to a specific job. Use a biodata only when an organisation asks for one in a prescribed format."
+      },
+      {
+        "q": "How long should an academic CV be?",
+        "a": "As long as your record requires. A recent postgraduate might need two or three pages, while an established researcher could need many more. Organise it with clear headings, list the most recent items first, and follow any format the institution provides."
+      },
+      {
+        "q": "Should I add a declaration at the end of my resume?",
+        "a": "Not for private-sector jobs. The 'I hereby declare' paragraph with signature, place and date is a biodata and government-form convention. Include it only when a specific application format asks for it."
+      }
+    ],
+    "relatedRoles": [
+      "software-engineer",
+      "data-scientist",
+      "business-analyst",
+      "hr-executive",
+      "recruiter"
+    ]
+  }
+]

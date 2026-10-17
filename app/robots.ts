@@ -1,18 +1,18 @@
 import { MetadataRoute } from "next";
+import { SITE } from "@/lib/site";
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = "https://smartresume.co.in";
-
   return {
     rules: {
       userAgent: "*",
       allow: "/",
       disallow: [
-        "/dashboard/",   // Don't index logged-in user areas
-        "/api/",         // Don't crawl Next.js internal APIs
-        "/results/",     // Don't index random user result pages (unless linked)
+        "/dashboard/", // signed-in area
+        "/api/", // API proxy
+        "/results/", // individual scan reports
+        "/score/", // shared score cards (noindex)
       ],
     },
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: `${SITE.url}/sitemap.xml`,
   };
 }

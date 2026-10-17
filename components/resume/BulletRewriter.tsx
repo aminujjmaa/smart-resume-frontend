@@ -10,6 +10,8 @@ import { isPro } from "@/lib/entitlements";
 interface Props {
   readonly bullets: BulletSuggestion[];
   readonly jobDescription: string;
+  /** The report's id: lets the API use its stored job description when none is in memory. */
+  readonly analysisId?: string;
   readonly resumeText: string;
   readonly onApply: (newResumeText: string, originalLine: string, rewrittenLine: string) => void;
   readonly activeHighlight?: string | null;
@@ -34,7 +36,7 @@ function fuzzyReplace(text: string, search: string, replacement: string): { newT
   return { newText: text, matched: false };
 }
 
-export default function BulletRewriter({ bullets, jobDescription, resumeText, onApply, activeHighlight }: Props) {
+export default function BulletRewriter({ bullets, jobDescription, analysisId, resumeText, onApply, activeHighlight }: Props) {
   const [items, setItems] = useState(bullets);
   const [loading, setLoading] = useState<Record<number, boolean>>({});
   const [copied, setCopied] = useState<Record<number, boolean>>({});
@@ -73,7 +75,8 @@ export default function BulletRewriter({ bullets, jobDescription, resumeText, on
     try {
       const res = await analysisApi.rewrite({
         bullet_point: items[idx].original,
-        job_description: jobDescription,
+        job_description: jobDescription || undefined,
+        analysis_id: jobDescription ? undefined : analysisId,
       });
       setItems((prev) =>
         prev.map((item, i) =>

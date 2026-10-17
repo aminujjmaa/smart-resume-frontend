@@ -1,511 +1,208 @@
-"use client";
-
-import { useCallback, useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { useDropzone } from "react-dropzone";
-import {
-  AlertCircle,
-  CheckCircle,
-  ChevronRight,
-  FileText,
-  Loader2,
-  Search,
-  Shield,
-  Upload,
-  X,
-} from "lucide-react";
-import { useAnalysis } from "@/hooks/useAnalysis";
-import { useAnalysisStore } from "@/store/useAppStore";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { ArrowRight, CheckCircle2, ChevronRight, FileText, Search, XCircle } from "lucide-react";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
-import ResumePreview from "@/components/resume/ResumePreview";
-import { SEO_DATA } from "@/lib/seo-data";
-import Link from "next/link";
+import ScanForm from "@/components/scan/ScanForm";
+import { ROLES, getRole, relatedRoles, roleRequirementsText } from "@/lib/seo-data";
+import { GUIDES } from "@/lib/guides";
+import { JsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/jsonld";
 
-type InputMode = "file" | "text";
-type StepState = "complete" | "active" | "pending";
-type DropzoneRootGetter = ReturnType<typeof useDropzone>["getRootProps"];
-type DropzoneInputGetter = ReturnType<typeof useDropzone>["getInputProps"];
+type Props = { params: { jobTitle: string } };
 
-const ANALYSIS_STEPS = [
-  { key: "uploading", label: "Uploading file..." },
-  { key: "parsing", label: "Parsing resume content..." },
-  { key: "analyzing", label: "AI is analyzing your resume..." },
-  { key: "scoring", label: "Calculating ATS score..." },
-];
+// Only roles with real content get a page; anything else is a 404, not a thin auto-generated page.
+export const dynamicParams = false;
 
-const REPORT_ITEMS = [
-  "ATS score with category breakdown",
-  "Matched and missing job keywords",
-  "Formatting and parsing risk checks",
-  "Priority fixes and bullet rewrites",
-];
-
-function formatJobTitle(slug = "") {
-  return decodeURIComponent(slug)
-    .replaceAll("-", " ")
-    .replaceAll(/\b\w/g, (letter) => letter.toUpperCase());
+export function generateStaticParams() {
+  return ROLES.map((role) => ({ jobTitle: role.slug }));
 }
 
-function getStepState(index: number, currentIndex: number): StepState {
-  if (index < currentIndex) return "complete";
-  if (index === currentIndex) return "active";
-  return "pending";
-}
-
-function LoadingView({ currentStepIdx }: Readonly<{ currentStepIdx: number }>) {
-  return (
-    <div className="w-full max-w-md mt-12 animate-fade-in">
-      <div className="text-center mb-10">
-        <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center">
-          <Loader2 size={28} className="text-brand-400 animate-spin" />
-        </div>
-        <h2 className="font-display text-2xl font-bold text-white mb-2">Analyzing Your Resume</h2>
-        <p className="text-slate-400 text-sm">Our AI is working. This takes about 15 seconds.</p>
-      </div>
-
-      <div className="space-y-3">
-        {ANALYSIS_STEPS.map((step, index) => {
-          const state = getStepState(index, currentStepIdx);
-          return (
-            <div key={step.key} className={`step-indicator ${state}`}>
-              <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 border text-xs font-bold transition-all duration-500">
-                {state === "complete" ? "✓" : index + 1}
-              </div>
-              <span className="text-sm font-medium">{step.label}</span>
-              {state === "active" && <Loader2 size={14} className="animate-spin ml-auto" />}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function PageHeader({ jobTitle }: Readonly<{ jobTitle: string }>) {
-  return (
-    <div className="mb-8 grid gap-6 md:grid-cols-[1fr_340px] md:items-end">
-      <div>
-        <span className="mb-4 inline-flex items-center gap-2 rounded-lg border border-teal-300/20 bg-teal-300/10 px-3 py-1.5 text-xs font-semibold text-teal-200">
-          <Search size={14} />
-          Role-specific ATS scanner
-        </span>
-        <h1 className="font-display text-4xl font-bold leading-tight text-white md:text-5xl capitalize">
-          Free ATS Resume Scanner for {jobTitle}
-        </h1>
-        <p className="mt-4 max-w-2xl text-base leading-8 text-slate-400 md:text-lg">
-          Upload your resume, compare it against a {jobTitle} role, and see the keyword gaps, formatting risks, and rewrite opportunities before you apply.
-        </p>
-      </div>
-
-      <div className="rounded-lg border border-white/10 bg-white/[0.035] p-4">
-        <div className="flex items-start gap-3">
-          <Shield size={18} className="mt-0.5 text-teal-300" />
-          <div>
-            <p className="text-sm font-semibold text-white">Built for fast tailoring</p>
-            <p className="mt-1 text-xs leading-5 text-slate-400">
-              Add a full job description for a sharper role match report.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ModeToggle({
-  mode,
-  onModeChange,
-}: Readonly<{
-  mode: InputMode;
-  onModeChange: (mode: InputMode) => void;
-}>) {
-  return (
-    <div className="mb-6 flex w-fit gap-1 rounded-lg border border-white/10 bg-slate-950/70 p-1">
-      {(["file", "text"] as InputMode[]).map((nextMode) => (
-        <button
-          key={nextMode}
-          onClick={() => onModeChange(nextMode)}
-          className={`rounded-lg px-5 py-2 text-sm font-medium transition-all duration-200 ${
-            mode === nextMode ? "bg-teal-400/20 text-teal-100" : "text-slate-400 hover:text-white"
-          }`}
-        >
-          {nextMode === "file" ? "Upload File" : "Paste Text"}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function FileResumeInput({
-  file,
-  getInputProps,
-  getRootProps,
-  isDragActive,
-  onFileClear,
-}: Readonly<{
-  file: File | null;
-  getInputProps: DropzoneInputGetter;
-  getRootProps: DropzoneRootGetter;
-  isDragActive: boolean;
-  onFileClear: () => void;
-}>) {
-  return (
-    <div className="space-y-4">
-      {file ? (
-        <>
-          <p className="block text-sm font-medium text-slate-300">Resume File</p>
-          <div className="flex items-center gap-4 rounded-lg border border-teal-300/20 bg-teal-300/10 p-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-teal-300/20 bg-slate-950">
-              <FileText size={18} className="text-teal-300" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-white">{file.name}</p>
-              <p className="text-xs text-slate-500">{(file.size / 1024).toFixed(0)} KB</p>
-            </div>
-            <button
-              onClick={onFileClear}
-              className="text-slate-500 transition-colors hover:text-red-400"
-              aria-label="Remove resume file"
-            >
-              <X size={18} />
-            </button>
-          </div>
-        </>
-      ) : (
-        <>
-          <label htmlFor="seo-resume-file-input" className="block text-sm font-medium text-slate-300">
-            Resume File
-          </label>
-          <div {...getRootProps()} className={`dropzone ${isDragActive ? "active" : ""}`}>
-            <input {...getInputProps()} id="seo-resume-file-input" />
-            <Upload size={32} className="mx-auto mb-3 text-teal-300" />
-            <p className="mb-1 font-medium text-white">
-              {isDragActive ? "Drop it here" : "Drag and drop your resume"}
-            </p>
-            <p className="text-sm text-slate-500">
-              or <span className="cursor-pointer text-teal-300">browse files</span>
-            </p>
-            <p className="mt-3 text-xs text-slate-600">PDF, DOCX, or TXT. Max 5MB.</p>
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
-
-function TextResumeInput({
-  resumeText,
-  onResumeTextChange,
-}: Readonly<{
-  resumeText: string;
-  onResumeTextChange: (value: string) => void;
-}>) {
-  return (
-    <div className="space-y-4">
-      <label htmlFor="seo-resume-text-input" className="block text-sm font-medium text-slate-300">
-        Resume Text
-      </label>
-      <textarea
-        id="seo-resume-text-input"
-        className="input min-h-56 resize-y"
-        placeholder="Paste your full resume text here..."
-        value={resumeText}
-        onChange={(event) => onResumeTextChange(event.target.value)}
-      />
-    </div>
-  );
-}
-
-function ResumeInput(props: Readonly<{
-  file: File | null;
-  getInputProps: DropzoneInputGetter;
-  getRootProps: DropzoneRootGetter;
-  isDragActive: boolean;
-  mode: InputMode;
-  resumeText: string;
-  onFileClear: () => void;
-  onResumeTextChange: (value: string) => void;
-}>) {
-  if (props.mode === "file") {
-    return (
-      <FileResumeInput
-        file={props.file}
-        getInputProps={props.getInputProps}
-        getRootProps={props.getRootProps}
-        isDragActive={props.isDragActive}
-        onFileClear={props.onFileClear}
-      />
-    );
-  }
-
-  return (
-    <TextResumeInput
-      resumeText={props.resumeText}
-      onResumeTextChange={props.onResumeTextChange}
-    />
-  );
-}
-
-function InputPanel({
-  error,
-  file,
-  getInputProps,
-  getRootProps,
-  hasResumeInput,
-  isDragActive,
-  jobDesc,
-  mode,
-  resumeText,
-  onFileClear,
-  onJobDescChange,
-  onModeChange,
-  onResumeTextChange,
-  onSubmit,
-}: Readonly<{
-  error: string | null;
-  file: File | null;
-  getInputProps: DropzoneInputGetter;
-  getRootProps: DropzoneRootGetter;
-  hasResumeInput: boolean;
-  isDragActive: boolean;
-  jobDesc: string;
-  mode: InputMode;
-  resumeText: string;
-  onFileClear: () => void;
-  onJobDescChange: (value: string) => void;
-  onModeChange: (mode: InputMode) => void;
-  onResumeTextChange: (value: string) => void;
-  onSubmit: () => void;
-}>) {
-  return (
-    <div className="rounded-lg border border-white/10 bg-white/[0.035] p-5 md:p-6">
-      {error && (
-        <div className="mb-6 flex items-center gap-3 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400 animate-fade-in">
-          <AlertCircle size={16} className="shrink-0" />
-          {error}
-        </div>
-      )}
-
-      <ModeToggle mode={mode} onModeChange={onModeChange} />
-
-      <div className="space-y-6">
-        <ResumeInput
-          file={file}
-          getInputProps={getInputProps}
-          getRootProps={getRootProps}
-          isDragActive={isDragActive}
-          mode={mode}
-          resumeText={resumeText}
-          onFileClear={onFileClear}
-          onResumeTextChange={onResumeTextChange}
-        />
-
-        <div>
-          <label htmlFor="seo-job-description-input" className="mb-3 block text-sm font-medium text-slate-300">
-            Job Description <span className="font-normal text-slate-500">(Optional, recommended)</span>
-          </label>
-          <textarea
-            id="seo-job-description-input"
-            className="input min-h-48 resize-y"
-            placeholder="Paste the full job description here..."
-            value={jobDesc}
-            onChange={(event) => onJobDescChange(event.target.value)}
-          />
-          <p className="mt-2 text-xs text-slate-600">A complete job description makes keyword and role-alignment scoring more accurate.</p>
-        </div>
-
-        <button
-          onClick={onSubmit}
-          disabled={!hasResumeInput}
-          className="btn-primary w-full justify-center py-4 text-base disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          Get My Free Score
-          <ChevronRight size={18} />
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function PreviewPanel({
-  file,
-  hasResumeInput,
-  jobTitle,
-  mode,
-  resumeText,
-}: Readonly<{
-  file: File | null;
-  hasResumeInput: boolean;
-  jobTitle: string;
-  mode: InputMode;
-  resumeText: string;
-}>) {
-  return (
-    <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
-      {hasResumeInput ? (
-        <ResumePreview file={file} text={mode === "text" ? resumeText : ""} />
-      ) : (
-        <div className="rounded-lg border border-white/10 bg-white/[0.035] p-6">
-          <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg border border-teal-300/20 bg-teal-300/10">
-            <FileText size={20} className="text-teal-300" />
-          </div>
-          <h2 className="font-display text-xl font-semibold text-white">Resume preview</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-400">
-            Upload a resume to preview the original document before the report runs.
-          </p>
-        </div>
-      )}
-
-      <div className="rounded-lg border border-white/10 bg-[#08101c] p-5">
-        <h2 className="font-display text-lg font-semibold text-white">{jobTitle} report includes</h2>
-        <div className="mt-4 space-y-3">
-          {REPORT_ITEMS.map((item) => (
-            <div key={item} className="flex items-start gap-3 text-sm text-slate-300">
-              <CheckCircle size={16} className="mt-0.5 shrink-0 text-emerald-300" />
-              <span>{item}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </aside>
-  );
-}
-
-export default function SEOUploadPage() {
-  const { jobTitle } = useParams<{ jobTitle: string }>();
-  const decodedJobTitle = formatJobTitle(jobTitle);
-
-  // Generate 3 related jobs for internal linking
-  const relatedJobs = SEO_DATA
-    .filter((j) => j.slug !== jobTitle)
-    .slice(0, 3);
-
-  const [mode, setMode] = useState<InputMode>("file");
-  const [file, setFile] = useState<File | null>(null);
-  const [jobDesc, setJobDesc] = useState("");
-  const { resumeText, setResumeText, setResumeFile } = useAnalysisStore();
-  const { submitAnalysis, step, error } = useAnalysis();
-
-  useEffect(() => {
-    if (decodedJobTitle) {
-      setJobDesc((current) => current || `Job Title: ${decodedJobTitle}\n\n[Paste the full job description here...]`);
-    }
-  }, [decodedJobTitle]);
-
-  const onDrop = useCallback((accepted: File[]) => {
-    if (accepted[0]) {
-      setFile(accepted[0]);
-      setResumeFile(accepted[0]);
-    }
-  }, [setResumeFile]);
-
-  const handleFileClear = useCallback(() => {
-    setFile(null);
-    setResumeFile(null);
-  }, [setResumeFile]);
-
-  const handleModeChange = useCallback((nextMode: InputMode) => {
-    setMode(nextMode);
-    if (nextMode === "text") {
-      handleFileClear();
-    }
-  }, [handleFileClear]);
-
-  const handleResumeTextChange = useCallback((value: string) => {
-    setResumeFile(null);
-    setResumeText(value);
-  }, [setResumeFile, setResumeText]);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      "application/pdf": [".pdf"],
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
-      "text/plain": [".txt"],
-    },
-    maxFiles: 1,
-  });
-
-  const isLoading = ["uploading", "parsing", "analyzing", "scoring"].includes(step);
-  const currentStepIdx = ANALYSIS_STEPS.findIndex((analysisStep) => analysisStep.key === step);
-  const hasResumeInput = Boolean(file || resumeText.trim());
-
-  const handleSubmit = async () => {
-    const fd = new FormData();
-    if (jobDesc.trim()) {
-      fd.append("job_description", jobDesc);
-    }
-    if (mode === "file" && file) {
-      fd.append("resume_file", file);
-    } else if (mode === "text" && resumeText.trim()) {
-      fd.append("resume_text", resumeText);
-    }
-    await submitAnalysis(fd);
+export function generateMetadata({ params }: Props): Metadata {
+  const role = getRole(params.jobTitle);
+  if (!role) return {};
+  return {
+    title: { absolute: role.metaTitle },
+    description: role.metaDescription,
+    alternates: { canonical: `/ats-score/${role.slug}` },
+    openGraph: { title: role.metaTitle, description: role.metaDescription, url: `/ats-score/${role.slug}`, type: "website" },
   };
+}
+
+function SkillGroup({ title, skills }: Readonly<{ title: string; skills: string[] }>) {
+  return (
+    <div className="rounded-lg border border-white/10 bg-white/[0.03] p-5">
+      <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-slate-400">{title}</h3>
+      <ul className="flex flex-wrap gap-2">
+        {skills.map((skill) => (
+          <li key={skill} className="rounded-md border border-teal-300/20 bg-teal-300/10 px-2.5 py-1 text-sm text-teal-100">
+            {skill}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default function RoleAtsCheckerPage({ params }: Props) {
+  const role = getRole(params.jobTitle);
+  if (!role) notFound();
+
+  const related = relatedRoles(role);
+  const guides = GUIDES.filter((g) => g.relatedRoles.includes(role.slug)).slice(0, 3);
+  const path = `/ats-score/${role.slug}`;
 
   return (
     <div className="min-h-screen bg-surface-950 flex flex-col">
+      <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "ATS checker", path: "/scan" }, { name: role.role, path }])} />
+      {role.faqs.length > 0 && <JsonLd data={faqJsonLd(role.faqs)} />}
       <Navbar />
 
-      <main className="flex-1 flex flex-col items-center py-12 px-4">
-        {isLoading ? (
-          <LoadingView currentStepIdx={currentStepIdx} />
-        ) : (
-          <div className="w-full max-w-6xl animate-fade-in">
-            <PageHeader jobTitle={decodedJobTitle} />
+      <main className="flex-1 px-4 py-12">
+        <div className="mx-auto w-full max-w-6xl">
+          <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-1.5 text-xs text-slate-500">
+            <Link href="/" className="hover:text-slate-300">Home</Link>
+            <ChevronRight size={12} />
+            <Link href="/scan" className="hover:text-slate-300">ATS checker</Link>
+            <ChevronRight size={12} />
+            <span className="text-slate-300">{role.role}</span>
+          </nav>
 
-            <div className="grid gap-6 lg:grid-cols-[1fr_420px]">
-              <InputPanel
-                error={error}
-                file={file}
-                getInputProps={getInputProps}
-                getRootProps={getRootProps}
-                hasResumeInput={hasResumeInput}
-                isDragActive={isDragActive}
-                jobDesc={jobDesc}
-                mode={mode}
-                resumeText={resumeText}
-                onFileClear={handleFileClear}
-                onJobDescChange={setJobDesc}
-                onModeChange={handleModeChange}
-                onResumeTextChange={handleResumeTextChange}
-                onSubmit={handleSubmit}
-              />
-              <PreviewPanel
-                file={file}
-                hasResumeInput={hasResumeInput}
-                jobTitle={decodedJobTitle}
-                mode={mode}
-                resumeText={resumeText}
-              />
+          <header className="mb-8 max-w-3xl">
+            <span className="mb-4 inline-flex items-center gap-2 rounded-lg border border-teal-300/20 bg-teal-300/10 px-3 py-1.5 text-xs font-semibold text-teal-200">
+              <Search size={14} /> Free {role.role} resume checker · {role.level}
+            </span>
+            <h1 className="font-display text-4xl font-bold leading-tight text-white md:text-5xl">
+              {role.role} Resume ATS Checker
+            </h1>
+            <p className="mt-4 text-base leading-8 text-slate-400 md:text-lg">{role.intro}</p>
+          </header>
+
+          <ScanForm idPrefix={`ats-${role.slug}`} role={{ name: role.role, requirements: roleRequirementsText(role) }} />
+
+          <section className="mt-20" aria-labelledby="skills-heading">
+            <h2 id="skills-heading" className="font-display text-2xl font-bold text-white md:text-3xl">
+              Keywords recruiters search for in {role.role} resumes
+            </h2>
+            <p className="mt-3 max-w-3xl text-slate-400">
+              Use the ones you can genuinely back up — in your skills section and inside the bullets that prove them.
+            </p>
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              <SkillGroup title="Core skills" skills={role.skills.hard} />
+              {role.skills.tools.length > 0 && <SkillGroup title="Tools" skills={role.skills.tools} />}
+              {role.skills.soft.length > 0 && <SkillGroup title="Soft skills" skills={role.skills.soft} />}
             </div>
+          </section>
 
-            {/* Related ATS Scanners (Internal Linking) */}
-            <div className="mt-20 border-t border-white/10 pt-16">
-              <h2 className="text-2xl font-bold text-white mb-8 text-center">Check ATS Scores for Other Roles</h2>
-              <div className="grid md:grid-cols-3 gap-6">
-                {relatedJobs.map((related) => (
-                  <Link 
-                    key={related.slug} 
-                    href={`/ats-score/${related.slug}`}
-                    className="card p-6 bg-white/[0.02] border border-white/5 hover:border-brand-500/50 hover:bg-white/[0.05] transition-all group text-center"
-                  >
-                    <div className="flex h-12 w-12 mx-auto items-center justify-center rounded-lg border border-teal-300/20 bg-teal-300/10 mb-4">
-                      <Search size={20} className="text-teal-300 group-hover:scale-110 transition-transform" />
-                    </div>
-                    <h3 className="text-lg font-bold text-white group-hover:text-brand-400 transition-colors">
-                      {related.h1.split(" Resume")[0]}
-                    </h3>
-                    <p className="text-slate-400 text-sm mt-2">
-                      Free ATS resume checker
-                    </p>
+          {role.jdSnippet && (
+          <section className="mt-16" aria-labelledby="jd-heading">
+            <h2 id="jd-heading" className="font-display text-2xl font-bold text-white md:text-3xl">
+              What a typical {role.role} job description asks for
+            </h2>
+            <div className="mt-6 grid gap-6 md:grid-cols-[1fr_320px]">
+              <pre className="whitespace-pre-wrap rounded-lg border border-white/10 bg-[#08101c] p-5 font-sans text-sm leading-7 text-slate-300">
+                {role.jdSnippet}
+              </pre>
+              <p className="text-sm leading-7 text-slate-400">
+                Every company words this differently. For the most accurate score, paste the actual job description you&apos;re
+                applying to in the checker above — the report quotes the exact line each missing keyword comes from.
+              </p>
+            </div>
+          </section>
+          )}
+
+          {role.weakVsStrong.length > 0 && (
+          <section className="mt-16" aria-labelledby="bullets-heading">
+            <h2 id="bullets-heading" className="font-display text-2xl font-bold text-white md:text-3xl">
+              Weak vs strong {role.role} resume bullets
+            </h2>
+            <div className="mt-6 space-y-4">
+              {role.weakVsStrong.map((pair) => (
+                <div key={pair.weak} className="grid gap-3 rounded-lg border border-white/10 bg-white/[0.03] p-5 md:grid-cols-2">
+                  <p className="flex gap-3 text-sm leading-6 text-slate-300">
+                    <XCircle size={18} className="mt-0.5 shrink-0 text-red-400" aria-label="Weak" />
+                    {pair.weak}
+                  </p>
+                  <p className="flex gap-3 text-sm leading-6 text-white">
+                    <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-emerald-400" aria-label="Strong" />
+                    {pair.strong}
+                  </p>
+                  <p className="text-xs leading-5 text-slate-500 md:col-span-2">{pair.why}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+          )}
+
+          {role.mistakes.length > 0 && (
+          <section className="mt-16" aria-labelledby="mistakes-heading">
+            <h2 id="mistakes-heading" className="font-display text-2xl font-bold text-white md:text-3xl">
+              Common {role.role} resume mistakes
+            </h2>
+            <ul className="mt-6 grid gap-4 md:grid-cols-2">
+              {role.mistakes.map((mistake) => (
+                <li key={mistake} className="rounded-lg border border-amber-500/15 bg-amber-500/[0.05] p-5 text-sm leading-6 text-slate-300">
+                  {mistake}
+                </li>
+              ))}
+            </ul>
+          </section>
+          )}
+
+          {role.faqs.length > 0 && (
+          <section className="mt-16" aria-labelledby="faq-heading">
+            <h2 id="faq-heading" className="font-display text-2xl font-bold text-white md:text-3xl">
+              {role.role} resume FAQs
+            </h2>
+            <div className="mt-6 space-y-3">
+              {role.faqs.map((faq) => (
+                <details key={faq.q} className="group rounded-lg border border-white/10 bg-white/[0.03] p-5">
+                  <summary className="cursor-pointer list-none font-semibold text-white">{faq.q}</summary>
+                  <p className="mt-3 text-sm leading-7 text-slate-400">{faq.a}</p>
+                </details>
+              ))}
+            </div>
+          </section>
+          )}
+
+          <section className="mt-16 grid gap-6 md:grid-cols-3">
+            <Link
+              href={`/resume-examples/${role.slug}`}
+              className="card group flex flex-col justify-between border border-brand-500/30 bg-brand-500/[0.06] p-6 md:col-span-1"
+            >
+              <FileText size={22} className="text-brand-300" />
+              <div className="mt-4">
+                <p className="font-display text-lg font-bold text-white">See a {role.role} resume example</p>
+                <p className="mt-1 text-sm text-slate-400">An ATS-friendly layout you can model yours on.</p>
+              </div>
+              <span className="mt-4 inline-flex items-center gap-1 text-sm text-brand-300 group-hover:gap-2 transition-all">
+                View example <ArrowRight size={14} />
+              </span>
+            </Link>
+            <div className="md:col-span-2">
+              <h2 className="mb-4 font-display text-lg font-bold text-white">Related ATS checkers</h2>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {related.map((r) => (
+                  <Link key={r.slug} href={`/ats-score/${r.slug}`} className="rounded-lg border border-white/10 bg-white/[0.03] p-4 text-sm text-slate-200 hover:border-brand-500/40">
+                    {r.role} resume checker
                   </Link>
                 ))}
               </div>
+              {guides.length > 0 && (
+                <>
+                  <h2 className="mb-4 mt-8 font-display text-lg font-bold text-white">Guides</h2>
+                  <ul className="space-y-2 text-sm">
+                    {guides.map((g) => (
+                      <li key={g.slug}>
+                        <Link href={`/guides/${g.slug}`} className="text-teal-300 hover:underline">{g.title}</Link>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
             </div>
-          </div>
-        )}
+          </section>
+        </div>
       </main>
 
       <Footer />

@@ -4,17 +4,20 @@ import Link from "next/link";
 import { Search, Zap } from "lucide-react";
 
 const productLinks = [
-  { label: "Features", href: "/#features" },
-  { label: "How it works", href: "/#how-it-works" },
-  { label: "Pricing", href: "/#pricing" },
+  { label: "Free ATS checker", href: "/scan" },
+  { label: "How the score works", href: "/how-ats-score-works" },
   { label: "Resume examples", href: "/resume-examples" },
+  { label: "Guides", href: "/guides" },
+  { label: "Pricing", href: "/pricing" },
 ];
 
 const scanLinks = [
-  { label: "Software Engineer scanner", href: "/ats-score/software-engineer" },
-  { label: "Product Manager scanner", href: "/ats-score/product-manager" },
-  { label: "Data Analyst scanner", href: "/ats-score/data-analyst" },
-  { label: "Business Analyst scanner", href: "/ats-score/business-analyst" },
+  { label: "Software Engineer", href: "/ats-score/software-engineer" },
+  { label: "Data Analyst", href: "/ats-score/data-analyst" },
+  { label: "Business Analyst", href: "/ats-score/business-analyst" },
+  { label: "Product Manager", href: "/ats-score/product-manager" },
+  { label: "Sales Executive", href: "/ats-score/sales-executive" },
+  { label: "Financial Analyst", href: "/ats-score/financial-analyst" },
 ];
 
 export default function Footer() {
@@ -31,7 +34,7 @@ export default function Footer() {
               <span className="text-teal-300">AI</span>
             </Link>
             <p className="max-w-sm text-sm leading-6 text-slate-400">
-              ATS resume scanning, keyword gap analysis, formatting checks, and AI bullet rewrites for job seekers who want a sharper application.
+              Free ATS resume checks, keyword gap analysis and formatting fixes for job seekers in India — with AI help on Pro.
             </p>
             <Link href="/scan" className="btn-secondary mt-6 px-4 py-2 text-sm">
               <Search size={15} />
@@ -51,7 +54,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="mb-4 text-sm font-semibold text-white">Popular scans</h4>
+            <h4 className="mb-4 text-sm font-semibold text-white">Resume checkers</h4>
             <ul className="space-y-3 text-sm text-slate-400">
               {scanLinks.map((item) => (
                 <li key={item.label}>

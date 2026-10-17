@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "2026-*", "prod/**"]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      NEXT_PUBLIC_API_URL: https://api.smartresume.co.in/api/v1
+      NEXT_PUBLIC_SITE_URL: https://smartresume.co.in
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Validate SEO content
+        run: npm run validate:seo
+
+      - name: Build (also checks every static role/guide page renders)
+        run: npm run build

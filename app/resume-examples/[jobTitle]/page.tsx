@@ -1,102 +1,88 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { CheckCircle2, ArrowRight } from "lucide-react";
+import { ArrowRight, CheckCircle2, ChevronRight } from "lucide-react";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
-import { SEO_DATA, getJobTitleSEO } from "@/lib/seo-data";
+import { ROLES, getRole, relatedRoles } from "@/lib/seo-data";
+import { SITE } from "@/lib/site";
+import { JsonLd, breadcrumbJsonLd } from "@/lib/jsonld";
 
-type Props = {
-  params: { jobTitle: string };
-};
+type Props = { params: { jobTitle: string } };
 
-export async function generateStaticParams() {
-  return SEO_DATA.map((job) => ({
-    jobTitle: job.slug,
-  }));
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return ROLES.map((role) => ({ jobTitle: role.slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const job = getJobTitleSEO(params.jobTitle);
-  if (!job) return {};
+function titleFor(role: string) {
+  return `${role} Resume Example (ATS-Friendly, India)`;
+}
 
+function descriptionFor(role: string, level: string) {
+  return `An ATS-friendly ${role} resume example for ${level.toLowerCase()} candidates in India, with the bullet style, keywords and layout recruiters shortlist.`;
+}
+
+export function generateMetadata({ params }: Props): Metadata {
+  const role = getRole(params.jobTitle);
+  if (!role) return {};
+  const title = titleFor(role.role);
+  const description = descriptionFor(role.role, role.level);
   return {
-    title: job.title,
-    description: job.description,
-    keywords: job.keywords,
-    openGraph: {
-      title: job.title,
-      description: job.description,
-      type: "article",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: job.title,
-      description: job.description,
-    },
+    title: { absolute: title },
+    description,
+    alternates: { canonical: `/resume-examples/${role.slug}` },
+    openGraph: { title, description, type: "article", url: `/resume-examples/${role.slug}` },
   };
 }
 
 export default function ResumeExamplePage({ params }: Props) {
-  const job = getJobTitleSEO(params.jobTitle);
+  const role = getRole(params.jobTitle);
+  if (!role) notFound();
 
-  if (!job) {
-    notFound();
-  }
-
-  // Find 3 related resumes for internal linking (same category if possible, fallback to others)
-  const relatedJobs = SEO_DATA
-    .filter(j => j.slug !== job.slug && j.category === job.category)
-    .slice(0, 3);
-  
-  if (relatedJobs.length < 3) {
-    const fillers = SEO_DATA.filter(j => j.slug !== job.slug && !relatedJobs.includes(j)).slice(0, 3 - relatedJobs.length);
-    relatedJobs.push(...fillers);
-  }
-
-  // Generate structured data for Google (JobPosting or Article)
-  const jsonLd = {
+  const path = `/resume-examples/${role.slug}`;
+  const example = role.example;
+  const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: job.h1,
-    description: job.description,
-    author: {
-      "@type": "Organization",
-      name: "SmartResume AI",
-      url: "https://smartresume.co.in"
-    }
+    headline: titleFor(role.role),
+    description: descriptionFor(role.role, role.level),
+    dateModified: role.updatedAt,
+    mainEntityOfPage: `${SITE.url}${path}`,
+    author: { "@type": "Organization", name: SITE.name, url: SITE.url },
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-surface-900">
+      <JsonLd data={articleJsonLd} />
+      <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Resume examples", path: "/resume-examples" }, { name: role.role, path }])} />
       <Navbar />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      
-      <main className="flex-1 pt-32 pb-24 px-6">
+
+      <main className="flex-1 pt-28 pb-24 px-6">
+        <nav aria-label="Breadcrumb" className="mx-auto mb-8 flex max-w-5xl items-center gap-1.5 text-xs text-slate-500">
+          <Link href="/" className="hover:text-slate-300">Home</Link>
+          <ChevronRight size={12} />
+          <Link href="/resume-examples" className="hover:text-slate-300">Resume examples</Link>
+          <ChevronRight size={12} />
+          <span className="text-slate-300">{role.role}</span>
+        </nav>
+
         <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-start">
-          
-          {/* Left Column: Context and CTAs */}
-          <div className="space-y-8 sticky top-32">
+          <div className="space-y-8 md:sticky md:top-28">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 text-brand-400 text-sm font-bold tracking-wider mb-4">
-                {job.level} • Score: {job.score}/100
+                {role.category} · {role.level}
               </div>
-              <h1 className="text-4xl md:text-5xl font-display font-bold text-white leading-tight">
-                {job.h1}
-              </h1>
-              <p className="mt-4 text-xl text-slate-400">
-                {job.description}
-              </p>
+              <h1 className="text-4xl md:text-5xl font-display font-bold text-white leading-tight">{role.role} Resume Example</h1>
+              <p className="mt-4 text-lg text-slate-400">{role.intro}</p>
             </div>
 
             <div className="card p-6 border border-white/5 bg-white/[0.02]">
-              <h3 className="font-bold text-white mb-4">Why this resume works:</h3>
+              <h2 className="font-bold text-white mb-4">Why this resume works</h2>
               <ul className="space-y-4">
-                {job.whyItWorks.map((point, idx) => (
-                  <li key={idx} className="flex gap-3 text-slate-300">
+                {role.whyItWorks.map((point) => (
+                  <li key={point} className="flex gap-3 text-slate-300">
                     <CheckCircle2 className="text-emerald-500 shrink-0 mt-0.5" size={20} />
                     <span>{point}</span>
                   </li>
@@ -104,72 +90,59 @@ export default function ResumeExamplePage({ params }: Props) {
               </ul>
             </div>
 
-            <div className="space-y-4 pt-4">
-              <Link href="/signup" className="btn-primary w-full justify-center py-4 text-lg">
-                Build your {job.h1.split(" Resume")[0]} Resume <ArrowRight size={20} />
+            <div className="space-y-3">
+              <Link href={`/ats-score/${role.slug}`} className="btn-primary w-full justify-center py-4 text-lg">
+                Check my {role.role} resume <ArrowRight size={20} />
               </Link>
-              <p className="text-center text-sm text-slate-500">
-                Free to try. No credit card required.
-              </p>
+              <p className="text-center text-sm text-slate-500">Free ATS score and missing keywords — no sign-up needed.</p>
             </div>
           </div>
 
-          {/* Right Column: Visual Mock Resume */}
-          <div className="bg-white rounded-xl shadow-2xl p-8 md:p-12 text-slate-900 font-sans transform md:rotate-1 hover:rotate-0 transition-transform duration-500">
+          <div className="bg-white rounded-xl shadow-2xl p-8 md:p-12 text-slate-900 font-sans">
             <div className="border-b border-slate-300 pb-4 mb-4 text-center">
-              <h2 className="text-3xl font-bold uppercase tracking-tight text-slate-900 mb-1">{job.dummyData.name}</h2>
-              <p className="text-sm text-slate-600">{job.dummyData.contact}</p>
+              <h2 className="text-3xl font-bold uppercase tracking-tight text-slate-900 mb-1">{example.name}</h2>
+              <p className="text-sm text-slate-600">{example.contact}</p>
             </div>
-            
             <div className="mb-6">
               <h3 className="text-sm font-bold uppercase text-brand-600 border-b border-brand-200 pb-1 mb-2">Professional Summary</h3>
-              <p className="text-sm leading-relaxed text-slate-700">{job.dummyData.summary}</p>
+              <p className="text-sm leading-relaxed text-slate-700">{example.summary}</p>
             </div>
-
             <div className="mb-6">
               <h3 className="text-sm font-bold uppercase text-brand-600 border-b border-brand-200 pb-1 mb-2">Experience</h3>
-              {job.dummyData.experience.map((exp, i) => (
-                <div key={i} className="mb-4">
+              {example.experience.map((exp) => (
+                <div key={exp.title} className="mb-4">
                   <h4 className="text-sm font-bold text-slate-900 mb-1">{exp.title}</h4>
                   <ul className="list-disc pl-5 space-y-1">
-                    {exp.bullets.map((bullet, j) => (
-                      <li key={j} className="text-sm text-slate-700 leading-relaxed">{bullet}</li>
+                    {exp.bullets.map((bullet) => (
+                      <li key={bullet} className="text-sm text-slate-700 leading-relaxed">{bullet}</li>
                     ))}
                   </ul>
                 </div>
               ))}
             </div>
-
             <div className="mb-6">
               <h3 className="text-sm font-bold uppercase text-brand-600 border-b border-brand-200 pb-1 mb-2">Skills</h3>
-              <p className="text-sm text-slate-700">{job.dummyData.skills}</p>
+              <p className="text-sm text-slate-700">{example.skills}</p>
             </div>
-
             <div>
               <h3 className="text-sm font-bold uppercase text-brand-600 border-b border-brand-200 pb-1 mb-2">Education</h3>
-              <p className="text-sm text-slate-700">{job.dummyData.education}</p>
+              <p className="text-sm text-slate-700">{example.education}</p>
             </div>
           </div>
-
         </div>
 
-        {/* Related Resumes (Internal Linking for SEO) */}
         <div className="max-w-5xl mx-auto mt-24 border-t border-white/10 pt-16">
-          <h2 className="text-2xl font-bold text-white mb-8">More Resume Examples</h2>
+          <h2 className="text-2xl font-bold text-white mb-8">More resume examples</h2>
           <div className="grid md:grid-cols-3 gap-6">
-            {relatedJobs.map((related) => (
-              <Link 
-                key={related.slug} 
+            {relatedRoles(role).slice(0, 3).map((related) => (
+              <Link
+                key={related.slug}
                 href={`/resume-examples/${related.slug}`}
                 className="card p-6 bg-white/[0.02] border border-white/5 hover:border-brand-500/50 hover:bg-white/[0.05] transition-all group"
               >
                 <div className="text-brand-400 text-sm font-bold mb-2">{related.category}</div>
-                <h3 className="text-lg font-bold text-white group-hover:text-brand-400 transition-colors">
-                  {related.h1.split(" Resume")[0]}
-                </h3>
-                <p className="text-slate-400 text-sm mt-2 line-clamp-2">
-                  {related.description}
-                </p>
+                <h3 className="text-lg font-bold text-white group-hover:text-brand-400 transition-colors">{related.role}</h3>
+                <p className="text-slate-400 text-sm mt-2 line-clamp-2">{related.intro}</p>
               </Link>
             ))}
           </div>

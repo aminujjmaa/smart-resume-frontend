@@ -31,9 +31,10 @@ export default function Navbar() {
         </Link>
 
         <div className="hidden items-center gap-7 text-sm font-medium text-slate-400 md:flex">
-          <a href="#features" className="hover:text-white transition-colors">Features</a>
-          <a href="#how-it-works" className="hover:text-white transition-colors">How it works</a>
-          <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
+          <Link href="/how-ats-score-works" className="hover:text-white transition-colors">How it works</Link>
+          <Link href="/resume-examples" className="hover:text-white transition-colors">Examples</Link>
+          <Link href="/guides" className="hover:text-white transition-colors">Guides</Link>
+          <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
@@ -42,7 +43,7 @@ export default function Navbar() {
           ) : (
             <>
               <Link href="/login" className="btn-ghost text-sm">Sign in</Link>
-              <Link href="/dashboard/upload" className="btn-primary text-sm">
+              <Link href="/scan" className="btn-primary text-sm">
                 <Search size={15} />
                 Scan Free
               </Link>
@@ -57,16 +58,17 @@ export default function Navbar() {
 
       {open && (
         <div className="glass flex flex-col gap-4 border-t border-white/10 px-6 py-4 md:hidden animate-fade-in">
-          <a href="#features" className="text-slate-400 hover:text-white py-2">Features</a>
-          <a href="#how-it-works" className="text-slate-400 hover:text-white py-2">How it works</a>
-          <a href="#pricing" className="text-slate-400 hover:text-white py-2">Pricing</a>
+          <Link href="/how-ats-score-works" className="text-slate-400 hover:text-white py-2">How it works</Link>
+          <Link href="/resume-examples" className="text-slate-400 hover:text-white py-2">Examples</Link>
+          <Link href="/guides" className="text-slate-400 hover:text-white py-2">Guides</Link>
+          <Link href="/pricing" className="text-slate-400 hover:text-white py-2">Pricing</Link>
           <hr className="border-white/10" />
           {isAuthenticated ? (
             <Link href="/dashboard" className="btn-primary text-sm justify-center">Dashboard</Link>
           ) : (
             <>
               <Link href="/login" className="text-slate-300 text-center py-2">Sign in</Link>
-              <Link href="/dashboard/upload" className="btn-primary text-sm justify-center">Scan Free</Link>
+              <Link href="/scan" className="btn-primary text-sm justify-center">Scan Free</Link>
             </>
           )}
         </div>

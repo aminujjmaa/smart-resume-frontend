@@ -108,6 +108,27 @@ export interface AnalysisResult {
   priority_fixes: string[];
   seniority_signal: string;
   semantic_profile?: Record<string, unknown>;
+  /** Points per scoring category ("Why this score?"). Missing on reports made before 2026-10. */
+  category_scores?: CategoryScore[];
+  /** Caps that lowered the total, with the reason shown to the user. */
+  caps_applied?: ScoreCap[];
+  score_domain?: "engineering" | "data" | "product" | "business" | "";
+  /** "ai" when Pro AI wrote the suggestions, "rules" for the rule-based engine. */
+  suggestions_source?: "ai" | "rules";
+}
+
+export interface CategoryScore {
+  name: string;
+  score: number;
+  max_score: number;
+  grade: string;
+  why: string;
+  how_to_improve: string;
+}
+
+export interface ScoreCap {
+  cap: number;
+  reason: string;
 }
 
 export interface Analysis {

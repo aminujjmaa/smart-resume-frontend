@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { analysisApi } from "@/lib/api";
 import { useAnalysisStore, useAuthStore } from "@/store/useAppStore";
 import type { Analysis } from "@/types";
+import { track } from "@/lib/analytics";
 
 // Poll quickly at first, then back off; AI enhancement can take ~40s under load.
 const POLL_DELAYS_MS = [1000, 1500, 2000, 3000, 4000, 5000];
@@ -14,6 +15,7 @@ export function useAnalysis() {
   const router = useRouter();
   const { setCurrentAnalysis, setStep, currentAnalysis, step } = useAnalysisStore();
   const [error, setError] = useState<string | null>(null);
+  const [limitReached, setLimitReached] = useState(false);
   const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const stopPolling = useCallback(() => {
@@ -52,6 +54,7 @@ export function useAnalysis() {
           if (analysis.status === "done") {
             stopPolling();
             setStep("done");
+            track("scan_completed", { score: analysis.ats_score ?? null });
             const { isAuthenticated } = useAuthStore.getState();
             router.push(isAuthenticated ? `/dashboard/results/${jobId}` : `/results/${jobId}`);
             return;
@@ -81,7 +84,9 @@ export function useAnalysis() {
   const submitAnalysis = useCallback(
     async (formData: FormData) => {
       setError(null);
+      setLimitReached(false);
       setStep("uploading");
+      track("scan_submitted", { with_jd: formData.has("job_description"), file: formData.has("resume_file") });
       try {
         setStep("parsing");
         const res = await analysisApi.submit(formData);
@@ -92,12 +97,17 @@ export function useAnalysis() {
       } catch (err: unknown) {
         stopPolling();
         setStep("error");
-        const apiErr = err as { response?: { data?: { detail?: string } } };
-        setError(apiErr?.response?.data?.detail || "Submission failed. Please try again.");
+        const apiErr = err as { response?: { status?: number; data?: { detail?: unknown } } };
+        if (apiErr.response?.status === 429) {
+          setLimitReached(true);
+          track("scan_limit_hit");
+        }
+        const detail = apiErr.response?.data?.detail;
+        setError(typeof detail === "string" ? detail : "Submission failed. Please try again.");
       }
     },
     [setCurrentAnalysis, setStep, pollResult, stopPolling]
   );
 
-  return { submitAnalysis, currentAnalysis, step, error, stopPolling };
+  return { submitAnalysis, currentAnalysis, step, error, limitReached, stopPolling };
 }

@@ -39,7 +39,7 @@ export default function HistoryPage() {
           <p className="text-slate-400 mb-6 max-w-sm mx-auto">
             You haven't analyzed any resumes yet. Upload your first resume to see it here.
           </p>
-          <Link href="/dashboard/upload" className="btn-primary inline-flex">
+          <Link href="/scan" className="btn-primary inline-flex">
             Analyze Resume Now
           </Link>
         </div>

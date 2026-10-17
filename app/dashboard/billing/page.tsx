@@ -8,6 +8,7 @@ import { authApi, razorpayApi } from "@/lib/api";
 import { formatPaise, PLANS, PRICING_FINE_PRINT, PRO_PERIOD, PRO_PRICE } from "@/lib/pricing";
 import { useAuthStore } from "@/store/useAppStore";
 import type { SubscriptionSummary } from "@/types";
+import { track } from "@/lib/analytics";
 
 function formatDate(value?: string | null): string {
   return value ? format(new Date(value), "d MMM yyyy") : "—";
@@ -58,6 +59,7 @@ export default function BillingPage() {
     setCancelling(true);
     try {
       const res = await razorpayApi.cancelSubscription();
+      track("subscription_cancelled");
       await refresh(res.data);
       setMessage("Auto-renewal cancelled. You keep Pro until the end of the current period.");
     } catch {

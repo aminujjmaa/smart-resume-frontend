@@ -1,19 +1,42 @@
 [
   {
     "slug": "software-engineer",
-    "title": "Software Engineer Resume Example & Template | SmartResume AI",
-    "description": "See a 90+ ATS-scoring Software Engineer resume example. Learn how to write compelling bullets that land tech interviews.",
-    "keywords": ["Software Engineer Resume", "Tech Resume Example", "Backend Engineer Resume", "ATS Resume Software Engineer"],
-    "h1": "Software Engineer Resume Example That Passes the ATS",
-    "level": "Mid-Senior Level",
-    "score": 92,
+    "role": "Software Engineer",
+    "category": "Software Engineering",
+    "level": "3 to 8 years",
+    "updatedAt": "2026-10-17",
+    "metaTitle": "Software Engineer Resume ATS Checker — Free Score & Keywords",
+    "metaDescription": "Check your Software Engineer resume against ATS keywords for free. See the skills recruiters search for, an ATS-friendly example and what to fix first.",
+    "intro": "Recruiters hiring a Software Engineer search for specific skills and look for proof of impact in your experience bullets. Check your resume for missing keywords and formatting problems, then compare it with the example resume.",
+    "skills": {
+      "hard": [
+        "Python",
+        "TypeScript",
+        "Go",
+        "Docker"
+      ],
+      "tools": [
+        "Kubernetes",
+        "AWS",
+        "PostgreSQL"
+      ],
+      "soft": []
+    },
+    "jdSnippet": "",
+    "weakVsStrong": [],
+    "mistakes": [],
+    "faqs": [],
+    "related": [
+      "frontend-developer",
+      "backend-developer",
+      "full-stack-developer"
+    ],
     "whyItWorks": [
       "Uses strong technical action verbs (Architected, Scaled)",
       "Quantifies impact (e.g. 'reduced latency by 40%')",
       "Clear, parseable technical skills section separated by domain"
     ],
-    "category": "Engineering",
-    "dummyData": {
+    "example": {
       "name": "Alex Dev",
       "contact": "alex.dev@email.com | (555) 123-4567 | linkedin.com/in/alexdev",
       "summary": "Software Engineer with 4+ years of experience building highly scalable microservices. Proven track record of optimizing backend infrastructure and improving database latency.",
@@ -33,19 +56,44 @@
   },
   {
     "slug": "frontend-developer",
-    "title": "Frontend Developer Resume Example & Template | SmartResume AI",
-    "description": "View a standout Frontend Developer resume optimized for ATS. Highlight React, Vue, and performance optimization skills.",
-    "keywords": ["Frontend Developer Resume", "React Developer Resume", "UI Engineer Resume", "Web Developer Resume"],
-    "h1": "Frontend Developer Resume Example That Lands Interviews",
-    "level": "Mid Level",
-    "score": 94,
+    "role": "Frontend Developer",
+    "category": "Software Engineering",
+    "level": "2 to 6 years",
+    "updatedAt": "2026-10-17",
+    "metaTitle": "Frontend Developer Resume ATS Checker — Free Score & Keywords",
+    "metaDescription": "Check your Frontend Developer resume against ATS keywords for free. See the skills recruiters search for, an ATS-friendly example and what to fix first.",
+    "intro": "Recruiters hiring a Frontend Developer search for specific skills and look for proof of impact in your experience bullets. Check your resume for missing keywords and formatting problems, then compare it with the example resume.",
+    "skills": {
+      "hard": [
+        "JavaScript",
+        "TypeScript",
+        "React",
+        "Next.js"
+      ],
+      "tools": [
+        "Tailwind CSS",
+        "Jest",
+        "Cypress",
+        "HTML5",
+        "CSS3"
+      ],
+      "soft": []
+    },
+    "jdSnippet": "",
+    "weakVsStrong": [],
+    "mistakes": [],
+    "faqs": [],
+    "related": [
+      "software-engineer",
+      "backend-developer",
+      "full-stack-developer"
+    ],
     "whyItWorks": [
       "Highlights modern frameworks (React, Next.js, Tailwind)",
       "Focuses on web performance metrics (Core Web Vitals, Load Time)",
       "Showcases responsive design and accessibility (a11y) wins"
     ],
-    "category": "Engineering",
-    "dummyData": {
+    "example": {
       "name": "Sam Frontend",
       "contact": "sam.front@email.com | (555) 234-5678 | github.com/samfront",
       "summary": "Frontend Developer specializing in React and Next.js. Passionate about building accessible, highly performant web applications with excellent Core Web Vitals.",
@@ -65,19 +113,44 @@
   },
   {
     "slug": "backend-developer",
-    "title": "Backend Developer Resume Example & Template | SmartResume AI",
-    "description": "Get an ATS-friendly Backend Developer resume template. Showcase your API design, database architecture, and scaling expertise.",
-    "keywords": ["Backend Developer Resume", "API Engineer Resume", "Node.js Resume", "Python Developer Resume"],
-    "h1": "Backend Developer Resume Designed for Top Tech Companies",
-    "level": "Senior Level",
-    "score": 95,
+    "role": "Backend Developer",
+    "category": "Software Engineering",
+    "level": "5+ years",
+    "updatedAt": "2026-10-17",
+    "metaTitle": "Backend Developer Resume ATS Checker — Free Score & Keywords",
+    "metaDescription": "Check your Backend Developer resume against ATS keywords for free. See the skills recruiters search for, an ATS-friendly example and what to fix first.",
+    "intro": "Recruiters hiring a Backend Developer search for specific skills and look for proof of impact in your experience bullets. Check your resume for missing keywords and formatting problems, then compare it with the example resume.",
+    "skills": {
+      "hard": [
+        "Node.js",
+        "Python",
+        "MongoDB",
+        "PostgreSQL"
+      ],
+      "tools": [
+        "Redis",
+        "GraphQL",
+        "REST APIs",
+        "AWS",
+        "Docker"
+      ],
+      "soft": []
+    },
+    "jdSnippet": "",
+    "weakVsStrong": [],
+    "mistakes": [],
+    "faqs": [],
+    "related": [
+      "software-engineer",
+      "frontend-developer",
+      "full-stack-developer"
+    ],
     "whyItWorks": [
       "Focuses on scale (TPS, data volume, concurrency)",
       "Highlights specific cloud services used (AWS EC2, S3, RDS)",
       "Demonstrates security and system architecture knowledge"
     ],
-    "category": "Engineering",
-    "dummyData": {
+    "example": {
       "name": "Jordan Backend",
       "contact": "jordan.b@email.com | (555) 345-6789 | linkedin.com/in/jordanb",
       "summary": "Senior Backend Developer with 6+ years of experience designing robust RESTful and GraphQL APIs. Expert in optimizing database queries and deploying scalable cloud infrastructure.",
@@ -97,19 +170,43 @@
   },
   {
     "slug": "full-stack-developer",
-    "title": "Full Stack Developer Resume Example & Template | SmartResume AI",
-    "description": "Discover a Full Stack Developer resume that passes the ATS. Effectively balance frontend and backend skills in your experience.",
-    "keywords": ["Full Stack Developer Resume", "MERN Stack Resume", "Web Developer Resume", "Software Engineer Resume"],
-    "h1": "Full Stack Developer Resume Example That Gets You Hired",
-    "level": "Mid Level",
-    "score": 91,
+    "role": "Full Stack Developer",
+    "category": "Software Engineering",
+    "level": "2 to 6 years",
+    "updatedAt": "2026-10-17",
+    "metaTitle": "Full Stack Developer Resume ATS Checker — Free Score & Keywords",
+    "metaDescription": "Check your Full Stack Developer resume against ATS keywords for free. See the skills recruiters search for, an ATS-friendly example and what to fix first.",
+    "intro": "Recruiters hiring a Full Stack Developer search for specific skills and look for proof of impact in your experience bullets. Check your resume for missing keywords and formatting problems, then compare it with the example resume.",
+    "skills": {
+      "hard": [
+        "React",
+        "Node.js",
+        "Express",
+        "PostgreSQL"
+      ],
+      "tools": [
+        "Prisma",
+        "TypeScript",
+        "AWS",
+        "CI/CD"
+      ],
+      "soft": []
+    },
+    "jdSnippet": "",
+    "weakVsStrong": [],
+    "mistakes": [],
+    "faqs": [],
+    "related": [
+      "software-engineer",
+      "frontend-developer",
+      "backend-developer"
+    ],
     "whyItWorks": [
       "Balances both frontend and backend achievements perfectly",
       "Mentions end-to-end feature delivery",
       "Includes deployment and CI/CD pipeline experience"
     ],
-    "category": "Engineering",
-    "dummyData": {
+    "example": {
       "name": "Taylor Stack",
       "contact": "taylor.s@email.com | (555) 456-7890 | github.com/taylorstack",
       "summary": "Full Stack Developer proficient in the MERN stack. Experienced in leading end-to-end feature development from database schema design to responsive UI implementation.",
@@ -129,19 +226,42 @@
   },
   {
     "slug": "data-scientist",
-    "title": "Data Scientist Resume Example & Template | SmartResume AI",
-    "description": "Get inspired by a top-scoring Data Scientist resume example. Learn how to present ML models and data impact effectively.",
-    "keywords": ["Data Scientist Resume", "ML Engineer Resume", "Data Analyst Resume Example", "ATS Data Science Resume"],
-    "h1": "Data Scientist Resume Example That Stands Out",
-    "level": "Entry-Mid Level",
-    "score": 88,
+    "role": "Data Scientist",
+    "category": "Data & AI",
+    "level": "Fresher to 4 years",
+    "updatedAt": "2026-10-17",
+    "metaTitle": "Data Scientist Resume ATS Checker — Free Score & Keywords",
+    "metaDescription": "Check your Data Scientist resume against ATS keywords for free. See the skills recruiters search for, an ATS-friendly example and what to fix first.",
+    "intro": "Recruiters hiring a Data Scientist search for specific skills and look for proof of impact in your experience bullets. Check your resume for missing keywords and formatting problems, then compare it with the example resume.",
+    "skills": {
+      "hard": [
+        "Python",
+        "SQL",
+        "R",
+        "Pandas"
+      ],
+      "tools": [
+        "PyTorch",
+        "Scikit-Learn",
+        "Tableau",
+        "AWS SageMaker"
+      ],
+      "soft": []
+    },
+    "jdSnippet": "",
+    "weakVsStrong": [],
+    "mistakes": [],
+    "faqs": [],
+    "related": [
+      "data-analyst",
+      "business-analyst"
+    ],
     "whyItWorks": [
       "Details specific libraries and models used (XGBoost, PyTorch)",
       "Emphasizes the business value of models, not just accuracy metrics",
       "Links to a well-maintained GitHub portfolio"
     ],
-    "category": "Data & Analytics",
-    "dummyData": {
+    "example": {
       "name": "Jamie Data",
       "contact": "jamie.data@email.com | (555) 567-8901 | github.com/jamiedata",
       "summary": "Detail-oriented Data Scientist specializing in predictive modeling and natural language processing. Passionate about translating complex datasets into actionable business insights.",
@@ -161,19 +281,41 @@
   },
   {
     "slug": "data-analyst",
-    "title": "Data Analyst Resume Example & Template | SmartResume AI",
-    "description": "A top-tier Data Analyst resume example. See how to highlight SQL, BI tools, and data-driven business impact.",
-    "keywords": ["Data Analyst Resume", "Business Intelligence Resume", "SQL Analyst Resume", "ATS Data Analyst"],
-    "h1": "Data Analyst Resume Example Built to Pass the ATS",
-    "level": "Entry Level",
-    "score": 89,
+    "role": "Data Analyst",
+    "category": "Data & AI",
+    "level": "Fresher to 2 years",
+    "updatedAt": "2026-10-17",
+    "metaTitle": "Data Analyst Resume ATS Checker — Free Score & Keywords",
+    "metaDescription": "Check your Data Analyst resume against ATS keywords for free. See the skills recruiters search for, an ATS-friendly example and what to fix first.",
+    "intro": "Recruiters hiring a Data Analyst search for specific skills and look for proof of impact in your experience bullets. Check your resume for missing keywords and formatting problems, then compare it with the example resume.",
+    "skills": {
+      "hard": [
+        "SQL",
+        "Python",
+        "PowerBI",
+        "Tableau"
+      ],
+      "tools": [
+        "Excel (Advanced)",
+        "Data Cleansing",
+        "A/B Testing"
+      ],
+      "soft": []
+    },
+    "jdSnippet": "",
+    "weakVsStrong": [],
+    "mistakes": [],
+    "faqs": [],
+    "related": [
+      "data-scientist",
+      "business-analyst"
+    ],
     "whyItWorks": [
       "Focuses heavily on data visualization and stakeholder communication",
       "Highlights SQL proficiency and database querying",
       "Quantifies the impact of insights on business strategy"
     ],
-    "category": "Data & Analytics",
-    "dummyData": {
+    "example": {
       "name": "Casey Analyst",
       "contact": "casey.a@email.com | (555) 678-9012 | linkedin.com/in/caseya",
       "summary": "Analytical Data Analyst with 2 years of experience transforming raw data into actionable insights. Proficient in SQL, Python, and PowerBI with a strong background in financial reporting.",
@@ -193,19 +335,41 @@
   },
   {
     "slug": "product-manager",
-    "title": "Product Manager Resume Example & Template | SmartResume AI",
-    "description": "View an ATS-optimized Product Manager resume example. Discover how to highlight product impact and leadership metrics.",
-    "keywords": ["Product Manager Resume", "PM Resume Example", "SaaS PM Resume", "ATS Resume Product Manager"],
-    "h1": "Product Manager Resume Example That Lands Interviews",
-    "level": "Senior Level",
-    "score": 94,
+    "role": "Product Manager",
+    "category": "Product & Design",
+    "level": "5+ years",
+    "updatedAt": "2026-10-17",
+    "metaTitle": "Product Manager Resume ATS Checker — Free Score & Keywords",
+    "metaDescription": "Check your Product Manager resume against ATS keywords for free. See the skills recruiters search for, an ATS-friendly example and what to fix first.",
+    "intro": "Recruiters hiring a Product Manager search for specific skills and look for proof of impact in your experience bullets. Check your resume for missing keywords and formatting problems, then compare it with the example resume.",
+    "skills": {
+      "hard": [
+        "Product Strategy",
+        "Agile/Scrum",
+        "A/B Testing",
+        "SQL"
+      ],
+      "tools": [
+        "Jira",
+        "Mixpanel",
+        "Wireframing"
+      ],
+      "soft": []
+    },
+    "jdSnippet": "",
+    "weakVsStrong": [],
+    "mistakes": [],
+    "faqs": [],
+    "related": [
+      "ui-ux-designer",
+      "project-manager"
+    ],
     "whyItWorks": [
       "Highlights specific ARR growth and user adoption metrics",
       "Shows cross-functional leadership between engineering and design",
       "Focuses on business outcomes rather than just feature output"
     ],
-    "category": "Product & Design",
-    "dummyData": {
+    "example": {
       "name": "Sam Product",
       "contact": "sam.pm@email.com | (555) 987-6543 | linkedin.com/in/sampm",
       "summary": "Data-driven Product Manager with 6+ years of experience in B2B SaaS. Expert in driving product strategy from ideation to launch, focusing on user growth and retention.",
@@ -225,19 +389,41 @@
   },
   {
     "slug": "ui-ux-designer",
-    "title": "UI/UX Designer Resume Example & Template | SmartResume AI",
-    "description": "See a beautifully structured UI/UX Designer resume optimized for ATS. Highlight user research, wireframing, and Figma skills.",
-    "keywords": ["UI/UX Designer Resume", "Product Designer Resume", "UX Researcher Resume", "Figma Designer Resume"],
-    "h1": "UI/UX Designer Resume Example That Passes ATS Filters",
-    "level": "Mid Level",
-    "score": 90,
+    "role": "UI/UX Designer",
+    "category": "Product & Design",
+    "level": "2 to 6 years",
+    "updatedAt": "2026-10-17",
+    "metaTitle": "UI/UX Designer Resume ATS Checker — Free Score & Keywords",
+    "metaDescription": "Check your UI/UX Designer resume against ATS keywords for free. See the skills recruiters search for, an ATS-friendly example and what to fix first.",
+    "intro": "Recruiters hiring a UI/UX Designer search for specific skills and look for proof of impact in your experience bullets. Check your resume for missing keywords and formatting problems, then compare it with the example resume.",
+    "skills": {
+      "hard": [
+        "Figma",
+        "Sketch",
+        "Adobe Creative Suite",
+        "Prototyping"
+      ],
+      "tools": [
+        "Wireframing",
+        "User Research",
+        "HTML/CSS"
+      ],
+      "soft": []
+    },
+    "jdSnippet": "",
+    "weakVsStrong": [],
+    "mistakes": [],
+    "faqs": [],
+    "related": [
+      "product-manager",
+      "project-manager"
+    ],
     "whyItWorks": [
       "Mentions specific design tools and methodologies (Figma, Design Thinking)",
       "Highlights metrics like 'improved task completion rate'",
       "Clearly separates UI (visual) and UX (research) achievements"
     ],
-    "category": "Product & Design",
-    "dummyData": {
+    "example": {
       "name": "Riley Design",
       "contact": "riley.d@email.com | (555) 789-0123 | portfolio.com/rileyd",
       "summary": "User-centric UI/UX Designer with 4 years of experience creating intuitive digital products. Proven ability to translate complex user requirements into elegant, accessible interfaces.",
@@ -257,19 +443,39 @@
   },
   {
     "slug": "marketing-manager",
-    "title": "Marketing Manager Resume Example & Template | SmartResume AI",
-    "description": "See a highly effective Marketing Manager resume example optimized for ATS. Highlight your campaigns and ROI metrics.",
-    "keywords": ["Marketing Manager Resume", "Digital Marketing Resume", "Growth Marketing Resume"],
-    "h1": "Marketing Manager Resume Example Built for Success",
-    "level": "Mid Level",
-    "score": 91,
+    "role": "Marketing Manager",
+    "category": "Sales & Marketing",
+    "level": "2 to 6 years",
+    "updatedAt": "2026-10-17",
+    "metaTitle": "Marketing Manager Resume ATS Checker — Free Score & Keywords",
+    "metaDescription": "Check your Marketing Manager resume against ATS keywords for free. See the skills recruiters search for, an ATS-friendly example and what to fix first.",
+    "intro": "Recruiters hiring a Marketing Manager search for specific skills and look for proof of impact in your experience bullets. Check your resume for missing keywords and formatting problems, then compare it with the example resume.",
+    "skills": {
+      "hard": [
+        "Google Ads",
+        "Facebook Ads Manager",
+        "SEO/SEM",
+        "Google Analytics"
+      ],
+      "tools": [
+        "Mailchimp",
+        "Copywriting"
+      ],
+      "soft": []
+    },
+    "jdSnippet": "",
+    "weakVsStrong": [],
+    "mistakes": [],
+    "faqs": [],
+    "related": [
+      "sales-executive"
+    ],
     "whyItWorks": [
       "Demonstrates clear ROI on marketing spend (CAC, LTV)",
       "Shows multi-channel campaign experience",
       "Uses strong marketing-specific verbs (Spearheaded, Optimized)"
     ],
-    "category": "Marketing & Sales",
-    "dummyData": {
+    "example": {
       "name": "Morgan Market",
       "contact": "morgan.mkt@email.com | (555) 222-3333 | linkedin.com/in/morganmkt",
       "summary": "Creative and analytical Growth Marketing Manager with 5 years of experience managing 7-figure ad budgets and driving B2C acquisition across social and search channels.",
@@ -289,19 +495,40 @@
   },
   {
     "slug": "project-manager",
-    "title": "Project Manager Resume Example & Template | SmartResume AI",
-    "description": "An ATS-optimized Project Manager resume example. Showcase your PMP certification, budget management, and team leadership.",
-    "keywords": ["Project Manager Resume", "PMP Resume Example", "Scrum Master Resume", "IT Project Manager"],
-    "h1": "Project Manager Resume Example That Beats the ATS",
-    "level": "Senior Level",
-    "score": 93,
+    "role": "Project Manager",
+    "category": "Product & Design",
+    "level": "5+ years",
+    "updatedAt": "2026-10-17",
+    "metaTitle": "Project Manager Resume ATS Checker — Free Score & Keywords",
+    "metaDescription": "Check your Project Manager resume against ATS keywords for free. See the skills recruiters search for, an ATS-friendly example and what to fix first.",
+    "intro": "Recruiters hiring a Project Manager search for specific skills and look for proof of impact in your experience bullets. Check your resume for missing keywords and formatting problems, then compare it with the example resume.",
+    "skills": {
+      "hard": [
+        "Agile/Scrum",
+        "Budget Management",
+        "Risk Mitigation",
+        "Jira"
+      ],
+      "tools": [
+        "Asana",
+        "Stakeholder Communication"
+      ],
+      "soft": []
+    },
+    "jdSnippet": "",
+    "weakVsStrong": [],
+    "mistakes": [],
+    "faqs": [],
+    "related": [
+      "product-manager",
+      "ui-ux-designer"
+    ],
     "whyItWorks": [
       "Highlights budget sizes and team scopes managed",
       "Mentions specific methodologies (Agile, Scrum, Waterfall)",
       "Quantifies on-time and under-budget delivery rates"
     ],
-    "category": "Management",
-    "dummyData": {
+    "example": {
       "name": "Avery Manage",
       "contact": "avery.m@email.com | (555) 890-1234 | linkedin.com/in/averym",
       "summary": "PMP-certified Project Manager with 7+ years of experience leading cross-functional teams to deliver complex IT infrastructure projects on time and under budget.",
@@ -321,19 +548,38 @@
   },
   {
     "slug": "financial-analyst",
-    "title": "Financial Analyst Resume Example & Template | SmartResume AI",
-    "description": "Discover a Financial Analyst resume designed for top finance roles. Highlight forecasting, financial modeling, and Excel skills.",
-    "keywords": ["Financial Analyst Resume", "Finance Resume Example", "Investment Banking Resume", "ATS Finance Resume"],
-    "h1": "Financial Analyst Resume Example for Top Tier Firms",
-    "level": "Mid Level",
-    "score": 92,
+    "role": "Financial Analyst",
+    "category": "Finance & Accounting",
+    "level": "2 to 6 years",
+    "updatedAt": "2026-10-17",
+    "metaTitle": "Financial Analyst Resume ATS Checker — Free Score & Keywords",
+    "metaDescription": "Check your Financial Analyst resume against ATS keywords for free. See the skills recruiters search for, an ATS-friendly example and what to fix first.",
+    "intro": "Recruiters hiring a Financial Analyst search for specific skills and look for proof of impact in your experience bullets. Check your resume for missing keywords and formatting problems, then compare it with the example resume.",
+    "skills": {
+      "hard": [
+        "Financial Modeling",
+        "Excel (VBA",
+        "Macros)",
+        "FP&A"
+      ],
+      "tools": [
+        "Valuation",
+        "ERP Systems",
+        "Tableau"
+      ],
+      "soft": []
+    },
+    "jdSnippet": "",
+    "weakVsStrong": [],
+    "mistakes": [],
+    "faqs": [],
+    "related": [],
     "whyItWorks": [
       "Quantifies financial impact and portfolio sizes",
       "Highlights advanced modeling skills (DCF, LBO, Three-statement)",
       "Demonstrates high attention to detail and reporting accuracy"
     ],
-    "category": "Finance & Accounting",
-    "dummyData": {
+    "example": {
       "name": "Drew Finance",
       "contact": "drew.f@email.com | (555) 901-2345 | linkedin.com/in/drewf",
       "summary": "Detail-oriented Financial Analyst with 4 years of experience in corporate FP&A. Skilled in financial modeling, variance analysis, and preparing executive board presentations.",
@@ -353,19 +599,39 @@
   },
   {
     "slug": "human-resources-manager",
-    "title": "Human Resources Manager Resume Example & Template | SmartResume AI",
-    "description": "View a winning HR Manager resume example. Highlight employee retention, talent acquisition, and compliance expertise.",
-    "keywords": ["HR Manager Resume", "Human Resources Resume", "Talent Acquisition Resume", "HRBP Resume"],
-    "h1": "HR Manager Resume Example That Passes the ATS",
-    "level": "Senior Level",
-    "score": 90,
+    "role": "HR Manager",
+    "category": "HR & Operations",
+    "level": "5+ years",
+    "updatedAt": "2026-10-17",
+    "metaTitle": "HR Manager Resume ATS Checker — Free Score & Keywords",
+    "metaDescription": "Check your HR Manager resume against ATS keywords for free. See the skills recruiters search for, an ATS-friendly example and what to fix first.",
+    "intro": "Recruiters hiring a HR Manager search for specific skills and look for proof of impact in your experience bullets. Check your resume for missing keywords and formatting problems, then compare it with the example resume.",
+    "skills": {
+      "hard": [
+        "Talent Acquisition",
+        "Employee Relations",
+        "Onboarding",
+        "Workday"
+      ],
+      "tools": [
+        "Performance Management",
+        "Employment Law"
+      ],
+      "soft": []
+    },
+    "jdSnippet": "",
+    "weakVsStrong": [],
+    "mistakes": [],
+    "faqs": [],
+    "related": [
+      "customer-success-manager"
+    ],
     "whyItWorks": [
       "Quantifies hiring metrics (time-to-fill, retention rate)",
       "Shows strategic HR initiatives beyond just administration",
       "Mentions specific HRIS tools and compliance knowledge"
     ],
-    "category": "Human Resources",
-    "dummyData": {
+    "example": {
       "name": "Cameron Staff",
       "contact": "cameron.s@email.com | (555) 012-3456 | linkedin.com/in/camerons",
       "summary": "Strategic Human Resources Manager with 8 years of experience building high-performing teams and fostering inclusive company cultures. Expert in talent acquisition, employee relations, and compliance.",
@@ -385,19 +651,40 @@
   },
   {
     "slug": "customer-success-manager",
-    "title": "Customer Success Manager Resume Example & Template | SmartResume AI",
-    "description": "An ATS-friendly Customer Success Manager resume example. Highlight NRR, churn reduction, and account growth.",
-    "keywords": ["Customer Success Manager Resume", "CSM Resume Example", "Account Manager Resume", "Client Success Resume"],
-    "h1": "Customer Success Manager Resume Example (ATS Optimized)",
-    "level": "Mid Level",
-    "score": 89,
+    "role": "Customer Success Manager",
+    "category": "HR & Operations",
+    "level": "2 to 6 years",
+    "updatedAt": "2026-10-17",
+    "metaTitle": "Customer Success Manager Resume ATS Checker — Free Score & Keywords",
+    "metaDescription": "Check your Customer Success Manager resume against ATS keywords for free. See the skills recruiters search for, an ATS-friendly example and what to fix first.",
+    "intro": "Recruiters hiring a Customer Success Manager search for specific skills and look for proof of impact in your experience bullets. Check your resume for missing keywords and formatting problems, then compare it with the example resume.",
+    "skills": {
+      "hard": [
+        "Account Management",
+        "Churn Reduction",
+        "Upselling",
+        "Salesforce"
+      ],
+      "tools": [
+        "Gainsight",
+        "Intercom",
+        "QBR Presentations"
+      ],
+      "soft": []
+    },
+    "jdSnippet": "",
+    "weakVsStrong": [],
+    "mistakes": [],
+    "faqs": [],
+    "related": [
+      "human-resources-manager"
+    ],
     "whyItWorks": [
       "Focuses on critical SaaS metrics (Net Retention Rate, Churn)",
       "Highlights portfolio size and ARR managed",
       "Shows ability to upsell and cross-sell accounts"
     ],
-    "category": "Customer Support & Success",
-    "dummyData": {
+    "example": {
       "name": "Quinn Success",
       "contact": "quinn.s@email.com | (555) 123-9876 | linkedin.com/in/quinns",
       "summary": "Proactive Customer Success Manager with 4 years of B2B SaaS experience. Passionate about driving product adoption and maximizing customer lifetime value through strategic partnership.",
@@ -417,19 +704,41 @@
   },
   {
     "slug": "business-analyst",
-    "title": "Business Analyst Resume Example & Template | SmartResume AI",
-    "description": "A high-scoring Business Analyst resume example. See how to showcase requirement gathering, process improvement, and stakeholder management.",
-    "keywords": ["Business Analyst Resume", "Business Systems Analyst Resume", "ATS Business Analyst", "Agile BA Resume"],
-    "h1": "Business Analyst Resume Example That Lands Interviews",
-    "level": "Mid Level",
-    "score": 93,
+    "role": "Business Analyst",
+    "category": "Data & AI",
+    "level": "2 to 6 years",
+    "updatedAt": "2026-10-17",
+    "metaTitle": "Business Analyst Resume ATS Checker — Free Score & Keywords",
+    "metaDescription": "Check your Business Analyst resume against ATS keywords for free. See the skills recruiters search for, an ATS-friendly example and what to fix first.",
+    "intro": "Recruiters hiring a Business Analyst search for specific skills and look for proof of impact in your experience bullets. Check your resume for missing keywords and formatting problems, then compare it with the example resume.",
+    "skills": {
+      "hard": [
+        "Requirements Gathering",
+        "Process Mapping",
+        "Jira",
+        "Visio"
+      ],
+      "tools": [
+        "SQL",
+        "Agile/Scrum",
+        "UAT Testing"
+      ],
+      "soft": []
+    },
+    "jdSnippet": "",
+    "weakVsStrong": [],
+    "mistakes": [],
+    "faqs": [],
+    "related": [
+      "data-scientist",
+      "data-analyst"
+    ],
     "whyItWorks": [
       "Clearly states experience translating business needs into technical specs",
       "Quantifies process improvements (e.g. 'reduced manual entry by X%')",
       "Highlights proficiency with both business strategy and technical tools"
     ],
-    "category": "Business & Strategy",
-    "dummyData": {
+    "example": {
       "name": "Parker Insight",
       "contact": "parker.i@email.com | (555) 234-8765 | linkedin.com/in/parkeri",
       "summary": "Detail-oriented Business Analyst with 5 years of experience bridging the gap between IT and business stakeholders. Expert in gathering requirements, defining scope, and driving process optimization.",
@@ -449,19 +758,39 @@
   },
   {
     "slug": "sales-executive",
-    "title": "Sales Executive Resume Example & Template | SmartResume AI",
-    "description": "Get a quota-crushing Sales Executive resume example. Learn how to highlight revenue targets, pipeline generation, and closing skills.",
-    "keywords": ["Sales Executive Resume", "Account Executive Resume", "B2B Sales Resume", "Software Sales Resume"],
-    "h1": "Sales Executive Resume Example (Quota-Crushing Template)",
-    "level": "Mid-Senior Level",
-    "score": 95,
+    "role": "Sales Executive",
+    "category": "Sales & Marketing",
+    "level": "3 to 8 years",
+    "updatedAt": "2026-10-17",
+    "metaTitle": "Sales Executive Resume ATS Checker — Free Score & Keywords",
+    "metaDescription": "Check your Sales Executive resume against ATS keywords for free. See the skills recruiters search for, an ATS-friendly example and what to fix first.",
+    "intro": "Recruiters hiring a Sales Executive search for specific skills and look for proof of impact in your experience bullets. Check your resume for missing keywords and formatting problems, then compare it with the example resume.",
+    "skills": {
+      "hard": [
+        "B2B Sales",
+        "CRM (Salesforce)",
+        "Outbound Prospecting",
+        "Negotiation"
+      ],
+      "tools": [
+        "Pipeline Management",
+        "Cold Calling"
+      ],
+      "soft": []
+    },
+    "jdSnippet": "",
+    "weakVsStrong": [],
+    "mistakes": [],
+    "faqs": [],
+    "related": [
+      "marketing-manager"
+    ],
     "whyItWorks": [
       "Leads heavily with quantifiable revenue numbers and quotas",
       "Mentions specific deal sizes and sales cycles",
       "Highlights prospecting and pipeline generation metrics"
     ],
-    "category": "Marketing & Sales",
-    "dummyData": {
+    "example": {
       "name": "Logan Closer",
       "contact": "logan.c@email.com | (555) 345-7654 | linkedin.com/in/loganc",
       "summary": "Results-driven Enterprise Sales Executive with a 6-year track record of exceeding quotas in B2B software sales. Skilled in complex contract negotiation and C-level relationship building.",

@@ -37,6 +37,13 @@ export const authApi = {
     apiClient.post("/auth/reset-password", { token, password }),
 };
 
+// ── Free public tools (no login) ─────────────────────
+export const publicToolsApi = {
+  jdKeywords: (jobDescription: string) =>
+    apiClient.post("/public/jd-keywords", { job_description: jobDescription }),
+  bulletCheck: (bullets: string) => apiClient.post("/public/bullet-check", { bullets }),
+};
+
 // ── Meta ─────────────────────────────────────────────
 export const metaApi = {
   features: () => apiClient.get("/meta/features"),
@@ -49,9 +56,15 @@ export const analysisApi = {
       headers: { "Content-Type": "multipart/form-data" },
     }),
   getResult: (jobId: string) => apiClient.get(`/analyze/result/${jobId}`),
-  rewrite: (data: { bullet_point: string; job_description: string }) =>
+  rewrite: (data: { bullet_point: string; job_description?: string; analysis_id?: string }) =>
     apiClient.post("/analyze/rewrite", data),
   history: () => apiClient.get("/analyze/history"),
+  quota: () => apiClient.get("/analyze/quota"),
+  rescore: (jobId: string, resumeText: string) =>
+    apiClient.post(`/analyze/${jobId}/rescore`, { resume_text: resumeText }),
+  share: (jobId: string) => apiClient.post(`/analyze/${jobId}/share`),
+  unshare: (jobId: string) => apiClient.delete(`/analyze/${jobId}/share`),
+  emailReport: (jobId: string) => apiClient.post(`/analyze/${jobId}/email-report`),
   resolveIssue: (data: {
     category: string;
     issue: string;

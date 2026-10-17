@@ -1,14 +1,20 @@
 "use client";
+import { useEffect } from "react";
 import Link from "next/link";
 import { Lock, Check } from "lucide-react";
 import { useAuthStore } from "@/store/useAppStore";
 import { isPro } from "@/lib/entitlements";
 import { PLANS, PRO_PERIOD, PRO_PRICE } from "@/lib/pricing";
+import { track } from "@/lib/analytics";
 
 /** Renders children for Pro users; everyone else sees what Pro includes and how to get it. */
 export default function ProGate({ children }: { readonly children: React.ReactNode }) {
   const { user } = useAuthStore();
-  if (isPro(user)) return <>{children}</>;
+  const allowed = isPro(user);
+  useEffect(() => {
+    if (!allowed) track("pro_gate_viewed", { path: window.location.pathname });
+  }, [allowed]);
+  if (allowed) return <>{children}</>;
 
   const pro = PLANS.find((p) => p.id === "pro");
   return (

@@ -18,12 +18,13 @@ interface AnalysisState {
   step: AnalysisStep;
   resumeText: string;
   appliedResumeText: string; // resume text with applied AI improvements
+  appliedFor: string | null; // analysis id the edits belong to
   resumeFile: File | null;
   jobDescription: string;
   setCurrentAnalysis: (a: Analysis | null) => void;
   setStep: (s: AnalysisStep) => void;
   setResumeText: (t: string) => void;
-  setAppliedResumeText: (t: string) => void;
+  setAppliedResumeText: (t: string, analysisId?: string | null) => void;
   setResumeFile: (f: File | null) => void;
   setJobDescription: (t: string) => void;
   reset: () => void;
@@ -67,13 +68,14 @@ export const useAnalysisStore = create<AnalysisState>()((set) => ({
   step: "idle",
   resumeText: "",
   appliedResumeText: "",
+  appliedFor: null,
   resumeFile: null,
   jobDescription: "",
   setCurrentAnalysis: (a) => set({ currentAnalysis: a }),
   setStep: (s) => set({ step: s }),
   setResumeText: (t) => set({ resumeText: t }),
-  setAppliedResumeText: (t) => set({ appliedResumeText: t }),
+  setAppliedResumeText: (t, analysisId = null) => set({ appliedResumeText: t, appliedFor: analysisId }),
   setResumeFile: (f) => set({ resumeFile: f }),
   setJobDescription: (t) => set({ jobDescription: t }),
-  reset: () => set({ currentAnalysis: null, step: "idle", resumeText: "", appliedResumeText: "", resumeFile: null, jobDescription: "" }),
+  reset: () => set({ currentAnalysis: null, step: "idle", resumeText: "", appliedResumeText: "", appliedFor: null, resumeFile: null, jobDescription: "" }),
 }));

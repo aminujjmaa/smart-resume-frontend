@@ -38,7 +38,7 @@ export default function AboutPage() {
             <div className="prose prose-invert prose-lg">
               <h2 className="text-2xl font-bold text-white mb-4">The Problem</h2>
               <p className="text-slate-300 leading-relaxed mb-6">
-                Did you know that over 75% of resumes are rejected by an Applicant Tracking System (ATS) before a human ever reads them? Hiring managers rely on these automated systems to filter out candidates who don&apos;t perfectly match their exact keyword criteria.
+                Most mid-size and large employers — and the job portals they hire from — collect applications in an Applicant Tracking System (ATS). Recruiters search those systems by keyword and skim what comes back, so a resume that can&apos;t be parsed cleanly, or doesn&apos;t use the language of the job description, is easy to overlook even when the candidate is a strong fit.
               </p>
               <p className="text-slate-300 leading-relaxed mb-6">
                 This means incredibly talented people are missing out on life-changing opportunities simply because their resume wasn&apos;t formatted correctly, or because they used a synonym instead of the exact keyword the ATS was looking for.
