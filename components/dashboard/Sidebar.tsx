@@ -10,6 +10,7 @@ import {
 import { useAuthStore } from "@/store/useAppStore";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
+import { isPro } from "@/lib/entitlements";
 
 const navItems = [
   { href: "/dashboard",           icon: LayoutDashboard, label: "Overview" },
@@ -83,7 +84,7 @@ export default function Sidebar() {
           </div>
           <div className="overflow-hidden">
             <p className="text-white text-sm font-medium truncate">{user?.full_name || "User"}</p>
-            <p className="text-slate-500 text-xs truncate">{user?.plan === "premium" ? "⚡ Pro" : "Free Plan"}</p>
+            <p className="text-slate-500 text-xs truncate">{isPro(user) ? "⚡ Pro" : "Free Plan"}</p>
           </div>
         </div>
         <button

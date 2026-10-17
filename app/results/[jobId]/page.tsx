@@ -12,6 +12,7 @@ import Footer from "@/components/shared/Footer";
 import { CheckCircle2, Lock, Target, FileText } from "lucide-react";
 import Link from "next/link";
 import type { Analysis, AnalysisResult } from "@/types";
+import { PRO_PERIOD, PRO_PRICE } from "@/lib/pricing";
 
 function pctToGradient(pct: number): string {
   if (pct >= 70) return "from-emerald-500 to-emerald-400";
@@ -190,7 +191,7 @@ export default function PublicResultsPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Link href="/signup" className="btn-primary text-base px-8 py-4 shadow-glow">
-                  Unlock Full Analysis — $19/mo
+                  Unlock Full Analysis — {PRO_PRICE}/{PRO_PERIOD}
                 </Link>
                 <Link href="/signup" className="btn-secondary text-base px-8 py-4">
                   Try Free — No Credit Card

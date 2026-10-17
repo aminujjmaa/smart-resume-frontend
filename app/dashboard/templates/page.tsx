@@ -6,6 +6,8 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAppStore";
 import Link from "next/link";
+import { isPro } from "@/lib/entitlements";
+import { isProTemplate } from "@/lib/templateCatalog";
 
 // ── Template Data ──────────────────────────────────────────────────────────────
 
@@ -20,13 +22,12 @@ interface Template {
   bestFor: string;
 }
 
-const TEMPLATES: Template[] = [
+const TEMPLATE_LIST: Omit<Template, "isPremium">[] = [
   {
     id: "modern-tech",
     name: "Modern Tech",
     category: "Software Engineering",
     tags: ["Engineering", "SWE", "Backend", "Frontend"],
-    isPremium: false,
     atsScore: 98,
     description: "Clean single-column layout optimized for tech roles.",
     bestFor: "Software Engineers, Full-Stack Developers",
@@ -36,7 +37,6 @@ const TEMPLATES: Template[] = [
     name: "Executive Classic",
     category: "Management",
     tags: ["Leadership", "Management", "Director", "VP"],
-    isPremium: false,
     atsScore: 96,
     description: "Professional layout with emphasis on leadership impact.",
     bestFor: "Engineering Managers, Directors, VPs, CTOs",
@@ -46,7 +46,6 @@ const TEMPLATES: Template[] = [
     name: "Data Science Pro",
     category: "Data & ML",
     tags: ["Data Science", "ML", "AI", "Analytics"],
-    isPremium: false,
     atsScore: 97,
     description: "Two-column layout with a dedicated Technical Skills matrix.",
     bestFor: "Data Scientists, ML Engineers, AI Researchers",
@@ -56,7 +55,6 @@ const TEMPLATES: Template[] = [
     name: "Startup Minimal",
     category: "General",
     tags: ["Startup", "Product", "Generalist"],
-    isPremium: false,
     atsScore: 95,
     description: "Ultra-clean, impact-first design for fast-paced roles.",
     bestFor: "Product Managers, Startup Founders",
@@ -66,7 +64,6 @@ const TEMPLATES: Template[] = [
     name: "Senior Engineer",
     category: "Software Engineering",
     tags: ["Senior", "Staff", "Principal", "Architecture"],
-    isPremium: true,
     atsScore: 99,
     description: "Highlights Architecture Decisions and Technical Leadership.",
     bestFor: "Senior Engineers, Staff, Principal, Architects",
@@ -76,7 +73,6 @@ const TEMPLATES: Template[] = [
     name: "Product Leader",
     category: "Product",
     tags: ["Product", "PM", "Product Management"],
-    isPremium: true,
     atsScore: 97,
     description: "Dedicated Metrics Dashboard to showcase product outcomes.",
     bestFor: "Product Managers, Group PMs, CPOs",
@@ -86,7 +82,6 @@ const TEMPLATES: Template[] = [
     name: "DevOps / SRE",
     category: "Infrastructure",
     tags: ["DevOps", "SRE", "Cloud", "Infrastructure"],
-    isPremium: true,
     atsScore: 98,
     description: "Infrastructure-first with System Reliability breakdowns.",
     bestFor: "DevOps Engineers, SREs, Platform Engineers",
@@ -96,12 +91,13 @@ const TEMPLATES: Template[] = [
     name: "Career Pivot",
     category: "Career Change",
     tags: ["Career Change", "Bootcamp", "Transition"],
-    isPremium: false,
     atsScore: 93,
     description: "Leads with Skills & Projects to minimise role-change bias.",
     bestFor: "Bootcamp Grads, Career Changers",
   },
 ];
+
+const TEMPLATES: Template[] = TEMPLATE_LIST.map((t) => ({ ...t, isPremium: isProTemplate(t.id) }));
 
 const CATEGORIES = ["All", ...Array.from(new Set(TEMPLATES.map((t) => t.category)))];
 
@@ -476,7 +472,7 @@ function PreviewModal({ template, onClose }: PreviewModalProps) {
 
 export default function TemplatesPage() {
   const { user } = useAuthStore();
-  const isPremiumUser = user?.plan === "premium";
+  const isPremiumUser = isPro(user);
   const [activeCategory, setActiveCategory] = useState("All");
   const [search, setSearch] = useState("");
   const [previewTemplate, setPreviewTemplate] = useState<Template | null>(null);

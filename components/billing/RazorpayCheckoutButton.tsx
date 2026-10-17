@@ -5,6 +5,8 @@ import { useState, useCallback } from "react";
 import { Loader2, Zap } from "lucide-react";
 import { razorpayApi, authApi } from "@/lib/api";
 import { useAuthStore } from "@/store/useAppStore";
+import { PRO_PERIOD, PRO_PRICE } from "@/lib/pricing";
+import type { SubscriptionSummary } from "@/types";
 
 // Razorpay global type declaration
 declare global {
@@ -18,7 +20,7 @@ interface RazorpayCheckoutButtonProps {
   label?: string;
   className?: string;
   id?: string;
-  onSuccess?: () => void;
+  onSuccess?: (summary: SubscriptionSummary) => void;
 }
 
 function loadRazorpayScript(): Promise<boolean> {
@@ -36,6 +38,12 @@ function loadRazorpayScript(): Promise<boolean> {
   });
 }
 
+function apiErrorDetail(err: any, fallback: string): string {
+  const detail = err?.response?.data?.detail;
+  return typeof detail === "string" ? detail : fallback;
+}
+
+/** Starts the ₹99/month Pro subscription in Razorpay Checkout and verifies it server-side. */
 export default function RazorpayCheckoutButton({
   label = "Upgrade to Pro",
   className = "",
@@ -51,60 +59,48 @@ export default function RazorpayCheckoutButton({
     setIsLoading(true);
 
     try {
-      // 1. Load Razorpay script
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) {
         setErrorMsg("Failed to load payment gateway. Please check your internet connection.");
+        setIsLoading(false);
         return;
       }
 
-      // 2. Create order on backend
-      const orderRes = await razorpayApi.createOrder();
-      const { order_id, amount: orderAmount, currency: orderCurrency } = orderRes.data;
+      // 1. Create (or reuse) the subscription on our backend — the price comes from the plan.
+      const subRes = await razorpayApi.createSubscription();
+      const { subscription_id, key_id } = subRes.data as { subscription_id: string; key_id: string };
 
-      // 3. Open Razorpay modal
+      // 2. Razorpay Checkout collects the first payment and sets up auto-renewal.
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ?? "",
-        amount: orderAmount,
-        currency: orderCurrency,
+        key: key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
+        subscription_id,
         name: "SmartResume AI",
-        description: "Pro Plan – Unlimited AI Resume Features",
-        order_id,
+        description: `Pro – ${PRO_PRICE}/${PRO_PERIOD}, renews monthly`,
         prefill: {
           name: user?.full_name || "",
           email: user?.email || "",
         },
-        theme: {
-          color: "#4C6EF5",
-        },
+        theme: { color: "#4C6EF5" },
         modal: {
-          ondismiss: () => {
-            setIsLoading(false);
-          },
+          ondismiss: () => setIsLoading(false),
         },
         handler: async (response: {
           razorpay_payment_id: string;
-          razorpay_order_id: string;
+          razorpay_subscription_id: string;
           razorpay_signature: string;
         }) => {
           try {
-            // 4. Verify payment signature on backend
-            await razorpayApi.verifyPayment({
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_signature: response.razorpay_signature,
-            });
-
-            // 5. Refresh user data to reflect new plan
+            // 3. Verify the signature server-side; this grants Pro immediately.
+            const verified = await razorpayApi.verifySubscription(response);
             const me = await authApi.me();
             updateUser(me.data);
-
-            onSuccess?.();
+            onSuccess?.(verified.data as SubscriptionSummary);
           } catch (err: any) {
             setErrorMsg(
-              err?.response?.data?.detail ||
-                "Payment verification failed. Please contact support with your payment ID: " +
-                  response.razorpay_payment_id
+              apiErrorDetail(
+                err,
+                `We received your payment but couldn't confirm it yet. It usually updates within a minute — refresh this page. Payment ID: ${response.razorpay_payment_id}`
+              )
             );
           } finally {
             setIsLoading(false);
@@ -113,19 +109,13 @@ export default function RazorpayCheckoutButton({
       };
 
       const rzp = new window.Razorpay(options);
-
       rzp.on("payment.failed", (response: any) => {
-        setErrorMsg(
-          `Payment failed: ${response.error.description || "Unknown error"}. Please try again.`
-        );
+        setErrorMsg(`Payment failed: ${response.error?.description || "Unknown error"}. Please try again.`);
         setIsLoading(false);
       });
-
       rzp.open();
     } catch (err: any) {
-      setErrorMsg(
-        err?.response?.data?.detail || "Could not initiate payment. Please try again."
-      );
+      setErrorMsg(apiErrorDetail(err, "Could not start checkout. Please try again."));
       setIsLoading(false);
     }
   }, [user, onSuccess, updateUser]);
@@ -148,9 +138,7 @@ export default function RazorpayCheckoutButton({
           </>
         )}
       </button>
-      {errorMsg && (
-        <p className="text-red-400 text-sm text-center px-2">{errorMsg}</p>
-      )}
+      {errorMsg && <p className="text-red-400 text-sm text-center px-2">{errorMsg}</p>}
     </div>
   );
 }

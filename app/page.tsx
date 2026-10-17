@@ -9,6 +9,7 @@ import Pricing from "@/components/landing/Pricing";
 import LaunchBanner from "@/components/landing/LaunchBanner";
 import Link from "next/link";
 import { ArrowRight, HelpCircle, Search } from "lucide-react";
+import { PRO_PRICE_PAISE } from "@/lib/pricing";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -50,12 +51,28 @@ const jsonLd = {
   url: "https://smartresume.co.in",
   applicationCategory: "BusinessApplication",
   operatingSystem: "Web",
-  offers: {
-    "@type": "Offer",
-    price: "0",
-    priceCurrency: "USD",
-    description: "Free ATS resume scanner with keyword gap analysis and AI bullet rewrites",
-  },
+  offers: [
+    {
+      "@type": "Offer",
+      name: "Free",
+      price: "0",
+      priceCurrency: "INR",
+      description: "Free ATS resume scan with keyword gap analysis, formatting checks and suggested fixes",
+    },
+    {
+      "@type": "Offer",
+      name: "Pro",
+      price: String(PRO_PRICE_PAISE / 100),
+      priceCurrency: "INR",
+      description: "AI suggestions, AI bullet rewrites, cover letters, LinkedIn review and interview prep",
+      priceSpecification: {
+        "@type": "UnitPriceSpecification",
+        price: PRO_PRICE_PAISE / 100,
+        priceCurrency: "INR",
+        billingDuration: "P1M",
+      },
+    },
+  ],
   description:
     "Check your ATS score instantly. SmartResume AI scans your resume for keyword gaps, formatting issues, and weak bullet points so you land more interviews.",
   featureList: [

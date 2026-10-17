@@ -105,7 +105,7 @@ export default function ResumeExamplePage({ params }: Props) {
             </div>
 
             <div className="space-y-4 pt-4">
-              <Link href="/register" className="btn-primary w-full justify-center py-4 text-lg">
+              <Link href="/signup" className="btn-primary w-full justify-center py-4 text-lg">
                 Build your {job.h1.split(" Resume")[0]} Resume <ArrowRight size={20} />
               </Link>
               <p className="text-center text-sm text-slate-500">

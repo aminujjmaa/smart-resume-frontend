@@ -86,7 +86,7 @@ export default function ActionVerbsPage() {
             <p className="text-slate-300 mb-8 max-w-xl mx-auto">
               Use our AI resume builder to automatically scan your bullet points and suggest the perfect action verbs based on your industry.
             </p>
-            <Link href="/register" className="btn-primary inline-flex px-8 py-4 text-base">
+            <Link href="/signup" className="btn-primary inline-flex px-8 py-4 text-base">
               Build Your Resume For Free <ArrowRight size={18} />
             </Link>
           </div>

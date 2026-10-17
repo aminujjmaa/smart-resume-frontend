@@ -5,8 +5,11 @@ import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { ArrowLeft, Layout, Code2, SlidersHorizontal, FileDown, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useAnalysisStore } from "@/store/useAppStore";
+import { useAnalysisStore, useAuthStore } from "@/store/useAppStore";
 import { downloadPDFFromLatex, downloadDOCX } from "@/lib/downloadResume";
+import ProGate from "@/components/billing/ProGate";
+import { isPro } from "@/lib/entitlements";
+import { isProTemplate } from "@/lib/templateCatalog";
 
 // React-PDF viewer must be loaded dynamically on the client side only
 const PDFPreview = dynamic(() => import("@/components/resume/PDFPreview"), {
@@ -653,6 +656,12 @@ $\rightarrow$ 10,000+ doc corpus | sub-200ms retrieval | +28\% top-3 precision w
 export default function BuilderPage() {
   const searchParams = useSearchParams();
   const templateId = searchParams.get("templateId") ?? "modern-tech";
+  const { user } = useAuthStore();
+  if (isProTemplate(templateId) && !isPro(user)) return <ProGate>{null}</ProGate>;
+  return <BuilderEditor templateId={templateId} />;
+}
+
+function BuilderEditor({ templateId }: { readonly templateId: string }) {
   const { resumeText } = useAnalysisStore();
   const [editorMode, setEditorMode] = useState<EditorMode>("latex");
   const [visualData, setVisualData] = useState<VisualResume>(SAMPLE_VISUAL_DATA);

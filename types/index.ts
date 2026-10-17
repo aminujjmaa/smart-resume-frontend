@@ -7,7 +7,34 @@ export interface User {
   is_active: boolean;
   is_superuser?: boolean;
   plan: "free" | "premium";
+  /** Use this (via lib/entitlements isPro) to unlock Pro UI — `plan` alone ignores expiry. */
+  is_premium: boolean;
+  subscription_status?: string | null;
+  plan_expires_at?: string | null;
+  current_period_end?: string | null;
+  cancel_at_period_end?: boolean;
   created_at: string;
+}
+
+export interface BillingPayment {
+  razorpay_payment_id: string;
+  amount: number;
+  currency: string;
+  status: string;
+  method?: string | null;
+  paid_at?: string | null;
+  created_at?: string | null;
+}
+
+export interface SubscriptionSummary {
+  is_premium: boolean;
+  plan: string;
+  subscription_status?: string | null;
+  plan_expires_at?: string | null;
+  current_period_end?: string | null;
+  cancel_at_period_end: boolean;
+  price_paise: number;
+  payments: BillingPayment[];
 }
 
 export interface AuthToken {

@@ -5,6 +5,7 @@ import { analysisApi } from "@/lib/api";
 import { useAuthStore } from "@/store/useAppStore";
 import type { BulletSuggestion } from "@/types";
 import Link from "next/link";
+import { isPro } from "@/lib/entitlements";
 
 interface Props {
   readonly bullets: BulletSuggestion[];
@@ -54,7 +55,7 @@ export default function BulletRewriter({ bullets, jobDescription, resumeText, on
       setExpanded((p) => ({ ...p, [idx]: true }));
     }
   }, [activeHighlight, items]);
-  const isPremium = user?.plan === "premium";
+  const isPremium = isPro(user);
 
   const appliedCount = Object.values(applied).filter(Boolean).length;
 

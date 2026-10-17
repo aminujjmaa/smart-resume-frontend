@@ -1,170 +1,191 @@
-// billing page
 "use client";
 import { useState } from "react";
-import { useAuthStore } from "@/store/useAppStore";
-import { Check, Zap, CreditCard } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { Check, CreditCard, Loader2, Zap } from "lucide-react";
 import RazorpayCheckoutButton from "@/components/billing/RazorpayCheckoutButton";
+import { authApi, razorpayApi } from "@/lib/api";
+import { formatPaise, PLANS, PRICING_FINE_PRINT, PRO_PERIOD, PRO_PRICE } from "@/lib/pricing";
+import { useAuthStore } from "@/store/useAppStore";
+import type { SubscriptionSummary } from "@/types";
+
+function formatDate(value?: string | null): string {
+  return value ? format(new Date(value), "d MMM yyyy") : "—";
+}
+
+function planHeadline(sub: SubscriptionSummary): string {
+  if (!sub.is_premium) return "Free";
+  if (sub.subscription_status === "legacy") return "Pro (lifetime)";
+  return "Pro";
+}
+
+function planDetail(sub: SubscriptionSummary): string {
+  if (sub.subscription_status === "legacy") {
+    return "You bought lifetime Pro before subscriptions existed — it never expires.";
+  }
+  if (!sub.is_premium) {
+    return `You're on the free plan. Pro adds AI suggestions, rewrites and tools for ${PRO_PRICE}/${PRO_PERIOD}.`;
+  }
+  if (sub.cancel_at_period_end) {
+    return `Auto-renewal is off. Pro stays active until ${formatDate(sub.plan_expires_at)}.`;
+  }
+  if (sub.subscription_status === "pending") {
+    return "Your last renewal payment failed and Razorpay is retrying. Update your payment method from the Razorpay email to keep Pro.";
+  }
+  return `Renews automatically for ${formatPaise(sub.price_paise)} on ${formatDate(sub.current_period_end)}.`;
+}
 
 export default function BillingPage() {
-  // Re-read from store on every render — RazorpayCheckoutButton calls updateUser()
-  // after verify-payment so isPremium flips without a page reload.
-  const { user } = useAuthStore();
-  const isPremium = user?.plan === "premium";
-  const [successMsg, setSuccessMsg] = useState("");
+  const queryClient = useQueryClient();
+  const { updateUser } = useAuthStore();
+  const [message, setMessage] = useState("");
+  const [cancelling, setCancelling] = useState(false);
+  const [confirmCancel, setConfirmCancel] = useState(false);
 
-  const handlePaymentSuccess = () => {
-    // The store is already updated by RazorpayCheckoutButton via updateUser().
-    // Just show the confirmation banner; isPremium will be true on the next render.
-    setSuccessMsg("🎉 Payment verified! Your account has been upgraded to Pro. Enjoy unlimited access!");
+  const { data: sub, isLoading } = useQuery<SubscriptionSummary>({
+    queryKey: ["subscription"],
+    queryFn: () => razorpayApi.getSubscription().then((r) => r.data),
+  });
+
+  const refresh = async (summary?: SubscriptionSummary) => {
+    if (summary) queryClient.setQueryData(["subscription"], summary);
+    await queryClient.invalidateQueries({ queryKey: ["subscription"] });
+    const me = await authApi.me();
+    updateUser(me.data);
   };
+
+  const handleCancel = async () => {
+    setCancelling(true);
+    try {
+      const res = await razorpayApi.cancelSubscription();
+      await refresh(res.data);
+      setMessage("Auto-renewal cancelled. You keep Pro until the end of the current period.");
+    } catch {
+      setMessage("Couldn't cancel right now. Please try again or contact support.");
+    } finally {
+      setCancelling(false);
+      setConfirmCancel(false);
+    }
+  };
+
+  if (isLoading || !sub) {
+    return (
+      <div className="p-8 flex items-center gap-3 text-slate-400">
+        <Loader2 className="animate-spin" size={18} /> Loading billing…
+      </div>
+    );
+  }
+
+  const pro = PLANS.find((p) => p.id === "pro");
+  const canCancel =
+    sub.is_premium && !sub.cancel_at_period_end && sub.subscription_status !== "legacy" &&
+    ["active", "authenticated", "resumed", "pending"].includes(sub.subscription_status ?? "");
 
   return (
     <div className="p-8 max-w-4xl animate-fade-in">
       <div className="mb-8">
         <h1 className="font-display text-3xl font-bold text-white mb-2">Billing & Plan</h1>
-        <p className="text-slate-400">Manage your subscription and payment methods</p>
+        <p className="text-slate-400">Your plan, renewal date and payment history.</p>
       </div>
 
-      {successMsg && (
-        <div className="mb-6 p-4 rounded-md bg-brand-500/10 border border-brand-500/20 text-brand-400">
-          {successMsg}
-        </div>
+      {message && (
+        <div className="mb-6 p-4 rounded-md bg-brand-500/10 border border-brand-500/20 text-brand-300">{message}</div>
       )}
 
-      {/* Current Plan Card */}
-      <div className="card mb-8 p-8 relative overflow-hidden">
-        {isPremium && (
-          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-brand-500/20 to-transparent rounded-full -translate-y-1/2 translate-x-1/2" />
-        )}
-
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative">
+      <div className="card mb-8 p-8">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <h2 className="font-display text-xl font-bold text-white">
-                Current Plan: {isPremium ? "Pro" : "Free"}
-              </h2>
-              {isPremium && (
+              <h2 className="font-display text-xl font-bold text-white">Current plan: {planHeadline(sub)}</h2>
+              {sub.is_premium && (
                 <span className="badge badge-matched flex items-center gap-1">
                   <Zap size={12} /> Active
                 </span>
               )}
             </div>
-            <p className="text-slate-400 text-sm">
-              {isPremium
-                ? "You have full access to all features. Your next billing date is Dec 12, 2024."
-                : "You are on the free plan with limited analyses. Upgrade to unlock all features."}
-            </p>
+            <p className="text-slate-400 text-sm max-w-xl">{planDetail(sub)}</p>
           </div>
 
-          {/* Upgrade / Manage Button */}
-          {isPremium ? (
-            <button
-              type="button"
-              className="btn-secondary shrink-0"
-            >
-              Manage Subscription
-            </button>
-          ) : (
-            <div className="shrink-0 w-full md:w-auto">
+          {!sub.is_premium && (
+            <div className="shrink-0 w-full md:w-64">
               <RazorpayCheckoutButton
-                label="Upgrade to Pro"
-                onSuccess={handlePaymentSuccess}
+                id="billing-upgrade-plan-btn"
+                label={`Get Pro — ${PRO_PRICE}/${PRO_PERIOD}`}
+                onSuccess={async (summary) => {
+                  await refresh(summary);
+                  setMessage("Payment confirmed — welcome to Pro! All Pro tools are unlocked.");
+                }}
               />
+            </div>
+          )}
+
+          {canCancel && !confirmCancel && (
+            <button type="button" className="btn-secondary shrink-0" onClick={() => setConfirmCancel(true)}>
+              Cancel auto-renewal
+            </button>
+          )}
+          {canCancel && confirmCancel && (
+            <div className="shrink-0 flex flex-col gap-2 md:items-end">
+              <p className="text-sm text-slate-300">Stop renewing? You keep Pro until {formatDate(sub.current_period_end)}.</p>
+              <div className="flex gap-2">
+                <button type="button" className="btn-secondary" onClick={() => setConfirmCancel(false)}>
+                  Keep Pro
+                </button>
+                <button type="button" className="btn-primary" onClick={handleCancel} disabled={cancelling}>
+                  {cancelling ? "Cancelling…" : "Yes, cancel"}
+                </button>
+              </div>
             </div>
           )}
         </div>
 
-        {/* Usage Stats (Demo) */}
-        {!isPremium && (
-          <div className="mt-8 pt-8 border-t border-white/10">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-slate-300">Monthly Usage</span>
-              <span className="text-sm font-medium text-slate-300">2 / 3 Analyses</span>
-            </div>
-            <div className="w-full bg-surface-800 rounded-full h-2 mb-2">
-              <div className="h-2 rounded-full bg-brand-500" style={{ width: "66%" }} />
-            </div>
-            <p className="text-xs text-slate-500">Resets on Nov 1, 2024</p>
-          </div>
+        {!sub.is_premium && pro && (
+          <ul className="mt-8 pt-8 border-t border-white/10 grid gap-3 sm:grid-cols-2">
+            {pro.features.map((f) => (
+              <li key={f} className="flex items-start gap-3 text-sm text-slate-300">
+                <Check size={16} className="text-accent-green mt-0.5 shrink-0" />
+                {f}
+              </li>
+            ))}
+          </ul>
         )}
+        <p className="mt-6 text-xs text-slate-500">{PRICING_FINE_PRINT}</p>
       </div>
 
-      {/* Upgrade Options (if free) */}
-      {!isPremium && (
-        <div className="mb-8">
-          <h3 className="font-display text-lg font-bold text-white mb-4">Available Plans</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Pro Plan */}
-            <div className="card relative overflow-hidden" style={{ border: "1px solid rgba(76,110,245,0.4)" }}>
-              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/10 rounded-full translate-x-8 -translate-y-8" />
-              <div className="mb-4">
-                <span className="badge bg-brand-500/20 text-brand-400 mb-3 border border-brand-500/30">Most Popular</span>
-                <h4 className="font-display text-xl font-bold text-white">Pro</h4>
-                <div className="flex items-end gap-1 mt-2">
-                <span className="font-display text-4xl font-bold text-white">₹99</span>
-                  <span className="text-slate-400 pb-1">/month</span>
-                </div>
-              </div>
-              <ul className="space-y-3 mb-6">
-                {[
-                  "Unlimited resume analyses",
-                  "Advanced ATS scoring",
-                  "Unlimited AI bullet rewrites",
-                  "PDF & DOCX upload",
-                  "History tracking & comparison",
-                ].map((f) => (
-                  <li key={f} className="flex items-start gap-3 text-sm text-slate-300">
-                    <Check size={16} className="text-accent-green mt-0.5 shrink-0" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <RazorpayCheckoutButton
-                id="billing-upgrade-plan-btn"
-                label="Upgrade Now"
-                onSuccess={handlePaymentSuccess}
-              />
-            </div>
-          </div>
+      <div className="card p-0 overflow-hidden">
+        <div className="p-6 border-b border-white/5 flex items-center justify-between">
+          <h3 className="font-display text-lg font-bold text-white">Payment history</h3>
+          <CreditCard size={20} className="text-slate-400" />
         </div>
-      )}
-
-      {/* Invoices */}
-      {isPremium && (
-        <div className="card p-0 overflow-hidden">
-          <div className="p-6 border-b border-white/5 flex items-center justify-between">
-            <h3 className="font-display text-lg font-bold text-white">Billing History</h3>
-            <CreditCard size={20} className="text-slate-400" />
-          </div>
+        {sub.payments.length === 0 ? (
+          <p className="p-6 text-sm text-slate-400">No payments yet.</p>
+        ) : (
           <table className="w-full text-left">
             <thead>
               <tr className="bg-white/5 text-slate-400 text-xs uppercase tracking-wider">
                 <th className="p-4 pl-6">Date</th>
                 <th className="p-4">Amount</th>
-                <th className="p-4">Status</th>
-                <th className="p-4 pr-6 text-right">Invoice</th>
+                <th className="p-4">Method</th>
+                <th className="p-4 pr-6">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
-              {[
-                { date: "Oct 12, 2024", amount: "$19.00", status: "Paid" },
-                { date: "Sep 12, 2024", amount: "$19.00", status: "Paid" },
-              ].map((inv, i) => (
-                <tr key={i} className="hover:bg-white/5 transition-colors">
-                  <td className="p-4 pl-6 text-sm text-slate-300">{inv.date}</td>
-                  <td className="p-4 text-sm text-slate-300">{inv.amount}</td>
-                  <td className="p-4">
-                    <span className="badge badge-matched text-xs">{inv.status}</span>
-                  </td>
-                  <td className="p-4 pr-6 text-right">
-                    <a href="#" className="text-brand-400 text-sm hover:underline">Download</a>
+              {sub.payments.map((p) => (
+                <tr key={p.razorpay_payment_id} className="hover:bg-white/5 transition-colors">
+                  <td className="p-4 pl-6 text-sm text-slate-300">{formatDate(p.paid_at ?? p.created_at)}</td>
+                  <td className="p-4 text-sm text-slate-300">{formatPaise(p.amount)}</td>
+                  <td className="p-4 text-sm text-slate-400 uppercase">{p.method ?? "—"}</td>
+                  <td className="p-4 pr-6">
+                    <span className={`badge text-xs ${p.status === "failed" ? "badge-missing" : "badge-matched"}`}>
+                      {p.status === "captured" ? "Paid" : p.status}
+                    </span>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

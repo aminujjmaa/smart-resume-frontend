@@ -62,12 +62,14 @@ export const analysisApi = {
 
 // ── Razorpay ─────────────────────────────────────────
 export const razorpayApi = {
-  createOrder: () => apiClient.post("/razorpay/create-order"),
-  verifyPayment: (data: {
+  getSubscription: () => apiClient.get("/razorpay/subscription"),
+  createSubscription: () => apiClient.post("/razorpay/subscription"),
+  verifySubscription: (data: {
     razorpay_payment_id: string;
-    razorpay_order_id: string;
+    razorpay_subscription_id: string;
     razorpay_signature: string;
-  }) => apiClient.post("/razorpay/verify-payment", data),
+  }) => apiClient.post("/razorpay/subscription/verify", data),
+  cancelSubscription: () => apiClient.post("/razorpay/subscription/cancel"),
 };
 
 // ── Tools ────────────────────────────────────────────

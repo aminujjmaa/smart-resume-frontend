@@ -165,8 +165,8 @@ function SignupContent() {
 
           <p className="text-center text-xs text-slate-500 mt-4">
             By signing up you agree to our{" "}
-            <a href="#" className="text-brand-400">Terms</a> and{" "}
-            <a href="#" className="text-brand-400">Privacy Policy</a>
+            <Link href="/terms" className="text-brand-400">Terms</Link> and{" "}
+            <Link href="/privacy" className="text-brand-400">Privacy Policy</Link>
           </p>
 
           <p className="text-center text-sm text-slate-400 mt-4">

@@ -4,6 +4,11 @@ import { useAuthStore } from "@/store/useAppStore";
 import { adminApi } from "@/lib/api";
 import { ShieldAlert, Users, TrendingUp, Activity, Check, X } from "lucide-react";
 import type { AdminStats, User } from "@/types";
+
+function planLabel(u: User): string {
+  if (!u.is_premium) return "free";
+  return u.subscription_status === "legacy" ? "pro (lifetime)" : "pro";
+}
 import { useRouter } from "next/navigation";
 
 export default function AdminDashboardPage() {
@@ -108,9 +113,9 @@ export default function AdminDashboardPage() {
                       </td>
                       <td className="p-4">
                         <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                          u.plan === "premium" ? "bg-brand-500/20 text-brand-400 border border-brand-500/30" : "bg-surface-800 text-slate-400"
+                          u.is_premium ? "bg-brand-500/20 text-brand-400 border border-brand-500/30" : "bg-surface-800 text-slate-400"
                         }`}>
-                          {u.plan}
+                          {planLabel(u)}
                         </span>
                       </td>
                       <td className="p-4">
