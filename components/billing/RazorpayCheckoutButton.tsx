@@ -14,9 +14,6 @@ declare global {
 }
 
 interface RazorpayCheckoutButtonProps {
-  /** Amount in paise. Default: 9900 (₹99) */
-  amount?: number;
-  currency?: string;
   /** Label shown on the button. Default: "Upgrade to Pro" */
   label?: string;
   className?: string;
@@ -40,8 +37,6 @@ function loadRazorpayScript(): Promise<boolean> {
 }
 
 export default function RazorpayCheckoutButton({
-  amount = 9900,  // Default: ₹99 in paise
-  currency = "INR",
   label = "Upgrade to Pro",
   className = "",
   id,
@@ -64,7 +59,7 @@ export default function RazorpayCheckoutButton({
       }
 
       // 2. Create order on backend
-      const orderRes = await razorpayApi.createOrder(amount, currency);
+      const orderRes = await razorpayApi.createOrder();
       const { order_id, amount: orderAmount, currency: orderCurrency } = orderRes.data;
 
       // 3. Open Razorpay modal
@@ -133,7 +128,7 @@ export default function RazorpayCheckoutButton({
       );
       setIsLoading(false);
     }
-  }, [amount, currency, user, onSuccess, updateUser]);
+  }, [user, onSuccess, updateUser]);
 
   return (
     <div className="flex flex-col gap-2 w-full">

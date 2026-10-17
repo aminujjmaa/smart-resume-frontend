@@ -3,11 +3,12 @@ import { persist } from "zustand/middleware";
 import { clearAuthCookie, clearLegacyAuthStorage } from "@/lib/authCookie";
 import type { User, Analysis, AnalysisStep } from "@/types";
 
+// The JWT lives only in the httpOnly `sr_access_token` cookie set by the API;
+// it is never stored in JS-readable storage.
 interface AuthState {
   user: User | null;
-  token: string | null;
   isAuthenticated: boolean;
-  setAuth: (user: User, token: string) => void;
+  setAuth: (user: User) => void;
   updateUser: (user: User) => void;
   clearAuth: () => void;
 }
@@ -32,13 +33,12 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       user: null,
-      token: null,
       isAuthenticated: false,
-      setAuth: (user, token) => {
+      setAuth: (user) => {
         if (globalThis.window !== undefined) {
           clearLegacyAuthStorage();
         }
-        set({ user, token, isAuthenticated: true });
+        set({ user, isAuthenticated: true });
       },
       updateUser: (user) => set({ user }),
       clearAuth: () => {
@@ -46,12 +46,18 @@ export const useAuthStore = create<AuthState>()(
           clearLegacyAuthStorage();
           clearAuthCookie();
         }
-        set({ user: null, token: null, isAuthenticated: false });
+        set({ user: null, isAuthenticated: false });
       },
     }),
     {
       name: "smartresume-auth",
-      partialize: (state) => ({ user: state.user, token: state.token, isAuthenticated: state.isAuthenticated }),
+      version: 2,
+      // v1 persisted the JWT in localStorage; drop it on upgrade.
+      migrate: (persisted) => {
+        const { user = null, isAuthenticated = false } = (persisted ?? {}) as Partial<AuthState>;
+        return { user, isAuthenticated };
+      },
+      partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
     }
   )
 );

@@ -67,7 +67,6 @@ export default function BillingPage() {
           ) : (
             <div className="shrink-0 w-full md:w-auto">
               <RazorpayCheckoutButton
-                amount={9900}
                 label="Upgrade to Pro"
                 onSuccess={handlePaymentSuccess}
               />
@@ -122,7 +121,6 @@ export default function BillingPage() {
               </ul>
               <RazorpayCheckoutButton
                 id="billing-upgrade-plan-btn"
-                amount={9900}
                 label="Upgrade Now"
                 onSuccess={handlePaymentSuccess}
               />

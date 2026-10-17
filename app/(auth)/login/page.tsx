@@ -19,6 +19,9 @@ function LoginContent() {
     google_token_failed: "Could not connect to Google. Please try again.",
     google_invalid_token: "Google verification failed. Please try again.",
     google_no_email: "Your Google account has no email. Please use email/password.",
+    google_no_id_token: "Google sign-in failed. Please try again.",
+    google_state_mismatch: "Your sign-in session expired. Please try again.",
+    google_unverified_email: "Please verify your email with Google first, or sign in with email/password.",
     account_conflict: "An error occurred linking your Google account. Please try again.",
   };
 

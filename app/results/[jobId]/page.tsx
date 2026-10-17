@@ -38,7 +38,8 @@ function ScoreBarRow({ label, pct }: { readonly label: string; readonly pct: num
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function PublicResultsPage() {
   const { jobId } = useParams<{ jobId: string }>();
-  const { resumeFile } = useAnalysisStore();
+  // Resume text is never returned for anonymous reports; preview what this browser submitted.
+  const { resumeFile, resumeText } = useAnalysisStore();
 
   const { data: analysis, isLoading, error } = useQuery<Analysis>({
     queryKey: ["analysis", jobId],
@@ -80,6 +81,7 @@ export default function PublicResultsPage() {
   const result = analysis.result_json as AnalysisResult;
   if (!result) return null;
   const resumeAnnotations = buildResumeAnnotations(result);
+  const previewText = analysis.resume_text || resumeText;
 
   return (
     <div className="min-h-screen bg-surface-950 flex flex-col">
@@ -200,7 +202,7 @@ export default function PublicResultsPage() {
 
             </div>
 
-            {analysis.resume_text && (
+            {(previewText || resumeFile) && (
               <aside className="min-w-0 xl:sticky xl:top-8 xl:self-start">
                 <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.035] shadow-2xl shadow-black/20">
                   <div className="flex items-start justify-between gap-4 border-b border-white/10 bg-surface-950/70 px-4 py-4">
@@ -221,7 +223,7 @@ export default function PublicResultsPage() {
                     className="rounded-none border-0 bg-transparent"
                     file={resumeFile}
                     showHeader={false}
-                    text={analysis.resume_text}
+                    text={previewText}
                     title="Resume Markup"
                   />
                 </div>

@@ -9,17 +9,6 @@ export const apiClient = axios.create({
   withCredentials: true,
 });
 
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = useAuthStore.getState().token;
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
 // Handle 401 — clear token and redirect to login
 apiClient.interceptors.response.use(
   (response) => response,
@@ -62,8 +51,7 @@ export const analysisApi = {
 
 // ── Razorpay ─────────────────────────────────────────
 export const razorpayApi = {
-  createOrder: (amount: number, currency = "INR") =>
-    apiClient.post("/razorpay/create-order", { amount, currency }),
+  createOrder: () => apiClient.post("/razorpay/create-order"),
   verifyPayment: (data: {
     razorpay_payment_id: string;
     razorpay_order_id: string;

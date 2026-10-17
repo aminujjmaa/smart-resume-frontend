@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { isAxiosError } from "axios";
 import { Download, RefreshCw, ToggleLeft, ToggleRight, AlertCircle, Terminal } from "lucide-react";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
+import { latexApi } from "@/lib/api";
 
 type CompileStatus = "idle" | "compiling" | "done" | "error";
 
@@ -58,6 +58,20 @@ function resolveViewerState(status: CompileStatus, blobUrl: string | null): View
   return "loading";
 }
 
+/** Error bodies arrive as Blobs because the request uses responseType "blob". */
+async function compileErrorMessage(err: unknown): Promise<string> {
+  if (!isAxiosError(err)) return err instanceof Error ? err.message : "Compilation failed.";
+  if (!err.response) return "Network error — is the backend running?";
+  const data: unknown = err.response.data;
+  if (data instanceof Blob) {
+    try {
+      const body = JSON.parse(await data.text()) as { detail?: unknown };
+      if (typeof body.detail === "string") return body.detail;
+    } catch { /* not JSON */ }
+  }
+  return `HTTP ${err.response.status}`;
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function PDFPreview({ content, templateId }: PDFPreviewProps) {
@@ -81,32 +95,15 @@ export default function PDFPreview({ content, templateId }: PDFPreviewProps) {
     setCompileLog("");
 
     try {
-      const res = await fetch(`${API_BASE}/latex/compile`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ source }),
-      });
-
-      if (!res.ok) {
-        let detail = `HTTP ${res.status}`;
-        try {
-          const body = await res.json() as { detail?: string };
-          detail = body?.detail ?? detail;
-        } catch { /* ignore parse error */ }
-        setCompileLog(detail);
-        setState((s) => ({ ...s, status: "error", error: detail }));
-        return;
-      }
-
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
+      const res = await latexApi.compile(source);
+      const url = URL.createObjectURL(res.data as Blob);
 
       if (prevBlobRef.current) URL.revokeObjectURL(prevBlobRef.current);
       prevBlobRef.current = url;
 
       setState({ status: "done", blobUrl: url, error: null, compiledContent: source });
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Network error — is the backend running?";
+      const msg = await compileErrorMessage(err);
       setCompileLog(msg);
       setState((s) => ({ ...s, status: "error", error: msg }));
     }

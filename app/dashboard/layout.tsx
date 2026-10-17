@@ -14,7 +14,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     if (!isAuthenticated) {
       authApi.me()
         .then((res) => {
-          setAuth(res.data, "");
+          setAuth(res.data);
         })
         .catch(() => {
           router.replace("/login");

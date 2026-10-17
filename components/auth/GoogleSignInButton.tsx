@@ -15,8 +15,11 @@ export default function GoogleSignInButton({
   const handleClick = () => {
     // Navigate to the backend redirect endpoint — it builds the Google URL
     // and redirects the browser there. After consent, Google redirects to the
-    // backend callback which sets the cookie and forwards to /dashboard.
-    window.location.href = `${API_URL}/auth/google`;
+    // backend callback which sets the cookie and forwards to `next` (validated
+    // server-side) or /dashboard.
+    const next = new URLSearchParams(window.location.search).get("next");
+    const query = next ? `?next=${encodeURIComponent(next)}` : "";
+    window.location.href = `${API_URL}/auth/google${query}`;
   };
 
   return (
