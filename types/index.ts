@@ -16,65 +16,51 @@ export interface AuthToken {
   user: User;
 }
 
-// ── Score Breakdown ───────────────────────────────────────────────────────────
+// ── Score Breakdown (flat three-number summary) ──────────────────────────────────
 
-export type ScoreGrade = "A" | "B" | "C" | "D" | "F";
-
-export interface ScoreCategory {
-  name: string;
-  score: number;
-  max_score: number;
-  grade: ScoreGrade;
-  why: string;
-  how_to_improve: string;
+export interface ScoreBreakdown {
+  keyword_match_pct: number;
+  experience_impact_pct: number;
+  formatting_score_pct: number;
 }
 
-// ── Suggestions & Bullets ────────────────────────────────────────────────────
+// ── Missing Keywords ──────────────────────────────────────────────────────────
 
-export type SuggestionSeverity = "critical" | "high" | "medium" | "low";
+export interface MissingKeyword {
+  keyword: string;
+  jd_evidence: string;
+  importance: "required" | "preferred";
+}
 
-export interface Suggestion {
-  category: string;
-  severity: SuggestionSeverity;
+// ── Formatting Risks ──────────────────────────────────────────────────────────
+
+export interface FormattingRisk {
   issue: string;
+  why_it_matters: string;
   fix: string;
-  example?: string;
-  why_it_matters?: string;
-  evidence_to_add?: string[];
-  strong_example?: string;
 }
 
-export interface BulletImprovement {
+// ── Bullet Suggestions ────────────────────────────────────────────────────────
+
+export interface BulletSuggestion {
+  section: string;
   original: string;
-  improved: string;
-  reason?: string;
-  why_stronger?: string[];
-  evidence_to_add?: string[];
-}
-
-export interface BulletFeedback {
-  bullet: string;
-  score: number;
-  weakness_tags: string[];
-  feedback: string;
-  diagnosis?: string;
-  recruiter_perception?: string;
-  improvement_strategy?: string;
-  strong_alternative?: string;
-  evidence_options?: string[];
-  why_stronger?: string[];
+  rewritten: string;
+  reason: string;
+  needs_user_input: boolean;
+  applicable: boolean;
 }
 
 export interface ResumeAnnotation {
   original: string;
   score: number;
-  severity: SuggestionSeverity;
+  severity: "critical" | "high" | "medium" | "low";
   issue: string;
   tags: string[];
   improved?: string;
 }
 
-// ── Keywords ─────────────────────────────────────────────────────────────────
+// ── Keywords (hard/soft/other table) ────────────────────────────────────────
 
 export interface KeywordMatch {
   skill: string;
@@ -86,16 +72,14 @@ export interface KeywordMatch {
 
 export interface AnalysisResult {
   ats_score: number;
-  score_breakdown: ScoreCategory[];
+  score_breakdown: ScoreBreakdown;
   matched_keywords: string[];
-  missing_keywords: string[];
+  missing_keywords: MissingKeyword[];
   keyword_matches?: KeywordMatch[];
-  suggestions: Suggestion[];
-  bullet_improvements: BulletImprovement[];
-  bullet_feedback: BulletFeedback[];
-  formatting_issues: string[];
+  formatting_risks: FormattingRisk[];
+  bullet_suggestions: BulletSuggestion[];
+  priority_fixes: string[];
   seniority_signal: string;
-  role_alignment_summary: string;
   semantic_profile?: Record<string, unknown>;
 }
 

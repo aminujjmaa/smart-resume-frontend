@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
@@ -9,60 +9,28 @@ import ResumePreview from "@/components/resume/ResumePreview";
 import { buildResumeAnnotations } from "@/lib/resumeAnnotations";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
-import { CheckCircle2, Lock, Target, ChevronDown, ChevronUp, FileText } from "lucide-react";
+import { CheckCircle2, Lock, Target, FileText } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
-import type { Analysis, AnalysisResult, ScoreCategory } from "@/types";
+import type { Analysis, AnalysisResult } from "@/types";
 
-// ── Grade badge (matches dashboard page) ─────────────────────────────────────
-const gradeColors: Record<string, string> = {
-  A: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
-  B: "bg-blue-500/15 text-blue-400 border-blue-500/30",
-  C: "bg-amber-500/15 text-amber-400 border-amber-500/30",
-  D: "bg-orange-500/15 text-orange-400 border-orange-500/30",
-  F: "bg-red-500/15 text-red-400 border-red-500/30",
-};
+function pctToGradient(pct: number): string {
+  if (pct >= 70) return "from-emerald-500 to-emerald-400";
+  if (pct >= 45) return "from-amber-500 to-amber-400";
+  return "from-red-500 to-red-400";
+}
 
-// FREE: Show score category with grade but collapse the improvement advice (that's premium)
-function FreeScoreCategoryCard({ cat }: { cat: ScoreCategory }) {
-  const [open, setOpen] = useState(false);
-  const pct = (cat.score / cat.max_score) * 100;
-  const barColor =
-    pct >= 80 ? "from-emerald-500 to-emerald-400" :
-    pct >= 60 ? "from-blue-500 to-blue-400" :
-    pct >= 40 ? "from-amber-500 to-amber-400" :
-    "from-red-500 to-red-400";
-
+// FREE: Flat score breakdown bar
+function ScoreBarRow({ label, pct }: { readonly label: string; readonly pct: number }) {
+  const color = pctToGradient(pct);
   return (
-    <div className="card p-4 cursor-pointer hover:border-white/10 transition-all duration-200" onClick={() => setOpen(!open)}>
-      <div className="flex items-center gap-3">
-        <span className={`w-8 h-8 rounded-lg border text-xs font-bold flex items-center justify-center shrink-0 ${gradeColors[cat.grade] || gradeColors.F}`}>
-          {cat.grade}
-        </span>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-sm font-medium text-slate-200">{cat.name}</span>
-            <span className="text-xs text-slate-400 shrink-0 ml-2">{cat.score}/{cat.max_score}</span>
-          </div>
-          <div className="w-full bg-surface-800 rounded-full h-1.5">
-            <div
-              className={`h-1.5 rounded-full bg-gradient-to-r ${barColor} transition-all duration-700`}
-              style={{ width: `${pct}%` }}
-            />
-          </div>
-        </div>
-        {open ? <ChevronUp size={14} className="text-slate-500 shrink-0" /> : <ChevronDown size={14} className="text-slate-500 shrink-0" />}
+    <div className="mb-3">
+      <div className="flex justify-between mb-1">
+        <span className="text-sm text-slate-200">{label}</span>
+        <span className="text-xs text-slate-400">{pct}%</span>
       </div>
-      {open && (
-        <div className="mt-3 pt-3 border-t border-white/5 animate-fade-in">
-          <p className="text-xs text-slate-400"><span className="text-slate-300 font-medium">Why:</span> {cat.why}</p>
-          {/* How to improve is locked */}
-          <div className="mt-2 flex items-center gap-2 px-3 py-2 rounded-lg bg-brand-500/10 border border-brand-500/20">
-            <Lock size={12} className="text-brand-400 shrink-0" />
-            <p className="text-xs text-brand-300 font-medium">Upgrade to Pro to see exactly how to fix this category</p>
-          </div>
-        </div>
-      )}
+      <div className="w-full bg-surface-800 rounded-full h-1.5">
+        <div className={`h-1.5 rounded-full bg-gradient-to-r ${color} transition-all duration-700`} style={{ width: `${pct}%` }} />
+      </div>
     </div>
   );
 }
@@ -139,9 +107,6 @@ export default function PublicResultsPage() {
                   </span>
                 )}
               </div>
-              {result.role_alignment_summary && (
-                <p className="text-slate-400 text-sm mb-4 leading-relaxed">{result.role_alignment_summary}</p>
-              )}
               <div className="w-full bg-surface-800 rounded-full h-2 mb-3">
                 <div
                   className="h-2 rounded-full bg-gradient-to-r from-brand-500 to-purple-500 transition-all duration-1000"
@@ -160,10 +125,10 @@ export default function PublicResultsPage() {
             <div className="flex items-center gap-2 mb-3 text-sm font-semibold uppercase tracking-wider text-slate-300">
               <Target size={15} /> Score Breakdown — Free
             </div>
-            <div className="space-y-2">
-              {result.score_breakdown?.map((cat) => (
-                <FreeScoreCategoryCard key={cat.name} cat={cat} />
-              ))}
+            <div className="card p-5">
+              <ScoreBarRow label="Keyword Match" pct={result.score_breakdown?.keyword_match_pct ?? 0} />
+              <ScoreBarRow label="Experience Impact" pct={result.score_breakdown?.experience_impact_pct ?? 0} />
+              <ScoreBarRow label="Formatting & ATS" pct={result.score_breakdown?.formatting_score_pct ?? 0} />
             </div>
           </div>
 
@@ -187,7 +152,7 @@ export default function PublicResultsPage() {
                 <p className="text-xs text-red-400 font-medium mb-2">✗ Missing Keywords</p>
                 <div className="flex flex-wrap gap-1.5">
                   {result.missing_keywords.map((kw) => (
-                    <span key={kw} className="badge badge-missing text-xs">{kw}</span>
+                    <span key={kw.keyword} className="badge badge-missing text-xs">{kw.keyword}</span>
                   ))}
                 </div>
               </div>

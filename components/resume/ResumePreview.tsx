@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState, useRef } from "react";
 import { AlertTriangle, Eye, ExternalLink, FileText, Sparkles } from "lucide-react";
-import type { ResumeAnnotation, SuggestionSeverity } from "@/types";
+import type { ResumeAnnotation } from "@/types";
+type SuggestionSeverity = "critical" | "high" | "medium" | "low";
 
 type ResumePreviewProps = {
   annotations?: ResumeAnnotation[];
@@ -41,7 +42,7 @@ function formatFileType(file: File) {
 function normalizeLine(value: string) {
   return value
     .trim()
-    .replace(/^(?:[•▪◦\-\*]|\d+[\.)])\s+/, "")
+    .replace(/^(?:[•▪◦\-*]|\d+[.)]) +/, "")
     .replace(/\s+/g, " ")
     .toLowerCase();
 }
@@ -283,11 +284,11 @@ export default function ResumePreview({
     }
 
     let cancelled = false;
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (!cancelled) setFileText(String(reader.result || ""));
-    };
-    reader.readAsText(file);
+    file.text().then((content) => {
+      if (!cancelled) setFileText(content);
+    }).catch(() => {
+      if (!cancelled) setFileText("");
+    });
 
     return () => {
       cancelled = true;
@@ -325,27 +326,36 @@ export default function ResumePreview({
         </div>
       )}
 
-      {annotations.length > 0 && cleanText ? (
-        <AnnotatedTextPreview annotations={annotations} text={cleanText} activeCategory={activeCategory} />
-      ) : fileUrl ? (
-        <iframe
-          src={fileUrl}
-          title="Uploaded resume preview"
-          className="h-[560px] w-full bg-white"
-        />
-      ) : cleanText ? (
-        <pre className="max-h-[560px] overflow-auto whitespace-pre-wrap break-words p-5 text-sm leading-relaxed text-slate-200 font-sans">
-          {cleanText.length > TEXT_PREVIEW_LIMIT ? `${cleanText.slice(0, TEXT_PREVIEW_LIMIT)}\n\nPreview truncated.` : cleanText}
-        </pre>
-      ) : (
-        <div className="flex min-h-64 flex-col items-center justify-center px-6 text-center">
-          <FileText size={28} className="mb-3 text-slate-500" />
-          <p className="text-sm font-medium text-slate-300">Preview is available after analysis</p>
-          <p className="mt-1 max-w-sm text-xs text-slate-500">
-            Browser preview is not available for this file type, but the parsed resume text will appear on the results page.
-          </p>
-        </div>
-      )}
+      {(() => {
+        if (annotations.length > 0 && cleanText) {
+          return <AnnotatedTextPreview annotations={annotations} text={cleanText} activeCategory={activeCategory} />;
+        }
+        if (fileUrl) {
+          return (
+            <iframe
+              src={fileUrl}
+              title="Uploaded resume preview"
+              className="h-[560px] w-full bg-white"
+            />
+          );
+        }
+        if (cleanText) {
+          return (
+            <pre className="max-h-[560px] overflow-auto whitespace-pre-wrap break-words p-5 text-sm leading-relaxed text-slate-200 font-sans">
+              {cleanText.length > TEXT_PREVIEW_LIMIT ? `${cleanText.slice(0, TEXT_PREVIEW_LIMIT)}\n\nPreview truncated.` : cleanText}
+            </pre>
+          );
+        }
+        return (
+          <div className="flex min-h-64 flex-col items-center justify-center px-6 text-center">
+            <FileText size={28} className="mb-3 text-slate-500" />
+            <p className="text-sm font-medium text-slate-300">Preview is available after analysis</p>
+            <p className="mt-1 max-w-sm text-xs text-slate-500">
+              Browser preview is not available for this file type, but the parsed resume text will appear on the results page.
+            </p>
+          </div>
+        );
+      })()}
     </section>
   );
 }

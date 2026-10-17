@@ -1,9 +1,23 @@
 import { useState } from "react";
 import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Lightbulb, UserRound } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import type { BulletFeedback } from "@/types";
 
-export default function BulletFeedbackList({ feedbackList }: { feedbackList: BulletFeedback[] }) {
+
+// Local definition (BulletFeedback type was removed from the global schema)
+interface BulletFeedback {
+  bullet: string;
+  score: number;
+  weakness_tags: string[];
+  feedback: string;
+  diagnosis?: string;
+  recruiter_perception?: string;
+  improvement_strategy?: string;
+  strong_alternative?: string;
+  evidence_options?: string[];
+  why_stronger?: string[];
+}
+
+export default function BulletFeedbackList({ feedbackList }: { readonly feedbackList: BulletFeedback[] }) {
   const [expanded, setExpanded] = useState<Record<number, boolean>>({});
 
   return (
@@ -11,13 +25,12 @@ export default function BulletFeedbackList({ feedbackList }: { feedbackList: Bul
       {feedbackList.map((item, idx) => {
         const isExpanded = expanded[idx] ?? true;
         const pct = item.score;
-        const color =
-          pct >= 80 ? "text-emerald-400" :
-          pct >= 60 ? "text-amber-400" :
-          "text-red-400";
+        let color = "text-red-400";
+        if (pct >= 80) color = "text-emerald-400";
+        else if (pct >= 60) color = "text-amber-400";
         
         return (
-          <div key={idx} className="card">
+          <div key={item.bullet} className="card">
             <button
               className="w-full flex items-center justify-between mb-0 text-left"
               onClick={() => setExpanded((p) => ({ ...p, [idx]: !isExpanded }))}

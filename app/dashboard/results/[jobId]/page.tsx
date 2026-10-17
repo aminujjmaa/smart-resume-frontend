@@ -3,289 +3,133 @@
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { analysisApi } from "@/lib/api";
-import { useAnalysisStore, useAuthStore } from "@/store/useAppStore";
+import { useAnalysisStore } from "@/store/useAppStore";
 import ATSScoreRing from "@/components/resume/ATSScoreRing";
 import BulletRewriter from "@/components/resume/BulletRewriter";
-import ResumePreview from "@/components/resume/ResumePreview";
+import ResumeEditor from "@/components/resume/ResumeEditor";
 import SkillTable from "@/components/resume/SkillTable";
 import { buildResumeAnnotations } from "@/lib/resumeAnnotations";
 import { downloadPDF, downloadDOCX, buildLatexFromText } from "@/lib/downloadResume";
 import {
   ArrowLeft, AlertTriangle, ChevronDown, ChevronUp,
-  FileText, Download, FileDown, Loader2, BookOpen, UserCheck, Search, Wand2,
+  FileText, Download, FileDown, Loader2, BookOpen, Zap, Search,
+  Wand2, ShieldAlert, Edit3,
 } from "lucide-react";
 import Link from "next/link";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, Variants } from "framer-motion";
-import type { Analysis, AnalysisResult, ScoreCategory, Suggestion, SuggestionSeverity } from "@/types";
+import type {
+  Analysis, AnalysisResult, MissingKeyword,
+  FormattingRisk, ResumeAnnotation,
+} from "@/types";
 
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.07 } },
-};
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 26 } },
-};
-
-const gradeColors: Record<string, string> = {
-  A: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
-  B: "bg-blue-500/15 text-blue-400 border-blue-500/30",
-  C: "bg-amber-500/15 text-amber-400 border-amber-500/30",
-  D: "bg-orange-500/15 text-orange-400 border-orange-500/30",
-  F: "bg-red-500/15 text-red-400 border-red-500/30",
-};
-const severityColors: Record<SuggestionSeverity, string> = {
-  critical: "border-red-500/40 bg-red-500/5",
-  high: "border-orange-500/40 bg-orange-500/5",
-  medium: "border-amber-500/40 bg-amber-500/5",
-  low: "border-slate-500/20 bg-surface-800/50",
-};
-const severityBadge: Record<SuggestionSeverity, string> = {
-  critical: "bg-red-500/20 text-red-400",
-  high: "bg-orange-500/20 text-orange-400",
-  medium: "bg-amber-500/20 text-amber-400",
-  low: "bg-slate-500/20 text-slate-400",
+// ── Animation variants ─────────────────────────────────────────────────────────
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  show:   { opacity: 1, y: 0, transition: { type: "spring", stiffness: 280, damping: 25 } },
 };
 
-function ScoreCategoryCard({
-  cat,
-  resumeText,
-  isActive,
-  onActivate,
-}: {
-  readonly cat: ScoreCategory;
-  readonly resumeText?: string;
-  readonly isActive?: boolean;
-  readonly onActivate?: () => void;
-}) {
-  const [resolving, setResolving] = useState(false);
-  const [resolution, setResolution] = useState<{ resolution: string, before_example?: string | null, after_example?: string | null } | null>(null);
-  const [error, setError] = useState<string | null>(null);
+// ── Helpers ────────────────────────────────────────────────────────────────────
+function pctToGradient(pct: number) {
+  if (pct >= 70) return "from-emerald-500 to-emerald-400";
+  if (pct >= 45) return "from-amber-500 to-amber-400";
+  return "from-red-500 to-red-400";
+}
 
-  const { user } = useAuthStore();
-  const isPremium = user?.plan === "premium";
 
-  const pct = (cat.score / cat.max_score) * 100;
 
-  let barColor = "from-red-500 to-red-400";
-  if (pct >= 80) barColor = "from-emerald-500 to-emerald-400";
-  else if (pct >= 60) barColor = "from-blue-500 to-blue-400";
-  else if (pct >= 40) barColor = "from-amber-500 to-amber-400";
-
-  const handleFixWithAI = async () => {
-    if (!isPremium) {
-      setError("Premium feature. Please upgrade to use AI resolution.");
-      return;
-    }
-    setResolving(true);
-    setError(null);
-    try {
-      const res = await analysisApi.resolveIssue({
-        category: cat.name,
-        issue: cat.why,
-        how_to_improve: cat.how_to_improve,
-        resume_text: resumeText
-      });
-      setResolution(res.data);
-    } catch (err: any) {
-      if (err.response?.status === 403) setError("Premium feature. Please upgrade.");
-      else setError("Failed to generate AI resolution. Please try again.");
-    } finally {
-      setResolving(false);
-    }
-  };
-
+// ── Score bar ──────────────────────────────────────────────────────────────────
+function ScoreBar({ label, pct }: { readonly label: string; readonly pct: number }) {
+  const color = pctToGradient(pct);
   return (
-    <div
-      className={`card p-4 text-left w-full block mb-3 border bg-slate-900/50 cursor-pointer transition-colors ${isActive ? 'border-brand-500 shadow-[0_0_15px_rgba(56,189,248,0.2)]' : 'border-white/5 hover:border-white/15'}`}
-      onClick={onActivate}
-    >
-      <div className="flex items-center gap-3 mb-4">
-        <span className={`w-8 h-8 rounded-lg border text-xs font-bold flex items-center justify-center shrink-0 ${gradeColors[cat.grade] || gradeColors.F}`}>
-          {cat.grade}
-        </span>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-sm font-medium text-slate-200">{cat.name}</span>
-            <span className="text-xs text-slate-400 shrink-0 ml-2">{cat.score}/{cat.max_score}</span>
-          </div>
-          <div className="w-full bg-surface-800 rounded-full h-1.5">
-            <div className={`h-1.5 rounded-full bg-gradient-to-r ${barColor} transition-all duration-700`} style={{ width: `${pct}%` }} />
-          </div>
-        </div>
+    <div className="mb-3">
+      <div className="flex justify-between mb-1">
+        <span className="text-xs text-slate-300">{label}</span>
+        <span className="text-xs text-slate-500">{pct}%</span>
       </div>
-
-      <div className="space-y-3">
-        <div>
-          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Reasoning</span>
-          <p className="text-sm text-slate-300 whitespace-pre-wrap leading-relaxed">{cat.why}</p>
-        </div>
-
-        {!resolution && (
-          <div>
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">How to Improve</span>
-            <p className="text-sm text-brand-300 leading-relaxed">{cat.how_to_improve}</p>
-          </div>
-        )}
-
-        {resolution && (
-          <div className="mt-4 p-4 rounded-xl bg-brand-500/10 border border-brand-500/20 animate-fade-in">
-            <div className="flex items-center gap-2 mb-2 text-brand-400">
-              <Wand2 size={16} />
-              <span className="text-xs font-bold uppercase tracking-wider">AI Resolution Plan</span>
-            </div>
-            <p className="text-sm text-slate-200 leading-relaxed mb-3">{resolution.resolution}</p>
-
-            {resolution.before_example && resolution.after_example && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-                <div className="bg-slate-900/80 rounded-lg p-3 border border-red-500/20">
-                  <span className="text-[10px] font-bold text-red-400 uppercase tracking-wider block mb-1">Original Resume Snippet</span>
-                  <p className="text-xs text-slate-300 italic">"{resolution.before_example}"</p>
-                </div>
-                <div className="bg-slate-900/80 rounded-lg p-3 border border-emerald-500/20">
-                  <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block mb-1">Suggested Rewrite</span>
-                  <p className="text-xs text-emerald-100">{resolution.after_example}</p>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {error && <p className="text-xs text-red-400 mt-2">{error}</p>}
-
-        {!resolution && (
-          <div className="mt-4 pt-3 border-t border-white/5 flex justify-end">
-            <button
-              onClick={handleFixWithAI}
-              disabled={resolving}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-brand-500/20 text-brand-400 hover:text-brand-300 transition-colors text-xs font-medium border border-white/5 hover:border-brand-500/30 disabled:opacity-50"
-            >
-              {resolving ? <Loader2 size={14} className="animate-spin" /> : <Wand2 size={14} />}
-              Fix with AI {isPremium ? "" : "👑"}
-            </button>
-          </div>
-        )}
+      <div className="w-full bg-surface-800 rounded-full h-1.5">
+        <div className={`h-1.5 rounded-full bg-gradient-to-r ${color} transition-all duration-700`} style={{ width: `${pct}%` }} />
       </div>
     </div>
   );
 }
 
-function SuggestionCard({
-  s,
-  isActive,
-  onActivate,
-}: {
-  readonly s: Suggestion;
-  readonly isActive?: boolean;
-  readonly onActivate?: () => void;
+// ── Section nav pill ───────────────────────────────────────────────────────────
+function NavPill({ label, icon, onClick, active }: {
+  readonly label: string;
+  readonly icon: React.ReactNode;
+  readonly onClick: () => void;
+  readonly active?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
-  const sev = (s.severity || "medium") as SuggestionSeverity;
-
   return (
     <button
       type="button"
-      className={`rounded-xl border p-4 cursor-pointer block w-full text-left mb-3 ${severityColors[sev]} transition-all ${isActive ? 'ring-2 ring-brand-500 shadow-[0_0_15px_rgba(56,189,248,0.2)]' : ''}`}
-      onClick={() => {
-        setOpen(!open);
-        if (onActivate) onActivate();
-      }}
+      onClick={onClick}
+      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left text-xs font-semibold transition-all ${
+        active
+          ? "bg-brand-500/15 text-brand-300 border border-brand-500/25"
+          : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+      }`}
     >
-      <div className="flex items-start gap-3">
-        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 mt-0.5 ${severityBadge[sev]}`}>{sev}</span>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{s.category}</span>
-            {open ? <ChevronUp size={13} className="text-slate-500 shrink-0" /> : <ChevronDown size={13} className="text-slate-500 shrink-0" />}
-          </div>
-          <p className="text-sm text-slate-200 mt-1 leading-relaxed">{s.issue}</p>
-        </div>
-      </div>
-      {open && (
-        <div className="mt-3 pt-3 border-t border-white/5 space-y-2 animate-fade-in">
-          {s.why_it_matters && <p className="text-xs text-slate-300"><span className="font-medium text-blue-300">Why it matters: </span>{s.why_it_matters}</p>}
-          <p className="text-xs text-slate-300"><span className="font-medium text-brand-400">Fix: </span>{s.fix}</p>
-          {s.example && (
-            <div className="rounded-lg bg-slate-800/50 border border-slate-700/50 p-3 mt-2 mb-2">
-              <p className="text-xs text-slate-400 font-medium mb-1">YOUR RESUME</p>
-              <p className="text-xs text-slate-300 leading-relaxed italic">"{s.example}"</p>
-            </div>
-          )}
-          {s.strong_example && (
-            <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-3">
-              <p className="text-xs text-emerald-300 font-medium mb-1">STRONG VERSION</p>
-              <p className="text-xs text-slate-200 leading-relaxed">{s.strong_example}</p>
-            </div>
-          )}
-        </div>
-      )}
+      {icon}
+      {label}
     </button>
   );
 }
 
-// ── Download Dropdown ─────────────────────────────────────────────────────────
+// ── Download dropdown ──────────────────────────────────────────────────────────
 function DownloadDropdown({ resumeText }: { readonly resumeText: string }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen]       = useState(false);
   const [loading, setLoading] = useState<"pdf" | "docx" | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const ref                    = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
 
   const handlePDF = async () => {
-    setLoading("pdf");
-    setOpen(false);
-    try {
-      const latex = buildLatexFromText(resumeText);
-      await downloadPDF(latex, "smartresume-optimized.pdf");
-    } catch {
-      alert("PDF generation failed. Make sure you are logged in.");
-    } finally {
-      setLoading(null);
-    }
+    setLoading("pdf"); setOpen(false);
+    try { await downloadPDF(resumeText, "smartresume-optimized.pdf"); }
+    catch { alert("PDF generation failed."); }
+    finally { setLoading(null); }
   };
 
   const handleDOCX = async () => {
-    setLoading("docx");
-    setOpen(false);
-    try {
-      await downloadDOCX(resumeText, "smartresume-optimized.docx");
-    } catch {
-      alert("DOCX generation failed. Please try again.");
-    } finally {
-      setLoading(null);
-    }
+    setLoading("docx"); setOpen(false);
+    try { await downloadDOCX(resumeText, "smartresume-optimized.docx"); }
+    catch { alert("DOCX generation failed."); }
+    finally { setLoading(null); }
   };
 
-  let buttonText = "Download Resume";
-  if (loading === "pdf") buttonText = "Generating PDF…";
-  else if (loading === "docx") buttonText = "Generating DOCX…";
+  function getDownloadLabel(): string {
+    if (loading === "pdf") return "Generating PDF…";
+    if (loading === "docx") return "Generating DOCX…";
+    return "Download Resume";
+  }
+  const btnLabel = getDownloadLabel();
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative" ref={ref}>
       <button
         id="results-download-btn"
-        onClick={() => setOpen(!open)}
+        type="button"
+        onClick={() => setOpen((o) => !o)}
         disabled={!!loading}
-        className="btn-primary shrink-0 gap-2"
+        className="btn-primary shrink-0 gap-2 text-sm"
       >
-        {loading ? <Loader2 size={15} className="animate-spin" /> : <Download size={15} />}
-        {buttonText}
-        <ChevronDown size={13} className={`transition-transform ${open ? "rotate-180" : ""}`} />
+        {loading ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+        {btnLabel}
+        <ChevronDown size={12} className={`transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-52 rounded-xl border border-white/10 bg-slate-900 shadow-2xl shadow-black/40 z-50 overflow-hidden animate-fade-in">
+        <div className="absolute right-0 top-full mt-2 w-52 rounded-xl border border-white/10 bg-slate-900 shadow-2xl z-50 overflow-hidden animate-fade-in">
           <button onClick={handlePDF} className="flex w-full items-center gap-3 px-4 py-3 text-sm text-slate-200 hover:bg-white/5 transition-colors">
-            <FileDown size={16} className="text-red-400 shrink-0" />
+            <FileDown size={15} className="text-red-400 shrink-0" />
             <div className="text-left">
               <p className="font-medium">Download PDF</p>
               <p className="text-xs text-slate-500">ATS-ready LaTeX PDF</p>
@@ -293,7 +137,7 @@ function DownloadDropdown({ resumeText }: { readonly resumeText: string }) {
           </button>
           <div className="h-px bg-white/5 mx-3" />
           <button onClick={handleDOCX} className="flex w-full items-center gap-3 px-4 py-3 text-sm text-slate-200 hover:bg-white/5 transition-colors">
-            <FileDown size={16} className="text-blue-400 shrink-0" />
+            <FileDown size={15} className="text-blue-400 shrink-0" />
             <div className="text-left">
               <p className="font-medium">Download DOCX</p>
               <p className="text-xs text-slate-500">Microsoft Word format</p>
@@ -305,28 +149,124 @@ function DownloadDropdown({ resumeText }: { readonly resumeText: string }) {
   );
 }
 
-// ── Main Page ─────────────────────────────────────────────────────────────────
+// ── Formatting risk card ───────────────────────────────────────────────────────
+function FormattingRiskCard({ risk, isActive, onActivate }: {
+  readonly risk: FormattingRisk;
+  readonly isActive?: boolean;
+  readonly onActivate?: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <button
+      type="button"
+      className={`rounded-xl border p-4 w-full text-left mb-2 border-orange-500/30 bg-orange-500/5 transition-all ${isActive ? "ring-2 ring-brand-500" : ""}`}
+      onClick={() => { setOpen(!open); onActivate?.(); }}
+    >
+      <div className="flex items-start gap-3">
+        <ShieldAlert size={15} className="text-orange-400 shrink-0 mt-0.5" />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs font-semibold text-orange-400 uppercase tracking-wider">Formatting Risk</span>
+            {open ? <ChevronUp size={12} className="text-slate-500 shrink-0" /> : <ChevronDown size={12} className="text-slate-500 shrink-0" />}
+          </div>
+          <p className="text-sm text-slate-200 mt-1 leading-relaxed">{risk.issue}</p>
+        </div>
+      </div>
+      {open && (
+        <div className="mt-3 pt-3 border-t border-white/5 space-y-2 animate-fade-in">
+          <p className="text-xs text-slate-300"><span className="font-medium text-blue-300">Why it matters: </span>{risk.why_it_matters}</p>
+          <p className="text-xs text-slate-300"><span className="font-medium text-brand-400">Fix: </span>{risk.fix}</p>
+        </div>
+      )}
+    </button>
+  );
+}
+
+// ── Missing keyword row ────────────────────────────────────────────────────────
+function MissingKeywordRow({ kw }: { readonly kw: MissingKeyword }) {
+  return (
+    <div className="flex items-start justify-between gap-3 py-2.5 border-b border-white/5 last:border-0">
+      <div className="flex items-center gap-2">
+        <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${
+          kw.importance === "required"
+            ? "bg-red-500/15 text-red-400 border-red-500/25"
+            : "bg-amber-500/15 text-amber-400 border-amber-500/25"
+        }`}>
+          {kw.importance}
+        </span>
+        <span className="text-sm font-medium text-slate-200">{kw.keyword}</span>
+      </div>
+      <span className="text-xs text-slate-500 italic shrink-0 max-w-[160px] text-right">
+        &ldquo;{kw.jd_evidence}&rdquo;
+      </span>
+    </div>
+  );
+}
+
+// ── Main page ──────────────────────────────────────────────────────────────────
 export default function ResultsPage() {
   const { jobId } = useParams<{ jobId: string }>();
-  const { jobDescription, resumeFile, appliedResumeText, setAppliedResumeText } = useAnalysisStore();
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const { jobDescription, appliedResumeText, setAppliedResumeText } = useAnalysisStore();
+
+  // Right-panel state
+  const [activeTab,       setActiveTab]       = useState<"fixes" | "keywords" | "bullets">("bullets");
+  const [activeCategory,  setActiveCategory]  = useState<string | null>(null);
+  // Editor sync state
+  const [activeHighlight,  setActiveHighlight]  = useState<string | null>(null);
+  const [recentlyApplied,  setRecentlyApplied]  = useState<Set<string>>(new Set());
+
+  // Section refs for scroll-to
+  const fixesRef    = useRef<HTMLDivElement>(null);
+  const kwRef       = useRef<HTMLDivElement>(null);
+  const bulletsRef  = useRef<HTMLDivElement>(null);
+  const skillsRef   = useRef<HTMLDivElement>(null);
 
   const { data: analysis, isLoading, error } = useQuery<Analysis>({
     queryKey: ["analysis", jobId],
-    queryFn: () => analysisApi.getResult(jobId).then((r) => r.data),
+    queryFn:  () => analysisApi.getResult(jobId).then((r) => r.data),
     refetchInterval: (query) => {
-      const status = query.state.data?.status;
-      if (!status || status === "done" || status === "failed") return false;
+      const s = query.state.data?.status;
+      if (!s || s === "done" || s === "failed") return false;
       return 3000;
     },
     enabled: !!jobId,
     staleTime: 5000,
   });
 
+  // ── Handlers ────────────────────────────────────────────────────────────────
+
+  const handleAnnotationClick = useCallback((annotation: ResumeAnnotation) => {
+    setActiveHighlight(annotation.original);
+    // Determine which tab to open
+    setActiveTab("bullets"); // default
+    setActiveCategory(annotation.tags?.[0] ?? null);
+  }, []);
+
+  const handleApply = useCallback((updatedText: string, originalLine: string, rewrittenLine: string) => {
+    setAppliedResumeText(updatedText);
+    setRecentlyApplied((prev) => new Set(Array.from(prev).concat(rewrittenLine)));
+    setTimeout(() => {
+      setRecentlyApplied((prev) => {
+        const next = new Set(prev);
+        next.delete(rewrittenLine);
+        return next;
+      });
+    }, 2500);
+  }, [setAppliedResumeText]);
+
+  const handleEditorTextChange = useCallback((newText: string) => {
+    setAppliedResumeText(newText);
+  }, [setAppliedResumeText]);
+
+  const scrollTo = (ref: React.RefObject<HTMLDivElement | null>) => {
+    ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  // ── Loading / error states ───────────────────────────────────────────────────
   if (isLoading || analysis?.status === "processing" || analysis?.status === "pending") {
     return (
-      <div className="p-8 flex flex-col items-center justify-center min-h-[80vh]">
-        <div className="w-10 h-10 border-2 border-brand-500/30 border-t-brand-500 rounded-full animate-spin mb-4" />
+      <div className="flex flex-col items-center justify-center min-h-[70vh] gap-4">
+        <div className="w-10 h-10 border-2 border-brand-500/30 border-t-brand-500 rounded-full animate-spin" />
         <p className="text-slate-400">Analyzing your resume…</p>
       </div>
     );
@@ -343,193 +283,241 @@ export default function ResultsPage() {
   const result = analysis.result_json as AnalysisResult;
   if (!result) return null;
 
-  const resumeAnnotations = buildResumeAnnotations(result);
-  const resumeText = analysis.resume_text || "";
-  const workingText = appliedResumeText || resumeText;
+  const annotations  = buildResumeAnnotations(result);
+  const resumeText   = analysis.resume_text || "";
+  const workingText  = appliedResumeText || resumeText;
 
-  // JOBSCAN CLONE: Grouping the categories
-  const atsFindingNames = new Set([
-    "ATS Parseability", "Technical Depth", "Engineering Complexity",
-    "Architecture Maturity", "Production Readiness Signals", "Role Alignment", "Semantic Relevance"
-  ]);
+  const hardSkills      = result.keyword_matches?.filter((k) => k.category === "Hard Skill") || [];
+  const softSkills      = result.keyword_matches?.filter((k) => k.category === "Soft Skill") || [];
+  const otherKeywords   = result.keyword_matches?.filter((k) => k.category === "Other") || [];
+  const requiredMissing = (result.missing_keywords || []).filter((k) => k.importance === "required");
+  const preferredMissing = (result.missing_keywords || []).filter((k) => k.importance === "preferred");
 
-  const recruiterFindingNames = new Set([
-    "Impact Quantification", "Recruiter Readability", "Repetitive Words", "Ownership Signals"
-  ]);
-
-  const atsFindings = result.score_breakdown?.filter(cat => atsFindingNames.has(cat.name)) || [];
-  const recruiterFindings = result.score_breakdown?.filter(cat => recruiterFindingNames.has(cat.name)) || [];
-
-  const atsSuggestions = result.suggestions?.filter(s => atsFindingNames.has(s.category) || s.category === "Formatting" || s.category === "Role Fit") || [];
-  const recruiterSuggestions = result.suggestions?.filter(s => !atsFindingNames.has(s.category) && s.category !== "Formatting" && s.category !== "Role Fit") || [];
-
-  const hardSkills = result.keyword_matches?.filter(k => k.category === "Hard Skill") || [];
-  const softSkills = result.keyword_matches?.filter(k => k.category === "Soft Skill") || [];
-  const otherKeywords = result.keyword_matches?.filter(k => k.category === "Other") || [];
+  const hasFixes    = (result.formatting_risks?.length || 0) > 0;
+  const hasKeywords = (result.missing_keywords?.length || 0) > 0;
+  const hasBullets  = (result.bullet_suggestions?.length || 0) > 0;
 
   return (
-    <div className="flex flex-col xl:flex-row max-w-7xl mx-auto gap-0 xl:gap-8 p-4 md:p-6">
-      {/* ── Left: Jobscan Style Report ── */}
-      <div className="flex-1 min-w-0 order-2 xl:order-1">
-        <motion.div variants={containerVariants} initial="hidden" animate="show">
+    <div className="flex min-h-screen bg-surface-950">
 
-          {/* Top Bar */}
-          <motion.div variants={itemVariants} className="flex items-center justify-between gap-4 mb-6 flex-wrap">
-            <Link href="/dashboard" className="flex items-center gap-2 text-slate-400 hover:text-white text-sm transition-colors">
-              <ArrowLeft size={16} /> Back to Dashboard
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* LEFT SIDEBAR — Score + Navigation                                     */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <aside className="hidden xl:flex flex-col w-[264px] shrink-0 border-r border-white/8 sticky top-0 h-screen overflow-y-auto p-4 gap-5">
+        {/* Score ring */}
+        <div className="flex flex-col items-center pt-4">
+          <ATSScoreRing score={result.ats_score} size={140} />
+          {result.seniority_signal && (
+            <span className="mt-2 text-xs font-semibold px-2.5 py-1 rounded-full bg-brand-500/15 text-brand-300 border border-brand-500/20">
+              {result.seniority_signal}
+            </span>
+          )}
+        </div>
+
+        {/* Breakdown bars */}
+        <div className="card p-4">
+          <ScoreBar label="Keyword Match"    pct={result.score_breakdown?.keyword_match_pct ?? 0} />
+          <ScoreBar label="Experience Impact" pct={result.score_breakdown?.experience_impact_pct ?? 0} />
+          <ScoreBar label="Formatting & ATS" pct={result.score_breakdown?.formatting_score_pct ?? 0} />
+        </div>
+
+        {/* Section navigation */}
+        <div className="space-y-1">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600 px-3 mb-2">Sections</p>
+          {hasBullets  && <NavPill label="Bullet Rewrites"   icon={<AlertTriangle size={13} />} onClick={() => { setActiveTab("bullets"); scrollTo(bulletsRef); }} active={activeTab === "bullets"} />}
+          {hasKeywords && <NavPill label="Missing Keywords"  icon={<Wand2 size={13} />}          onClick={() => { setActiveTab("keywords"); scrollTo(kwRef); }}      active={activeTab === "keywords"} />}
+          {hasFixes    && <NavPill label="Formatting Risks"  icon={<ShieldAlert size={13} />}    onClick={() => { setActiveTab("fixes"); scrollTo(fixesRef); }}      active={activeTab === "fixes"} />}
+          <NavPill       label="Skills Match"       icon={<BookOpen size={13} />}     onClick={() => scrollTo(skillsRef)} />
+        </div>
+
+        {/* Back link */}
+        <div className="mt-auto pt-4 border-t border-white/8">
+          <Link href="/dashboard" className="flex items-center gap-2 text-slate-500 hover:text-white text-xs transition-colors">
+            <ArrowLeft size={13} /> Back to Dashboard
+          </Link>
+        </div>
+      </aside>
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* CENTER — Live Resume Editor                                           */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <main className="flex-1 min-w-0 flex flex-col p-4 md:p-6 gap-4">
+        {/* Top bar */}
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-3">
+            <Link href="/dashboard" className="xl:hidden flex items-center gap-2 text-slate-400 hover:text-white text-sm transition-colors">
+              <ArrowLeft size={15} /> Dashboard
             </Link>
-            <div className="flex items-center gap-3 flex-wrap">
-              <Link href="/dashboard/upload" id="results-reanalyze-btn" className="btn-secondary text-sm flex items-center gap-2">
-                <Search size={14} /> Scan Again
-              </Link>
-              {resumeText && <DownloadDropdown resumeText={workingText} />}
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-brand-300">
+              <FileText size={14} />
+              <span>Live Resume Editor</span>
             </div>
-          </motion.div>
+            <span className="rounded-full border border-amber-500/25 bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-200">
+              {annotations.length} issues
+            </span>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Link href="/dashboard/upload" id="results-reanalyze-btn" className="btn-secondary text-sm flex items-center gap-2">
+              <Search size={13} /> Scan Again
+            </Link>
+            {resumeText && <DownloadDropdown resumeText={workingText} />}
+          </div>
+        </div>
 
-          {/* 1. MATCH RATE (Hero) */}
-          <motion.div variants={itemVariants} className="flex flex-col items-center justify-center mb-10 text-center py-6">
-            <h1 className="font-display text-3xl font-bold text-white mb-2">Match Rate</h1>
-            <p className="text-slate-400 text-sm mb-6 max-w-md mx-auto">
-              This score represents how well your resume matches the job description based on ATS guidelines and recruiter preferences.
-            </p>
-            <ATSScoreRing score={result.ats_score} size={220} />
-            {result.role_alignment_summary && (
-              <p className="text-brand-300 text-sm mt-6 font-medium bg-brand-500/10 px-4 py-2 rounded-lg border border-brand-500/20 max-w-lg mx-auto">
-                {result.role_alignment_summary}
-              </p>
-            )}
-          </motion.div>
+        {/* Hint banner */}
+        <div className="flex items-center gap-2 rounded-xl border border-brand-500/20 bg-brand-500/5 px-4 py-2.5 text-xs text-brand-200">
+          <Edit3 size={13} className="shrink-0 text-brand-400" />
+          <span>Click any <span className="font-semibold text-white">highlighted line</span> to see the suggestion in the panel. Switch to <span className="font-semibold text-white">Edit mode</span> to make your own changes.</span>
+        </div>
 
-          {/* 2. ATS FINDINGS */}
-          <motion.div variants={itemVariants} className="mb-10">
-            <div className="flex items-center gap-3 border-b border-white/10 pb-3 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
-                <Search size={20} />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-white">ATS Findings</h2>
-                <p className="text-sm text-slate-400">Searchability, parsing, and exact keyword matches.</p>
-              </div>
+        {/* Editor */}
+        <ResumeEditor
+          text={workingText}
+          annotations={annotations}
+          onTextChange={handleEditorTextChange}
+          activeHighlight={activeHighlight}
+          onAnnotationClick={handleAnnotationClick}
+          recentlyApplied={recentlyApplied}
+        />
+
+        {/* Skills (bottom of center) */}
+        <div ref={skillsRef} className="mt-4">
+          <div className="flex items-center gap-3 border-b border-white/10 pb-3 mb-4">
+            <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+              <BookOpen size={18} />
             </div>
-            <div className="space-y-3">
-              {atsFindings.map(cat => (
-                <ScoreCategoryCard
-                  key={cat.name}
-                  cat={cat}
-                  resumeText={resumeText}
-                  isActive={activeCategory === cat.name}
-                  onActivate={() => setActiveCategory(cat.name)}
-                />
-              ))}
-              {atsSuggestions.map((s) => (
-                <SuggestionCard
-                  key={s.issue}
-                  s={s}
-                  isActive={activeCategory === s.category}
-                  onActivate={() => setActiveCategory(s.category)}
-                />
-              ))}
+            <div>
+              <h2 className="text-base font-bold text-white">Skills Match</h2>
+              <p className="text-xs text-slate-400">Matched vs missing keywords.</p>
             </div>
-          </motion.div>
+          </div>
+          <SkillTable title="Hard Skills"    skills={hardSkills} />
+          <SkillTable title="Soft Skills"    skills={softSkills} />
+          <SkillTable title="Other Keywords" skills={otherKeywords} />
+        </div>
+      </main>
 
-          {/* 3. RECRUITER FINDINGS */}
-          <motion.div variants={itemVariants} className="mb-10">
-            <div className="flex items-center gap-3 border-b border-white/10 pb-3 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center">
-                <UserCheck size={20} />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-white">Recruiter Findings</h2>
-                <p className="text-sm text-slate-400">Best practices, measurable results, and readability.</p>
-              </div>
-            </div>
-            <div className="space-y-3">
-              {recruiterFindings.map(cat => (
-                <ScoreCategoryCard
-                  key={cat.name}
-                  cat={cat}
-                  resumeText={resumeText}
-                  isActive={activeCategory === cat.name}
-                  onActivate={() => setActiveCategory(cat.name)}
-                />
-              ))}
-              {recruiterSuggestions.map((s) => (
-                <SuggestionCard
-                  key={s.issue}
-                  s={s}
-                  isActive={activeCategory === s.category}
-                  onActivate={() => setActiveCategory(s.category)}
-                />
-              ))}
-            </div>
-          </motion.div>
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* RIGHT PANEL — Tabbed Suggestions                                      */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      <aside className="hidden lg:flex flex-col w-[380px] shrink-0 border-l border-white/8 sticky top-0 h-screen overflow-y-auto">
+        {/* Tab bar */}
+        <div className="flex border-b border-white/10 bg-surface-950/80 sticky top-0 z-10">
+          {hasBullets && (
+            <button
+              type="button"
+              onClick={() => { setActiveTab("bullets"); scrollTo(bulletsRef); }}
+              className={`flex-1 py-3 text-xs font-semibold transition-colors ${activeTab === "bullets" ? "text-brand-300 border-b-2 border-brand-400" : "text-slate-500 hover:text-slate-300"}`}
+            >
+              ✍ Bullets {result.bullet_suggestions?.length ? `(${result.bullet_suggestions.length})` : ""}
+            </button>
+          )}
+          {hasKeywords && (
+            <button
+              type="button"
+              onClick={() => { setActiveTab("keywords"); scrollTo(kwRef); }}
+              className={`flex-1 py-3 text-xs font-semibold transition-colors ${activeTab === "keywords" ? "text-brand-300 border-b-2 border-brand-400" : "text-slate-500 hover:text-slate-300"}`}
+            >
+              🔑 Keywords {requiredMissing.length ? `(${requiredMissing.length}!)` : ""}
+            </button>
+          )}
+          {hasFixes && (
+            <button
+              type="button"
+              onClick={() => { setActiveTab("fixes"); scrollTo(fixesRef); }}
+              className={`flex-1 py-3 text-xs font-semibold transition-colors ${activeTab === "fixes" ? "text-brand-300 border-b-2 border-brand-400" : "text-slate-500 hover:text-slate-300"}`}
+            >
+              ⚡ Fixes {result.formatting_risks?.length ? `(${result.formatting_risks.length})` : ""}
+            </button>
+          )}
+        </div>
 
-          {/* 4. SKILLS MATCH */}
-          <motion.div variants={itemVariants} className="mb-10">
-            <div className="flex items-center gap-3 border-b border-white/10 pb-3 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-                <BookOpen size={20} />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-white">Skills Match</h2>
-                <p className="text-sm text-slate-400">Missing these keywords lowers your match rate.</p>
-              </div>
-            </div>
+        {/* Tab content */}
+        <div className="flex-1 overflow-y-auto p-4">
 
-            <SkillTable title="Hard Skills" skills={hardSkills} />
-            <SkillTable title="Soft Skills" skills={softSkills} />
-            <SkillTable title="Other Keywords" skills={otherKeywords} />
-          </motion.div>
-
-          {/* 5. BULLET REWRITES */}
-          {(result.bullet_improvements?.length || 0) > 0 && (
-            <motion.div variants={itemVariants} className="mb-10">
-              <div className="flex items-center gap-3 border-b border-white/10 pb-3 mb-5">
-                <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center">
-                  <AlertTriangle size={20} />
+          {/* Priority Fixes (always shown at top of bullets tab) */}
+          {activeTab === "bullets" && (result.priority_fixes?.length || 0) > 0 && (
+            <motion.div initial="hidden" animate="show" variants={fadeUp} className="mb-5">
+              <div className="card p-4 border-brand-500/25 bg-brand-500/5">
+                <div className="flex items-center gap-2 mb-3">
+                  <Zap size={14} className="text-brand-400" />
+                  <h3 className="text-sm font-bold text-white">Priority Fixes</h3>
                 </div>
-                <div>
-                  <h2 className="text-xl font-bold text-white">AI Bullet Rewrites</h2>
-                  <p className="text-sm text-slate-400">STAR-method improvements for your weakest points.</p>
-                </div>
+                <ol className="space-y-2">
+                  {result.priority_fixes.map((fix, i) => (
+                    <li key={fix} className="flex items-start gap-2">
+                      <span className="shrink-0 w-4 h-4 rounded-full bg-brand-500/20 text-brand-400 text-[10px] font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
+                      <p className="text-xs text-slate-200 leading-relaxed">{fix}</p>
+                    </li>
+                  ))}
+                </ol>
               </div>
-              <BulletRewriter
-                bullets={result.bullet_improvements}
-                jobDescription={jobDescription}
-                resumeText={resumeText}
-                onApply={(updatedText) => setAppliedResumeText(updatedText)}
-              />
             </motion.div>
           )}
 
-        </motion.div>
-      </div>
-
-      {/* ── Right: Sticky Annotated Resume ── */}
-      <aside className="w-full xl:w-[420px] shrink-0 xl:sticky xl:top-8 xl:self-start order-1 xl:order-2">
-        <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.035] shadow-2xl shadow-black/20">
-          <div className="flex items-start justify-between gap-4 border-b border-white/10 bg-surface-950/70 px-4 py-4">
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-brand-300">
-                <FileText size={15} /> Annotated Resume
-              </div>
-              <p className="mt-1 text-sm text-slate-400">Issues are highlighted inline.</p>
+          {/* Bullets tab */}
+          {activeTab === "bullets" && hasBullets && (
+            <div ref={bulletsRef}>
+              <BulletRewriter
+                bullets={result.bullet_suggestions}
+                jobDescription={jobDescription}
+                resumeText={workingText}
+                onApply={handleApply}
+                activeHighlight={activeHighlight}
+              />
             </div>
-            <span className="shrink-0 rounded-full border border-amber-500/25 bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-200">
-              {resumeAnnotations.length} issues
-            </span>
-          </div>
-          <ResumePreview
-            annotations={resumeAnnotations}
-            className="rounded-none border-0 bg-transparent"
-            file={resumeFile}
-            showHeader={false}
-            text={resumeText}
-            title="Resume Markup"
-            activeCategory={activeCategory}
-          />
+          )}
+
+          {/* Keywords tab */}
+          {activeTab === "keywords" && (
+            <div ref={kwRef}>
+              {requiredMissing.length > 0 && (
+                <div className="mb-4 card p-4">
+                  <p className="text-xs font-bold text-red-400 uppercase tracking-wider mb-3">Required ({requiredMissing.length})</p>
+                  {requiredMissing.map((kw) => <MissingKeywordRow key={kw.keyword} kw={kw} />)}
+                </div>
+              )}
+              {preferredMissing.length > 0 && (
+                <div className="card p-4">
+                  <p className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-3">Preferred ({preferredMissing.length})</p>
+                  {preferredMissing.map((kw) => <MissingKeywordRow key={kw.keyword} kw={kw} />)}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Fixes tab */}
+          {activeTab === "fixes" && hasFixes && (
+            <div ref={fixesRef}>
+              {result.formatting_risks.map((risk) => (
+                <FormattingRiskCard
+                  key={risk.issue}
+                  risk={risk}
+                  isActive={activeCategory === risk.issue}
+                  onActivate={() => setActiveCategory(risk.issue)}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Empty state */}
+          {activeTab === "bullets" && !hasBullets && (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <AlertTriangle size={28} className="text-slate-600 mb-3" />
+              <p className="text-slate-400 text-sm">No bullet rewrites needed.</p>
+            </div>
+          )}
         </div>
       </aside>
+
+      {/* Mobile: suggestions below editor */}
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 border-t border-white/10 bg-surface-950/95 backdrop-blur-sm">
+        <div className="flex">
+          {hasBullets   && <button type="button" onClick={() => setActiveTab("bullets")}  className={`flex-1 py-3 text-xs font-semibold ${activeTab === "bullets"  ? "text-brand-300" : "text-slate-500"}`}>✍ Bullets</button>}
+          {hasKeywords  && <button type="button" onClick={() => setActiveTab("keywords")} className={`flex-1 py-3 text-xs font-semibold ${activeTab === "keywords" ? "text-brand-300" : "text-slate-500"}`}>🔑 Keywords</button>}
+          {hasFixes     && <button type="button" onClick={() => setActiveTab("fixes")}    className={`flex-1 py-3 text-xs font-semibold ${activeTab === "fixes"    ? "text-brand-300" : "text-slate-500"}`}>⚡ Fixes</button>}
+        </div>
+      </div>
     </div>
   );
 }

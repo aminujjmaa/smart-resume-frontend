@@ -6,6 +6,9 @@
  *           we build an ATS-safe LaTeX document from it.
  */
 
+import * as React from "react";
+import { pdf } from "@react-pdf/renderer";
+import ResumeTemplate from "./templates/ModernTech";
 import {
   Document,
   Paragraph,
@@ -15,21 +18,16 @@ import {
   AlignmentType,
   BorderStyle,
 } from "docx";
-import { apiClient } from "./api";
 
-// ── PDF via LaTeX compile endpoint ────────────────────────────────────────────
+// ── PDF client-side generation ───────────────────────────────────────────────
 
 /**
- * Compile a LaTeX string server-side and download the resulting PDF.
- * Requires the user to be authenticated (the backend enforces it).
+ * Generate a PDF entirely client-side using @react-pdf/renderer.
+ * This completely avoids the need for pdflatex on the backend.
  */
-export async function downloadPDF(latexSource: string, filename = "resume.pdf") {
-  const response = await apiClient.post(
-    "/latex/compile",
-    { source: latexSource },
-    { responseType: "blob", withCredentials: true }
-  );
-  const blob = new Blob([response.data], { type: "application/pdf" });
+export async function downloadPDF(resumeText: string, filename = "resume.pdf") {
+  const element = React.createElement(ResumeTemplate, { content: resumeText, templateId: "modern-tech" });
+  const blob = await pdf(element).toBlob();
   triggerDownload(blob, filename);
 }
 
@@ -79,9 +77,11 @@ export async function downloadDOCX(resumeText: string, filename = "resume.docx")
     }
 
     // Section header: ALL CAPS, short, no bullet prefix
+    const isStandardSection = /^(experience|work experience|professional experience|education|skills|projects|summary|objective|certifications|publications)$/i.test(trimmed);
+    const isAllCapsHeader = trimmed === trimmed.toUpperCase() && trimmed.length > 2 && trimmed.length < 40;
+    
     if (
-      trimmed === trimmed.toUpperCase() &&
-      trimmed.length < 40 &&
+      (isStandardSection || isAllCapsHeader) &&
       !trimmed.startsWith("•") &&
       !trimmed.startsWith("-") &&
       !trimmed.startsWith("*")

@@ -56,23 +56,47 @@ function parseContent(content: string): ParsedResume {
   };
 
   lines.slice(2).forEach((line) => {
+    // 1. Markdown styles (fallback)
     if (line.startsWith("# ")) {
       current = { title: cleanText(line.replace(/^#\s+/, "")), lines: [] };
       sections.push(current);
       return;
     }
-
     if (line.startsWith("## ")) {
       ensureSection().lines.push({ kind: "heading", text: cleanText(line.replace(/^##\s+/, "")) });
       return;
     }
-
-    if (line.startsWith("- ")) {
-      ensureSection().lines.push({ kind: "bullet", text: cleanText(line.replace(/^-\s+/, "")) });
+    
+    // 2. Plain text intelligent parsing
+    const trimmed = line.trim();
+    const isStandardSection = /^(experience|work experience|professional experience|education|skills|projects|summary|objective|certifications|publications)$/i.test(trimmed);
+    const isAllCapsHeader = trimmed === trimmed.toUpperCase() && trimmed.length > 2 && trimmed.length < 40;
+    
+    if (
+      (isStandardSection || isAllCapsHeader) &&
+      !trimmed.startsWith("•") &&
+      !trimmed.startsWith("-") &&
+      !trimmed.startsWith("*")
+    ) {
+      current = { title: cleanText(trimmed), lines: [] };
+      sections.push(current);
       return;
     }
 
-    ensureSection().lines.push({ kind: "text", text: cleanText(line) });
+    if (/^[•▪◦\-*]\s+/.test(trimmed)) {
+      ensureSection().lines.push({ kind: "bullet", text: cleanText(trimmed.replace(/^[•▪◦\-*]\s+/, "")) });
+      return;
+    }
+
+    // Heuristic for subheadings (e.g., job titles/dates)
+    // If it's a short line that's not a bullet and not the first line of a section, it's often a subheading
+    if (trimmed.length < 70 && !trimmed.endsWith(".") && !trimmed.endsWith(",")) {
+       // Only treat as heading if we already have a section and it's not a bullet
+       ensureSection().lines.push({ kind: "heading", text: cleanText(trimmed) });
+       return;
+    }
+
+    ensureSection().lines.push({ kind: "text", text: cleanText(trimmed) });
   });
 
   return {

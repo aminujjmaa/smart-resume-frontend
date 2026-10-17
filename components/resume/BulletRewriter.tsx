@@ -1,27 +1,59 @@
 "use client";
-import { useState } from "react";
-import { Copy, RefreshCw, Check, ChevronDown, ChevronUp, Lock, CheckCheck } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Copy, RefreshCw, Check, ChevronDown, ChevronUp, Lock, CheckCheck, AlertCircle } from "lucide-react";
 import { analysisApi } from "@/lib/api";
 import { useAuthStore } from "@/store/useAppStore";
-import type { BulletImprovement } from "@/types";
+import type { BulletSuggestion } from "@/types";
 import Link from "next/link";
 
 interface Props {
-  readonly bullets: BulletImprovement[];
+  readonly bullets: BulletSuggestion[];
   readonly jobDescription: string;
   readonly resumeText: string;
-  readonly onApply: (updatedText: string) => void;
+  readonly onApply: (newResumeText: string, originalLine: string, rewrittenLine: string) => void;
+  readonly activeHighlight?: string | null;
 }
 
-export default function BulletRewriter({ bullets, jobDescription, resumeText, onApply }: Props) {
+function normalizeLine(val: string) {
+  return val.trim().replace(/^(?:[•▪◦\-*]|\d+[.)]) +/, "").replace(/\s+/g, " ").toLowerCase();
+}
+
+function fuzzyReplace(text: string, search: string, replacement: string): { newText: string, matched: boolean } {
+  if (text.includes(search)) {
+    return { newText: text.replace(search, replacement), matched: true };
+  }
+  const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const tokens = search.trim().split(/\s+/).map(escapeRegex);
+  if (tokens.length === 0) return { newText: text, matched: false };
+  
+  const pattern = new RegExp(tokens.join('\\s+'));
+  if (pattern.test(text)) {
+    return { newText: text.replace(pattern, replacement), matched: true };
+  }
+  return { newText: text, matched: false };
+}
+
+export default function BulletRewriter({ bullets, jobDescription, resumeText, onApply, activeHighlight }: Props) {
   const [items, setItems] = useState(bullets);
   const [loading, setLoading] = useState<Record<number, boolean>>({});
   const [copied, setCopied] = useState<Record<number, boolean>>({});
   const [expanded, setExpanded] = useState<Record<number, boolean>>({});
   const [errors, setErrors] = useState<Record<number, string>>({});
-  // Track which bullets have been applied to the resume text
   const [applied, setApplied] = useState<Record<number, boolean>>({});
   const { user } = useAuthStore();
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // Auto-scroll to and highlight the card that matches activeHighlight
+  useEffect(() => {
+    if (!activeHighlight) return;
+    const idx = items.findIndex(
+      (b) => normalizeLine(b.original) === normalizeLine(activeHighlight)
+    );
+    if (idx !== -1 && cardRefs.current[idx]) {
+      cardRefs.current[idx]?.scrollIntoView({ behavior: "smooth", block: "center" });
+      setExpanded((p) => ({ ...p, [idx]: true }));
+    }
+  }, [activeHighlight, items]);
   const isPremium = user?.plan === "premium";
 
   const appliedCount = Object.values(applied).filter(Boolean).length;
@@ -36,10 +68,7 @@ export default function BulletRewriter({ bullets, jobDescription, resumeText, on
     if (!isPremium) return;
     setLoading((prev) => ({ ...prev, [idx]: true }));
     setErrors((prev) => ({ ...prev, [idx]: "" }));
-    // If this bullet was already applied, unapply it first since it will change
-    if (applied[idx]) {
-      setApplied((prev) => ({ ...prev, [idx]: false }));
-    }
+    if (applied[idx]) setApplied((prev) => ({ ...prev, [idx]: false }));
     try {
       const res = await analysisApi.rewrite({
         bullet_point: items[idx].original,
@@ -47,7 +76,7 @@ export default function BulletRewriter({ bullets, jobDescription, resumeText, on
       });
       setItems((prev) =>
         prev.map((item, i) =>
-          i === idx ? { ...item, improved: res.data.improved } : item
+          i === idx ? { ...item, rewritten: res.data.improved } : item
         )
       );
     } catch (e: unknown) {
@@ -61,44 +90,56 @@ export default function BulletRewriter({ bullets, jobDescription, resumeText, on
     }
   };
 
-  /**
-   * Apply a single improved bullet to the working resume text.
-   * Does a simple string replace: original → improved.
-   */
   const applyToResume = (idx: number) => {
     const original = items[idx].original;
-    const improved = items[idx].improved;
-
-    // Build current "working" text — start from resumeText,
-    // then replay all currently-applied improvements.
-    let workingText = resumeText;
-    items.forEach((item, i) => {
-      if (i !== idx && applied[i]) {
-        workingText = workingText.replace(item.original, item.improved);
-      }
-    });
-
-    // Toggle: if already applied, revert; otherwise apply
+    const rewritten = items[idx].rewritten;
+    
     if (applied[idx]) {
-      setApplied((prev) => ({ ...prev, [idx]: false }));
-      onApply(workingText);
+      // Un-apply
+      const { newText, matched } = fuzzyReplace(resumeText, rewritten, original);
+      if (matched) {
+        setApplied((prev) => ({ ...prev, [idx]: false }));
+        onApply(newText, rewritten, original);
+      } else {
+        alert("Could not find the applied text to undo. You may have manually edited it.");
+      }
     } else {
-      workingText = workingText.replace(original, improved);
-      setApplied((prev) => ({ ...prev, [idx]: true }));
-      onApply(workingText);
+      // Apply
+      const { newText, matched } = fuzzyReplace(resumeText, original, rewritten);
+      if (matched) {
+        setApplied((prev) => ({ ...prev, [idx]: true }));
+        onApply(newText, original, rewritten);
+      } else {
+        alert("Could not find the original text to apply. You may have manually edited it.");
+      }
     }
   };
 
   const applyAll = () => {
-    let workingText = resumeText;
-    const newApplied: Record<number, boolean> = {};
+    let currentText = resumeText;
+    const newApplied: Record<number, boolean> = { ...applied };
+    let lastOriginal = "";
+    let lastRewritten = "";
+    
     items.forEach((item, i) => {
-      workingText = workingText.replace(item.original, item.improved);
-      newApplied[i] = true;
+      if (item.applicable && !applied[i]) {
+        const { newText, matched } = fuzzyReplace(currentText, item.original, item.rewritten);
+        if (matched) {
+          currentText = newText;
+          newApplied[i] = true;
+          lastOriginal = item.original;
+          lastRewritten = item.rewritten;
+        }
+      }
     });
+    
     setApplied(newApplied);
-    onApply(workingText);
+    if (lastOriginal) {
+      onApply(currentText, lastOriginal, lastRewritten);
+    }
   };
+
+  if (!items.length) return null;
 
   return (
     <div className="space-y-4">
@@ -128,20 +169,31 @@ export default function BulletRewriter({ bullets, jobDescription, resumeText, on
       {items.map((bullet, idx) => {
         const isExpanded = expanded[idx] ?? true;
         const isApplied = applied[idx] ?? false;
+        const isActiveHighlight = !!activeHighlight && normalizeLine(bullet.original) === normalizeLine(activeHighlight);
         return (
           <div
             key={bullet.original}
-            className={`card transition-all duration-200 ${isApplied ? "border-emerald-500/30 bg-emerald-500/[0.04]" : ""}`}
+            ref={(el) => { cardRefs.current[idx] = el; }}
+            className={`card transition-all duration-300 ${
+              isApplied ? "border-emerald-500/30 bg-emerald-500/[0.04]" : ""
+            } ${
+              isActiveHighlight ? "ring-2 ring-brand-400/40 shadow-[0_0_16px_rgba(99,102,241,0.18)]" : ""
+            }`}
           >
             {/* Header */}
             <button
               className="w-full flex items-center justify-between text-left"
               onClick={() => setExpanded((p) => ({ ...p, [idx]: !isExpanded }))}
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-slate-400 text-xs font-semibold uppercase tracking-wider">
-                  Bullet {idx + 1}
+                  {bullet.section} · Bullet {idx + 1}
                 </span>
+                {bullet.needs_user_input && (
+                  <span className="flex items-center gap-1 text-[10px] font-bold text-amber-400 bg-amber-500/15 border border-amber-500/25 px-2 py-0.5 rounded-full">
+                    <AlertCircle size={9} /> Add metric
+                  </span>
+                )}
                 {isApplied && (
                   <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/15 border border-emerald-500/25 px-2 py-0.5 rounded-full">
                     <Check size={9} /> Applied
@@ -157,11 +209,12 @@ export default function BulletRewriter({ bullets, jobDescription, resumeText, on
 
             {isExpanded && (
               <div className="mt-4 space-y-4 animate-fade-in">
+                {/* Reason */}
+                <p className="text-xs text-slate-500 italic">{bullet.reason}</p>
+
                 {/* Before */}
                 <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
-                  <p className="text-xs font-semibold text-red-400 uppercase tracking-wider mb-2">
-                    Original
-                  </p>
+                  <p className="text-xs font-semibold text-red-400 uppercase tracking-wider mb-2">Original</p>
                   <p className={`text-sm leading-relaxed ${isApplied ? "line-through text-slate-500" : "text-slate-300"}`}>
                     {bullet.original}
                   </p>
@@ -171,38 +224,40 @@ export default function BulletRewriter({ bullets, jobDescription, resumeText, on
                 <div className={`p-4 rounded-xl border transition-all duration-200 ${isApplied ? "bg-emerald-500/10 border-emerald-500/25" : "bg-accent-green/5 border-accent-green/15"}`}>
                   <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
                     <p className="text-xs font-semibold text-accent-green uppercase tracking-wider">
-                      AI-Improved
+                      {bullet.needs_user_input ? "Rewritten — add metric below" : "AI-Improved"}
                     </p>
                     <div className="flex items-center gap-2 flex-wrap">
                       {/* Copy */}
                       <button
                         id={`bullet-copy-${idx}`}
-                        onClick={() => copyToClipboard(bullet.improved, idx)}
+                        onClick={() => copyToClipboard(bullet.rewritten, idx)}
                         className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all"
                         style={{ background: "rgba(255,255,255,0.05)" }}
-                        title="Copy improved bullet"
+                        title="Copy rewritten bullet"
                       >
                         {copied[idx] ? <Check size={11} className="text-accent-green" /> : <Copy size={11} />}
                         {copied[idx] ? "Copied" : "Copy"}
                       </button>
 
-                      {/* Apply to Resume */}
-                      <button
-                        id={`bullet-apply-${idx}`}
-                        onClick={() => applyToResume(idx)}
-                        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
-                          isApplied
-                            ? "bg-emerald-500/20 border border-emerald-500/30 text-emerald-300"
-                            : "bg-brand-500/15 border border-brand-500/25 text-brand-300 hover:bg-brand-500/25"
-                        }`}
-                        title={isApplied ? "Click to undo" : "Apply this improvement to your resume"}
-                      >
-                        {isApplied ? (
-                          <><CheckCheck size={11} /> Applied</>
-                        ) : (
-                          <><Check size={11} /> Apply</>
-                        )}
-                      </button>
+                      {/* Apply */}
+                      {bullet.applicable && (
+                        <button
+                          id={`bullet-apply-${idx}`}
+                          onClick={() => applyToResume(idx)}
+                          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                            isApplied
+                              ? "bg-emerald-500/20 border border-emerald-500/30 text-emerald-300"
+                              : "bg-brand-500/15 border border-brand-500/25 text-brand-300 hover:bg-brand-500/25"
+                          }`}
+                          title={isApplied ? "Click to undo" : "Apply this improvement to your resume"}
+                        >
+                          {isApplied ? (
+                            <><CheckCheck size={11} /> Applied</>
+                          ) : (
+                            <><Check size={11} /> Apply</>
+                          )}
+                        </button>
+                      )}
 
                       {/* Regenerate (Pro only) */}
                       {isPremium ? (
@@ -230,42 +285,20 @@ export default function BulletRewriter({ bullets, jobDescription, resumeText, on
                     </div>
                   </div>
 
-                  <p className="text-slate-200 text-sm leading-relaxed">{bullet.improved}</p>
+                  <p className="text-slate-200 text-sm leading-relaxed">{bullet.rewritten}</p>
 
                   {errors[idx] && (
                     <p className="mt-2 text-xs text-red-400 font-medium">{errors[idx]}</p>
                   )}
 
-                  {(bullet.why_stronger?.length || 0) > 0 && (
-                    <ul className="mt-3 space-y-1">
-                      {bullet.why_stronger?.map((reason) => (
-                        <li key={reason} className="flex items-start gap-2 text-xs text-slate-400">
-                          <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-accent-green" />
-                          {reason}
-                        </li>
-                      ))}
-                    </ul>
+                  {bullet.needs_user_input && (
+                    <div className="mt-3 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                      <p className="text-xs text-amber-300 font-medium">
+                        ⚠️ Add a real metric here — check your logs, tickets, or project records for the actual number.
+                      </p>
+                    </div>
                   )}
                 </div>
-
-                {/* Evidence chips */}
-                {(bullet.evidence_to_add?.length || 0) > 0 && (
-                  <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
-                    <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      Add if true (strengthens the bullet)
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {bullet.evidence_to_add?.map((item) => (
-                        <span
-                          key={item}
-                          className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs font-medium text-slate-300"
-                        >
-                          {item}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             )}
           </div>
