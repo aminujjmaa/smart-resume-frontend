@@ -3,10 +3,12 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff, Zap, ArrowRight, AlertCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useFeatures } from "@/hooks/useFeatures";
 import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 
 function LoginContent() {
   const { login } = useAuth();
+  const features = useFeatures();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
@@ -104,7 +106,11 @@ function LoginContent() {
                 <label className="text-sm font-medium text-slate-300" htmlFor="login-password">
                   Password
                 </label>
-                <span className="text-xs text-slate-500">Forgot password coming soon</span>
+                {features?.email && (
+                  <Link href="/forgot-password" className="text-xs text-brand-400 hover:text-brand-300">
+                    Forgot password?
+                  </Link>
+                )}
               </div>
               <div className="relative">
                 <input

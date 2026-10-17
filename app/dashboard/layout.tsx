@@ -10,17 +10,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { isAuthenticated, setAuth } = useAuthStore();
   const router = useRouter();
 
+  // Always refresh the user on entry: plan status (e.g. an expired or renewed
+  // subscription) may have changed since the persisted copy was saved.
   useEffect(() => {
-    if (!isAuthenticated) {
-      authApi.me()
-        .then((res) => {
-          setAuth(res.data);
-        })
-        .catch(() => {
-          router.replace("/login");
-        });
-    }
-  }, [isAuthenticated, router, setAuth]);
+    authApi.me()
+      .then((res) => {
+        setAuth(res.data);
+      })
+      .catch(() => {
+        router.replace("/login");
+      });
+  }, [router, setAuth]);
 
   if (!isAuthenticated) {
     return (

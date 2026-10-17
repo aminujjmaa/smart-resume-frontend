@@ -5,18 +5,20 @@ import { analysisApi } from "@/lib/api";
 import { useAnalysisStore, useAuthStore } from "@/store/useAppStore";
 import type { Analysis } from "@/types";
 
-const POLL_INTERVAL = 1500; // ms
-const MAX_POLLS = 40;
+// Poll quickly at first, then back off; AI enhancement can take ~40s under load.
+const POLL_DELAYS_MS = [1000, 1500, 2000, 3000, 4000, 5000];
+const MAX_WAIT_MS = 3 * 60 * 1000;
+const MAX_CONSECUTIVE_NETWORK_ERRORS = 3;
 
 export function useAnalysis() {
   const router = useRouter();
   const { setCurrentAnalysis, setStep, currentAnalysis, step } = useAnalysisStore();
   const [error, setError] = useState<string | null>(null);
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const stopPolling = useCallback(() => {
     if (pollRef.current) {
-      clearInterval(pollRef.current);
+      clearTimeout(pollRef.current);
       pollRef.current = null;
     }
   }, []);
@@ -26,17 +28,24 @@ export function useAnalysis() {
   const pollResult = useCallback(
     (jobId: string) => {
       stopPolling();
-      let count = 0;
-      pollRef.current = setInterval(async () => {
-        count++;
-        if (count > MAX_POLLS) {
-          stopPolling();
-          setStep("error");
-          setError("Analysis timed out. Please try again.");
+      const startedAt = Date.now();
+      let attempt = 0;
+      let networkErrors = 0;
+
+      const fail = (message: string) => {
+        stopPolling();
+        setStep("error");
+        setError(message);
+      };
+
+      const tick = async () => {
+        if (Date.now() - startedAt > MAX_WAIT_MS) {
+          fail("This is taking longer than usual. Please try again in a minute.");
           return;
         }
         try {
           const res = await analysisApi.getResult(jobId);
+          networkErrors = 0;
           const analysis: Analysis = res.data;
           setCurrentAnalysis(analysis);
 
@@ -44,24 +53,27 @@ export function useAnalysis() {
             stopPolling();
             setStep("done");
             const { isAuthenticated } = useAuthStore.getState();
-            if (isAuthenticated) {
-              router.push(`/dashboard/results/${jobId}`);
-            } else {
-              router.push(`/results/${jobId}`);
-            }
-          } else if (analysis.status === "failed") {
-            stopPolling();
-            setStep("error");
-            setError("Analysis failed. Please try again.");
-          } else if (analysis.status === "processing") {
-            setStep("analyzing");
+            router.push(isAuthenticated ? `/dashboard/results/${jobId}` : `/results/${jobId}`);
+            return;
           }
+          if (analysis.status === "failed") {
+            fail("Analysis failed. Please try again.");
+            return;
+          }
+          if (analysis.status === "processing") setStep("analyzing");
         } catch {
-          stopPolling();
-          setStep("error");
-          setError("Connection error. Please try again.");
+          networkErrors += 1;
+          if (networkErrors >= MAX_CONSECUTIVE_NETWORK_ERRORS) {
+            fail("Connection error. Please check your internet and try again.");
+            return;
+          }
         }
-      }, POLL_INTERVAL);
+        const delay = POLL_DELAYS_MS[Math.min(attempt, POLL_DELAYS_MS.length - 1)];
+        attempt += 1;
+        pollRef.current = setTimeout(tick, delay);
+      };
+
+      pollRef.current = setTimeout(tick, POLL_DELAYS_MS[0]);
     },
     [router, setCurrentAnalysis, setStep, stopPolling]
   );

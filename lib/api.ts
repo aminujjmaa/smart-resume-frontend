@@ -15,7 +15,10 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401 && globalThis.window !== undefined) {
       useAuthStore.getState().clearAuth();
-      globalThis.window.location.href = "/login";
+      const { pathname } = globalThis.window.location;
+      if (pathname.startsWith("/dashboard")) {
+        globalThis.window.location.href = `/login?next=${encodeURIComponent(pathname)}`;
+      }
     }
     return Promise.reject(error);
   }
@@ -29,6 +32,14 @@ export const authApi = {
     apiClient.post("/auth/login", data),
   me: () => apiClient.get("/auth/me"),
   logout: () => apiClient.post("/auth/logout"),
+  forgotPassword: (email: string) => apiClient.post("/auth/forgot-password", { email }),
+  resetPassword: (token: string, password: string) =>
+    apiClient.post("/auth/reset-password", { token, password }),
+};
+
+// ── Meta ─────────────────────────────────────────────
+export const metaApi = {
+  features: () => apiClient.get("/meta/features"),
 };
 
 // ── Analysis ─────────────────────────────────────────
