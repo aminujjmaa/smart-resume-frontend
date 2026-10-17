@@ -1,14 +1,16 @@
 /**
  * Shared resume download utilities.
  *
- * Path 1 — Template Builder: caller passes latexSource directly.
- * Path 2 — Upload & Optimize: caller passes resumeText (plain text);
- *           we build an ATS-safe LaTeX document from it.
+ * Path 1 — Template Builder: LaTeX source is compiled by the backend
+ *           (same pdflatex output as the live preview).
+ * Path 2 — Upload & Optimize: plain resume text is rendered client-side
+ *           with @react-pdf/renderer.
  */
 
 import * as React from "react";
-import { pdf } from "@react-pdf/renderer";
+import { pdf, type DocumentProps } from "@react-pdf/renderer";
 import ResumeTemplate from "./templates/ModernTech";
+import { latexApi } from "./api";
 import {
   Document,
   Paragraph,
@@ -22,13 +24,24 @@ import {
 // ── PDF client-side generation ───────────────────────────────────────────────
 
 /**
- * Generate a PDF entirely client-side using @react-pdf/renderer.
- * This completely avoids the need for pdflatex on the backend.
+ * Generate a PDF from plain resume text entirely client-side using @react-pdf/renderer.
  */
-export async function downloadPDF(resumeText: string, filename = "resume.pdf") {
-  const element = React.createElement(ResumeTemplate, { content: resumeText, templateId: "modern-tech" });
+export async function downloadPDFFromText(resumeText: string, filename = "resume.pdf") {
+  // ResumeTemplate renders a <Document> root, which is what pdf() expects.
+  const element = React.createElement(ResumeTemplate, {
+    content: resumeText,
+    templateId: "modern-tech",
+  }) as unknown as React.ReactElement<DocumentProps>;
   const blob = await pdf(element).toBlob();
   triggerDownload(blob, filename);
+}
+
+/**
+ * Compile LaTeX source on the backend and download the resulting PDF.
+ */
+export async function downloadPDFFromLatex(latexSource: string, filename = "resume.pdf") {
+  const res = await latexApi.compile(latexSource);
+  triggerDownload(res.data as Blob, filename);
 }
 
 // ── DOCX client-side generation ───────────────────────────────────────────────

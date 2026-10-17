@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { ArrowLeft, Layout, Code2, SlidersHorizontal, FileDown, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useAnalysisStore } from "@/store/useAppStore";
-import { downloadPDF, downloadDOCX } from "@/lib/downloadResume";
+import { downloadPDFFromLatex, downloadDOCX } from "@/lib/downloadResume";
 
 // React-PDF viewer must be loaded dynamically on the client side only
 const PDFPreview = dynamic(() => import("@/components/resume/PDFPreview"), {
@@ -702,8 +702,8 @@ export default function BuilderPage() {
 
   const handleBuilderPDF = async () => {
     setDlLoading("pdf");
-    try { await downloadPDF(latexCode, `resume-${templateId}.pdf`); }
-    catch { alert("PDF generation failed. Make sure you are logged in."); }
+    try { await downloadPDFFromLatex(latexCode, `resume-${templateId}.pdf`); }
+    catch { alert("PDF compilation failed. Check the preview panel for LaTeX errors."); }
     finally { setDlLoading(null); }
   };
 

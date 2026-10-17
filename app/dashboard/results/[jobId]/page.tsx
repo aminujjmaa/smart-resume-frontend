@@ -9,7 +9,7 @@ import BulletRewriter from "@/components/resume/BulletRewriter";
 import ResumeEditor from "@/components/resume/ResumeEditor";
 import SkillTable from "@/components/resume/SkillTable";
 import { buildResumeAnnotations } from "@/lib/resumeAnnotations";
-import { downloadPDF, downloadDOCX, buildLatexFromText } from "@/lib/downloadResume";
+import { downloadPDFFromText, downloadDOCX } from "@/lib/downloadResume";
 import {
   ArrowLeft, AlertTriangle, ChevronDown, ChevronUp,
   FileText, Download, FileDown, Loader2, BookOpen, Zap, Search,
@@ -94,7 +94,7 @@ function DownloadDropdown({ resumeText }: { readonly resumeText: string }) {
 
   const handlePDF = async () => {
     setLoading("pdf"); setOpen(false);
-    try { await downloadPDF(resumeText, "smartresume-optimized.pdf"); }
+    try { await downloadPDFFromText(resumeText, "smartresume-optimized.pdf"); }
     catch { alert("PDF generation failed."); }
     finally { setLoading(null); }
   };
@@ -132,7 +132,7 @@ function DownloadDropdown({ resumeText }: { readonly resumeText: string }) {
             <FileDown size={15} className="text-red-400 shrink-0" />
             <div className="text-left">
               <p className="font-medium">Download PDF</p>
-              <p className="text-xs text-slate-500">ATS-ready LaTeX PDF</p>
+              <p className="text-xs text-slate-500">ATS-friendly single-column PDF</p>
             </div>
           </button>
           <div className="h-px bg-white/5 mx-3" />
